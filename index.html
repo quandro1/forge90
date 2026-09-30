@@ -2555,7 +2555,8 @@ function settingsSheet(){
     +'<p style="font-size:12.5px;color:var(--text-dim);margin-bottom:8px">'+(CLOUD.doc||CLOUD.status==='connecting'
         ?'Everything you log is saved on this device and backed up privately to your Claude account, so a cleared browser or a second phone picks up where you left off.'
         :'Everything you log lives in this browser only — nothing is sent anywhere. Clearing site data or using a different device starts you fresh, so export before you switch.')+'</p>'
-    +'<p style="margin-bottom:10px"><span id="cloudBadge" class="pill"></span></p>'
+    +'<p style="margin-bottom:8px"><span id="cloudBadge" class="pill"></span></p>'
+    +'<p id="storageLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+storageLine()+'</p>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btnExport">Export a backup</button>'
     +'<button class="btn" id="btnImport">Restore</button>'
     +'<button class="btn danger" id="btnWipe">Erase everything</button></div></div>');
@@ -2847,7 +2848,7 @@ function renderTodayReadout(){
    the double-click file on the laptop; every hook below is feature-detected
    and silently absent when the platform does not offer it.
    =================================================================== */
-const PWA={prompt:null, installed:false};
+const PWA={prompt:null, installed:false, persist:null};
 function isStandalone(){
   return window.matchMedia('(display-mode: standalone)').matches
       || window.matchMedia('(display-mode: minimal-ui)').matches
@@ -2923,6 +2924,28 @@ function refreshAppBox(){
 }
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); PWA.prompt=e; refreshAppBox(); });
 window.addEventListener('appinstalled',()=>{ PWA.installed=true; PWA.prompt=null; refreshAppBox(); });
+/* Without this, a browser may evict localStorage to reclaim space — iOS
+   clears it after ~7 days of not opening the site. Chrome grants it to an
+   installed app automatically; Safari grants it on Add to Home Screen.
+   It is the only thing protecting the log on a host with no cloud backup. */
+async function requestPersistence(){
+  try{
+    if(!navigator.storage||!navigator.storage.persist){ PWA.persist='unsupported'; return; }
+    if(await navigator.storage.persisted()){ PWA.persist='granted'; refreshStorageLine(); return; }
+    PWA.persist = (await navigator.storage.persist()) ? 'granted' : 'best-effort';
+  }catch(e){ PWA.persist='unsupported'; }
+  refreshStorageLine();
+}
+function storageLine(){
+  const p=PWA.persist;
+  if(p==='granted')     return '<span class="pill good">Storage protected</span> This device will not quietly discard your log to save space.';
+  if(p==='best-effort') return '<span class="pill warn">Storage is best-effort</span> Install the app (above) and the browser will protect it. Until then, export a backup now and then.';
+  if(p==='unsupported') return '<span class="pill">Storage not reportable</span> This browser will not say whether it protects the log — keep an export.';
+  return '<span class="pill">Checking storage…</span>';
+}
+function refreshStorageLine(){
+  const el=$('#storageLine'); if(el) el.innerHTML=storageLine();
+}
 function paintOnline(){ document.documentElement.classList.toggle('offline', navigator.onLine===false); }
 window.addEventListener('online',paintOnline);
 window.addEventListener('offline',paintOnline);
@@ -2993,7 +3016,7 @@ document.addEventListener('click',e=>{
    =================================================================== */
 (function init(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
-  ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW();
+  ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW(); requestPersistence();
   if(isStandalone()) document.documentElement.classList.add('standalone');
   $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===S.ui.diet));
   // a rest timer that was running when the page closed picks up where it was
