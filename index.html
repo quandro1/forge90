@@ -1547,15 +1547,34 @@ function load(){
   try{
     const raw=localStorage.getItem(KEY);
     if(!raw) return JSON.parse(JSON.stringify(DEFAULTS));
-    return mergeState(JSON.parse(raw));
+    return pruneLogs(mergeState(JSON.parse(raw)));
   }catch(e){ return JSON.parse(JSON.stringify(DEFAULTS)); }
 }
+/* A stray tap used to leave a dated-but-empty session behind, which then
+   posed as "last time" forever. Past sessions with no reps are not history. */
+function pruneLogs(st){
+  const logs=st.logs||{};
+  for(const id in logs){
+    logs[id]=(logs[id]||[]).filter(x=>x && x.d===TODAY ? true
+      : (x && (x.sets||[]).some(s=>s&&(s.r>0||s.w!=null))));
+    if(!logs[id].length) delete logs[id];
+  }
+  return st;
+}
 let saveTimer=null;
+function writeNow(){
+  clearTimeout(saveTimer); saveTimer=null;
+  try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){}
+}
 function save(){
   S.ui.savedAt=Date.now();                 // lets two copies of the state say which is newer
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} cloudQueue(); },160);
+  saveTimer=setTimeout(()=>{ writeNow(); cloudQueue(); },160);
 }
+/* The debounce above is a 160 ms window in which a rep you just typed is in
+   memory only. Lock the phone inside that window and it was gone. Anything
+   that can end the page's life must land the write first. */
+function saveNow(){ writeNow(); cloudQueue(); }
 
 /* ---- cloud copy (published page only) ----------------------------
    localStorage is the fast local copy and the only copy in the
@@ -2007,19 +2026,21 @@ const LOWER=['squat','rdl','legpress','bulgarian','lunge','legcurl','legext','ca
 function repRange(s){ const m=String(s).match(/(\d+)\s*[–-]\s*(\d+)/); return m?[+m[1],+m[2]]:null; }
 function lastLog(id){ const a=S.logs[id]||[]; return a.length?a[a.length-1]:null; }
 function logger(id){
-  const e=EX[id], last=lastLog(id), draft=(S.logs[id]||[]).find(x=>x.d===TODAY);
+  const e=EX[id], draft=(S.logs[id]||[]).find(x=>x.d===TODAY);
   const cur=draft?draft.sets:[];
   const nSets=Math.max(+e.sets||3, cur.length);
-  let rows='';
+  let rows='', lastW=null;
   for(let i=0;i<nSets;i++){
-    const s=cur[i]||{}, pw=(i>0&&cur[i-1]&&cur[i-1].w!=null)?cur[i-1].w:'kg';   // last set's weight as the hint
+    const s=cur[i]||{};
+    const pw=lastW!=null?lastW:'kg';          // carry the last weight you entered as the hint
+    if(s.w!=null) lastW=s.w;
     rows+='<div class="setrow'+(s.done?' done':'')+'"><span class="sn">'+(i+1)+'</span>'
-      +'<input class="num" type="number" step="0.5" inputmode="decimal" placeholder="'+pw+'" data-set="'+i+'" data-f="w" value="'+(s.w!=null?s.w:'')+'" aria-label="Set '+(i+1)+' weight">'
-      +'<input class="num" type="number" step="1" inputmode="numeric" placeholder="reps" data-set="'+i+'" data-f="r" value="'+(s.r!=null?s.r:'')+'" aria-label="Set '+(i+1)+' reps">'
+      +'<input class="num" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" placeholder="'+pw+'" data-set="'+i+'" data-f="w" value="'+(s.w!=null?s.w:'')+'" aria-label="Set '+(i+1)+' weight">'
+      +'<input class="num" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="reps" data-set="'+i+'" data-f="r" value="'+(s.r!=null?s.r:'')+'" aria-label="Set '+(i+1)+' reps">'
       +'<button class="ok" data-ok="'+i+'" aria-label="Set '+(i+1)+' done, start rest">✓</button>'
       +'<button class="del" data-del="'+i+'" aria-label="Clear set '+(i+1)+'">×</button></div>';
   }
-  const prev=(S.logs[id]||[]).filter(x=>x.d!==TODAY).pop();
+  const prev=prevSession(id), vd=verdict(id);
   return '<div class="logger" data-log="'+id+'">'
     +'<div class="lh"><b>Logbook</b><span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+prev.sets.filter(s=>s.r).map(s=>(s.w||0)+'×'+s.r).join('  '):'no history yet')+'</span></div>'
     +'<div class="sets">'+rows+'</div>'
@@ -2027,7 +2048,7 @@ function logger(id){
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
     +(prev?'<button class="btn sm" data-repeat>Same as last time</button>':'')
     +'<button class="btn sm primary" data-savelog>Save session</button></div>'
-    +'<div class="verdict '+verdict(id).cls+'"><span class="ic">'+verdict(id).ic+'</span><span>'+verdict(id).txt+'</span></div>'
+    +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+vd.txt+'</span></div>'
     +'</div>';
 }
 /* ---- rest timer -------------------------------------------------
@@ -2064,7 +2085,7 @@ function restPct(){ return Math.max(0,Math.min(100,(RT.end-Date.now())/RT.total*
 function startRest(id,setIdx,secs){
   audioUnlock();
   clearTimeout(rtGoTimer);
-  if(RT&&RT.id!==id){ const oid=RT.id; RT=null; const old=$('.rest[data-rest="'+oid+'"]'); if(old) old.outerHTML=restPanel(oid); }   // one timer at a time
+  if(RT&&RT.id!==id){ const oid=RT.id; RT=null; $$('.rest[data-rest="'+oid+'"]').forEach(o=>{ o.outerHTML=restPanel(oid); }); }   // one timer at a time
   const total=(secs||restSecs(EX[id]))*1000;
   RT={id, set:setIdx==null?-1:setIdx, end:Date.now()+total, total, done:false, warned:false};
   S.ui.rest={id:RT.id,set:RT.set,end:RT.end,total:RT.total}; save();
@@ -2080,7 +2101,7 @@ function stopRest(){
   clearInterval(rtTick); clearTimeout(rtGoTimer); rtTick=null;
   const id=RT&&RT.id; RT=null; delete S.ui.rest; save();
   wakeLock(false); document.title='FORGE 90';
-  const p=$('.rest[data-rest="'+id+'"]'); if(p) p.outerHTML=restPanel(id);
+  $$('.rest[data-rest="'+id+'"]').forEach(p=>{ p.outerHTML=restPanel(id); });
   $('#restPill').className='';
 }
 function tickRest(){
@@ -2100,14 +2121,14 @@ function tickRest(){
 function paintRest(full){
   if(!RT) return;
   const id=RT.id, left=RT.end-Date.now(), t=fmtT(left);
-  let p=$('.rest[data-rest="'+id+'"]');
-  if(p){
-    if(full||!$('.rt-t',p)){ p.outerHTML=restPanel(id); p=$('.rest[data-rest="'+id+'"]'); }
+  $$('.rest[data-rest="'+id+'"]').forEach(el=>{
+    if(full||!$('.rt-t',el)){ el.outerHTML=restPanel(id); }
     else{
-      $('.rt-t',p).textContent=t; $('.rt-bar i',p).style.width=restPct()+'%';
-      p.classList.toggle('warn', !RT.done&&left<=10000);
+      $('.rt-t',el).textContent=t; $('.rt-bar i',el).style.width=restPct()+'%';
+      el.classList.toggle('warn', !RT.done&&left<=10000);
     }
-  }
+  });
+  const p=$('.rest[data-rest="'+id+'"]');
   // floating pill: only when the panel itself is not on screen
   const pill=$('#restPill'); let vis=false;
   if(p&&currentTab==='train'){ const r=p.getBoundingClientRect(); vis=r.bottom>0&&r.top<innerHeight-70; }
@@ -2649,10 +2670,11 @@ document.addEventListener('click',e=>{
   const rep=T.closest('[data-repeat]');
   if(rep){
     const box=rep.closest('.logger'), id=box.dataset.log;
-    const prev=(S.logs[id]||[]).filter(x=>x.d!==TODAY&&x.sets.some(s=>s.r>0)).pop();
+    const prev=prevSession(id);
     if(prev){
       const e=upsert(id);
       e.sets=prev.sets.map(s=>({w:s.w,r:s.r}));
+      while(e.sets.length<setsWanted(id)) e.sets.push({});
       save(); refreshLogger(box,id);
     }
     return;
@@ -2751,14 +2773,20 @@ document.addEventListener('click',e=>{
   if(del){
     const box=del.closest('.logger'), id=box.dataset.log, i=+del.dataset.del;
     const entry=upsert(id);
-    if(entry.sets[i]) entry.sets[i]={};
+    // an extra row you added comes off entirely; a prescribed row just empties
+    if(i===entry.sets.length-1 && entry.sets.length>setsWanted(id)) entry.sets.pop();
+    else if(entry.sets[i]) entry.sets[i]={};
     save(); refreshLogger(box,id); return;
   }
   const savelog=T.closest('[data-savelog]');
   if(savelog){
     const box=savelog.closest('.logger'), id=box.dataset.log, entry=upsert(id);
-    entry.sets=entry.sets.filter(s=>s.w!=null||s.r!=null);
-    if(!entry.sets.length){ S.logs[id]=S.logs[id].filter(x=>x!==entry); }
+    // Trim only blank rows off the END. Filtering the whole array renumbered
+    // the sets, so skipping set 2 silently turned set 3 into set 2.
+    let n=entry.sets.length;
+    while(n>setsWanted(id) && blankSet(entry.sets[n-1])) n--;
+    entry.sets.length=n;
+    if(entry.sets.every(blankSet)){ S.logs[id]=S.logs[id].filter(x=>x!==entry); if(!S.logs[id].length) delete S.logs[id]; }
     else{
       const arr=S.checks[TODAY]||(S.checks[TODAY]=[]);
       if(arr.indexOf('session')<0) arr.push('session');
@@ -2793,16 +2821,39 @@ $('#addMeas').addEventListener('click',()=>{
 });
 
 /* --- delegated input --------------------------------------------- */
+function setsWanted(id){ return +((EX[id]||{}).sets)||3; }
+function blankSet(s){ return !s || (s.w==null && s.r==null && !s.done); }
 function upsert(id){
   const arr=S.logs[id]||(S.logs[id]=[]);
   let e=arr.find(x=>x.d===TODAY);
   if(!e){ e={d:TODAY,sets:[]}; arr.push(e); arr.sort((a,b)=>a.d<b.d?-1:1); }
+  // the rows the program prescribes always exist in state, so "+ Set" adds a
+  // real row instead of silently filling an invisible gap
+  while(e.sets.length<setsWanted(id)) e.sets.push({});
   return e;
 }
+/* One definition of "last time", used by the header AND the button, so the
+   two can never disagree: a session that actually has reps in it. */
+function prevSession(id){
+  return (S.logs[id]||[]).filter(x=>x.d!==TODAY&&(x.sets||[]).some(s=>s&&s.r>0)).pop()||null;
+}
+/* The same exercise appears on two days of the split (lateral raise on 1 and 4,
+   leg curl on 3 and 5), so two logbooks for it can be open at once. Refresh
+   every copy or the other one sits there showing stale numbers. */
 function refreshLogger(box,id){
-  const wrap=box.parentNode, tmp=document.createElement('div');
-  tmp.innerHTML=logger(id);
-  wrap.replaceChild(tmp.firstChild,box);
+  const a=document.activeElement;
+  const keep=(a&&a.closest&&a.closest('.logger[data-log="'+id+'"]'))
+    ? {set:a.dataset.set, f:a.dataset.f} : null;
+  $$('.logger[data-log="'+id+'"]').forEach(b=>{
+    const wrap=b.parentNode; if(!wrap) return;
+    const tmp=document.createElement('div');
+    tmp.innerHTML=logger(id);
+    wrap.replaceChild(tmp.firstChild,b);
+  });
+  if(keep&&keep.set!=null){
+    const el=$('.logger[data-log="'+id+'"] input[data-set="'+keep.set+'"][data-f="'+keep.f+'"]');
+    if(el) try{ el.focus({preventScroll:true}); }catch(e){ el.focus(); }
+  }
 }
 document.addEventListener('input',e=>{
   const T=e.target;
@@ -2811,8 +2862,18 @@ document.addEventListener('input',e=>{
     const box=T.closest('.logger'), id=box.dataset.log, i=+T.dataset.set, f=T.dataset.f;
     const entry=upsert(id);
     while(entry.sets.length<=i) entry.sets.push({});
-    const v=T.value===''?null:+T.value;
-    entry.sets[i][f]=v;
+    // keep only digits (and one dot for weight), so junk never reaches state
+    let raw=String(T.value).replace(f==='w'?/[^0-9.]/g:/[^0-9]/g,'');
+    if(f==='w') raw=raw.replace(/(\..*)\./g,'$1');
+    if(raw!==T.value){ const at=T.selectionStart; T.value=raw; try{T.setSelectionRange(at-1,at-1);}catch(err){} }
+    if(raw===''){ entry.sets[i][f]=null; }
+    else{
+      const v=parseFloat(raw);          // "7." parses to 7 and the field keeps "7."
+      if(isFinite(v)) entry.sets[i][f]=v; else return;
+    }
+    // keep the other open copy of this exercise in step while typing
+    $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="'+f+'"]')
+      .forEach(el=>{ if(el!==T) el.value=T.value; });
     save(); return;
   }
   if(T.id==='qWeight'){ setNum(S.weights,T.value); return; }
@@ -3025,14 +3086,14 @@ document.addEventListener('click',e=>{
   else if(r){ delete S.ui.rest; save(); }
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible') return;
-    if(iso(new Date())!==TODAY){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} location.reload(); return; }   // past midnight: today moved on
+    if(iso(new Date())!==TODAY){ writeNow(); location.reload(); return; }   // past midnight: today moved on
     if(RT&&!RT.done){ tickRest(); wakeLock(true); }
   });
   const h=location.hash.slice(1);
   if(TABS.indexOf(h)>=0) setTab(h,true); else renderToday();
   if(RT) paintRest(true);
   cloudInit();
-  const flush=()=>{ if(CLOUD.dirty||CLOUD.timer){ clearTimeout(CLOUD.timer); cloudPush(); } };
+  const flush=()=>{ saveNow(); if(CLOUD.dirty||CLOUD.timer){ clearTimeout(CLOUD.timer); cloudPush(); } };
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flush(); });
   window.addEventListener('pagehide',flush);
   window.addEventListener('hashchange',()=>{
