@@ -17,6 +17,8 @@ function closeSheet(){
   if(history.state&&history.state.sheet){ sheetBack++; try{ history.back(); }catch(e){ sheetBack--; } }
 }
 window.addEventListener('popstate',()=>{
+  // in first-run set-up the Back button goes to the step before
+  if(SU&&SU.step>1&&!sheet.classList.contains('on')){ SU.err=''; SU.step--; setupDraw(); return; }
   if(sheetBack>0){
     sheetBack--;
     // a sheet opened again before the step back landed keeps a step of its own
@@ -143,7 +145,9 @@ function daySheet(i){
   }
   if(d.date<TODAY){            // a day that has passed: what was ticked, still open to correction
     const c=S.checks[d.date]||[];
-    body+='<div class="eyebrow" style="margin:16px 0 7px">What you did that day · tap to correct</div><div class="checks">'
+    body+='<div class="card" style="margin-top:14px"><div class="frow"><label for="dayWeight">Weight that morning (kg)</label>'
+      +'<input class="num" id="dayWeight" data-dayweight="'+d.date+'" type="text" inputmode="decimal" autocomplete="off" placeholder="none" value="'+(S.weights[d.date]!=null?esc(S.weights[d.date]):'')+'"></div></div>'
+      +'<div class="eyebrow" style="margin:16px 0 7px">What you did that day · tap to correct</div><div class="checks">'
       +checkList(d.date).map(x=>chkButton(x, c.indexOf(x.k)>=0, 'data-daychk="'+x.k+'" data-date="'+d.date+'"')).join('')+'</div>';
   }
   if(d.checkin) body+='<div class="note" style="margin-top:12px"><b>Weekly check-in.</b> Log the 7-day average weight, waist at the navel, photos front/side/back in the same light, and your key lifts. Judge on trends, act only on 2–3 weeks of them.</div>';

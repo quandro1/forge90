@@ -173,7 +173,7 @@ document.addEventListener('click',e=>{
   if(e.target.id==='btnWipe'){
     if(e.target.dataset.armed){
       SAVE_HALT=true;                        // nothing may write the old state back while the page closes
-      lsDrop(KEY); lsDrop(KEY_V1); lsDrop(KEY_DMG); lsDrop(KEY_REV);     // the revision goes too: the next copy starts from nothing
+      lsDrop(KEY); lsDrop(KEY_V1); lsDrop(KEY_DMG); lsDrop(KEY_REV); lsDrop(KEY_THEME);     // the revision goes too: the next copy starts from nothing
       const done=()=>location.reload();
       if(CLOUD.doc){ e.target.textContent='Erasing…'; CLOUD.doc.delete().then(done,done); } else done();
     }
@@ -187,6 +187,7 @@ document.addEventListener('click',e=>{
    =================================================================== */
 (function init(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
+  rememberTheme();
   if(BOOT.write){ DIRTY=true; writeNow(); }   // a converted or repaired state gets its own copy at once
   paintSaveState();
   ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW(); requestPersistence();
@@ -208,8 +209,14 @@ document.addEventListener('click',e=>{
   const h=location.hash.slice(1);
   if(TABS.indexOf(h)>=0) setTab(h,true); else renderToday();
   if(RT) paintRest(true);
-  if(!S.profile.setup&&!BOOT.newer) setupOpen();   // a new person: ask who they are before showing a plan
-  cloudInit();
+  segSync();
+  // A new person is asked who they are before a plan is shown. Inside claude.ai the saved copy may be
+  // in the cloud, so the question waits for that answer first.
+  const cloud=cloudInit();
+  if(!S.profile.setup&&!BOOT.newer){
+    if(typeof claude!=='undefined'&&claude.use) cloud.then(()=>{ if(!S.profile.setup&&!SU) setupOpen(); });
+    else setupOpen();
+  }
   const flush=()=>{ saveNow(); if(CLOUD.dirty||CLOUD.timer){ clearTimeout(CLOUD.timer); cloudPush(); } };
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flush(); });
   window.addEventListener('pagehide',flush);

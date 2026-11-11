@@ -418,7 +418,7 @@ function renderPR(){
 }
 function renderHabit(){
   $('#streakPill').textContent=streak()+(streak()===1?' day':' days');
-  const total=checkList().length;
+  const total=checkList().length, optional=checkList().some(x=>x.k==='creatine');   // creatine counts only on days it is ticked
   let h='<div style="display:flex;gap:4px;align-items:flex-end;height:74px;margin-top:4px">';
   for(let w=1;w<=13;w++){
     let hit=0, poss=0;
@@ -426,7 +426,8 @@ function renderHabit(){
       const i=(w-1)*7+k+1; if(i>BLOCK_DAYS) break;
       const d=dayInfo(i);
       if(parseISO(d.date)>parseISO(TODAY)) continue;
-      poss+=total; hit+=(S.checks[d.date]||[]).length;
+      const c=S.checks[d.date]||[];
+      poss+=total-((optional&&c.indexOf('creatine')<0)?1:0); hit+=c.length;
     }
     const pct=poss?Math.round(hit/poss*100):0;
     h+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px" title="Week '+w+': '+pct+'%">'

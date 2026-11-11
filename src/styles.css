@@ -2,7 +2,7 @@
 :root{
   --ground:#0D1317; --surface:#141C21; --raised:#1B252B; --sunken:#0A0F12;
   --line:#26333B; --line-soft:#1E2A31;
-  --text:#E6EDF1; --text-dim:#9DAFBA; --text-faint:#75858F;
+  --text:#E6EDF1; --text-dim:#9DAFBA; --text-faint:#7D8D97;
   --ember:#F0764A; --ember-deep:#E8622A; --ember-ink:#1A0C06;
   --steel:#7FA8BF; --steel-dim:#4E6B7D;
   --good:#5FC08A; --warn:#E0A83B; --bad:#E0685F;
@@ -22,11 +22,11 @@
   :root:not([data-theme="dark"]){
     --ground:#EFF2F3; --surface:#FFFFFF; --raised:#F6F8F9; --sunken:#E4E9EB;
     --line:#CBD5D9; --line-soft:#DDE4E7;
-    --text:#111A20; --text-dim:#4C5D67; --text-faint:#6E8089;
-    --ember:#C9491A; --ember-deep:#AF3D12; --ember-ink:#FFF3ED;
+    --text:#111A20; --text-dim:#4C5D67; --text-faint:#586A74;
+    --ember:#B84014; --ember-deep:#9E350F; --ember-ink:#FFF3ED;
     --steel:#3E6C86; --steel-dim:#7C9AAA;
-    --good:#217A4C; --warn:#8A5D07; --bad:#B03A31;
-    --ember-wash:rgba(201,73,26,.10); --steel-wash:rgba(62,108,134,.10);
+    --good:#1F7447; --warn:#8A5D07; --bad:#B03A31;
+    --ember-wash:rgba(184,64,20,.10); --steel-wash:rgba(62,108,134,.10);
     --shadow:0 1px 2px rgba(16,32,40,.07), 0 8px 24px -14px rgba(16,32,40,.28);
     --fig:#41535E; --equip:#6C7D88; --plate:#8695A0;
     --zone-off:#C4D0D6; --silo-fill:#E7ECEF; --silo-line:#CBD5D9;
@@ -36,11 +36,11 @@
 :root[data-theme="light"]{
   --ground:#EFF2F3; --surface:#FFFFFF; --raised:#F6F8F9; --sunken:#E4E9EB;
   --line:#CBD5D9; --line-soft:#DDE4E7;
-  --text:#111A20; --text-dim:#4C5D67; --text-faint:#6E8089;
-  --ember:#C9491A; --ember-deep:#AF3D12; --ember-ink:#FFF3ED;
+  --text:#111A20; --text-dim:#4C5D67; --text-faint:#586A74;
+  --ember:#B84014; --ember-deep:#9E350F; --ember-ink:#FFF3ED;
   --steel:#3E6C86; --steel-dim:#7C9AAA;
-  --good:#217A4C; --warn:#8A5D07; --bad:#B03A31;
-  --ember-wash:rgba(201,73,26,.10); --steel-wash:rgba(62,108,134,.10);
+  --good:#1F7447; --warn:#8A5D07; --bad:#B03A31;
+  --ember-wash:rgba(184,64,20,.10); --steel-wash:rgba(62,108,134,.10);
   --shadow:0 1px 2px rgba(16,32,40,.07), 0 8px 24px -14px rgba(16,32,40,.28);
   --fig:#41535E; --equip:#6C7D88; --plate:#8695A0;
   --zone-off:#C4D0D6; --silo-fill:#E7ECEF; --silo-line:#CBD5D9;
@@ -270,7 +270,6 @@ summary .idx{font-family:var(--font-m); font-size:11px; color:var(--ember); flex
 .cue b{color:var(--text); font-weight:600}
 
 /* ============ MACHINE SETUP ============ */
-.setup{margin-top:11px; border:1px solid var(--line-soft); border-radius:10px; padding:11px 12px; background:var(--sunken)}
 .pos{margin:8px 0 0; display:grid; grid-template-columns:58px 1fr; gap:7px 10px; font-size:13px; color:var(--text-dim); line-height:1.45}
 .pos dt{font-family:var(--font-d); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--steel); padding-top:2px}
 .pos dd{margin:0}
@@ -413,7 +412,7 @@ details.how>summary .how-t{flex:1}
 .howheavy .hh-t{min-width:0}
 .prenote{margin:-2px 11px 10px; font-size:12px; color:var(--text-faint); line-height:1.4}
 .setrow.done input{border-color:color-mix(in srgb,var(--good) 45%,var(--line)); color:var(--text-dim)}
-.rest{margin:0 11px 11px; border:1px solid var(--line); border-radius:9px; background:var(--surface); overflow:hidden}
+.logger .rest{margin:0 11px 11px; border:1px solid var(--line); border-radius:9px; background:var(--surface); overflow:hidden}
 .rest .rt-idle{display:flex; align-items:center; gap:10px; padding:8px 8px 8px 11px}
 .rest .rt-idle .hint{flex:1; min-width:0; font-size:12px; color:var(--text-faint); line-height:1.35}
 .rest .rt-top{display:flex; align-items:baseline; gap:10px; padding:9px 11px 4px}
@@ -462,7 +461,7 @@ details.how>summary .how-t{flex:1}
   width:112px; background:var(--sunken); border:1px solid var(--line); border-radius:8px; padding:7px 9px;
   font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:14px; text-align:right;
 }
-.frow select{text-align:left; width:150px; font-family:var(--font-b); font-size:13px}
+.frow select{text-align:left; width:auto; max-width:60%; font-family:var(--font-b); font-size:13px}
 .frow input[type="date"]{width:150px; text-align:left; font-size:13px}
 .frow input,.frow select{min-height:40px}
 .frow input:focus,.frow select:focus{border-color:var(--ember); outline:none}
@@ -597,6 +596,22 @@ details.how>summary .how-t{flex:1}
   #dayList .ex-b{padding-left:8px; padding-right:8px}
   #dayList .sets{padding-left:8px; padding-right:8px}
   .setrow{grid-template-columns:14px minmax(0,1fr) minmax(0,1fr) 44px 40px; gap:5px}
+  .readout{grid-template-columns:repeat(2,1fr)}
+  .readout>div:last-child:nth-child(odd){grid-column:1/-1}
   .logger .lf{padding-left:8px; padding-right:8px}
-  .rest,.undobar{margin-left:8px; margin-right:8px}
+  .logger .rest,.undobar{margin-left:8px; margin-right:8px}
 }
+
+/* ============ sizes a thumb can hit ============ */
+.btn.sm,.seg button,.lk{min-height:40px}
+.dlchip{min-height:40px; padding:4px 12px; display:inline-flex; align-items:center}
+.lk.tiny{min-width:40px; min-height:40px; justify-content:center}
+#restPill .rp-x{align-self:stretch; min-width:44px}
+#measTable .del{min-width:40px; min-height:40px; font-size:18px; color:var(--text-faint)}
+#measTable .del[data-armed]{color:var(--bad); font-size:12px; font-family:var(--font-d); letter-spacing:.08em; text-transform:uppercase}
+/* a block or a card scrolled to lands under the sticky header, not behind it */
+details[data-dayblock],.ex{scroll-margin-top:62px}
+/* an update notice does not sit on top of a running rest */
+body:has(#restPill.on) #updBar{bottom:calc(132px + env(safe-area-inset-bottom))}
+.pickhint{font-size:12.5px; color:var(--warn); margin-top:14px}
+.su-restore{margin-top:18px; font-size:13px; color:var(--text-dim); display:flex; align-items:center; gap:10px; flex-wrap:wrap}

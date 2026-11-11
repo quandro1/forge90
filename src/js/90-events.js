@@ -21,6 +21,7 @@ function setTab(name,skipHash){
   if(name==='fuel') renderFuel();
   if(name==='prog') renderProg();
   if(name==='today') renderToday();
+  segSync();
 }
 $$('.tabbar button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 
@@ -31,7 +32,7 @@ $('#btnTheme').addEventListener('click',()=>{
   const next=cur==='light'?'dark':cur==='dark'?'light'
     :(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark');
   document.documentElement.setAttribute('data-theme',next);
-  S.ui.theme=next; save(); paintThemeColor();
+  S.ui.theme=next; rememberTheme(); save(); paintThemeColor();
 });
 
 /* how many days a week: picks that variant of the plan and its default weekdays */
@@ -42,6 +43,7 @@ function setDaysPerWeek(n){
   save(); return true;
 }
 
+window.addEventListener('click',segSync);        // runs after every handler on the document: whatever the tap redrew is in place
 /* --- delegated clicks -------------------------------------------- */
 document.addEventListener('click',e=>{
   const T=e.target;
@@ -245,7 +247,7 @@ document.addEventListener('click',e=>{
       if(en.sets.every(blankSet)){ S.logs[id]=S.logs[id].filter(x=>x!==en); if(!S.logs[id].length) delete S.logs[id]; }
       syncSession(); save(); refreshLogger(id);
       const btn=$('.logger[data-log="'+id+'"][data-ref="'+ref+'"] [data-savelog]');
-      if(btn){ btn.textContent='Saved'; setTimeout(()=>{ btn.textContent='Save session'; },1400); }
+      if(btn){ btn.textContent='Done'; setTimeout(()=>{ btn.textContent='Done with this lift'; },1400); }
       return;
     }
   }
@@ -256,6 +258,12 @@ document.addEventListener('click',e=>{
 
   const dm=T.closest('[data-delmeas]');
   if(dm){
+    // a first measurement cannot be taken again: the cross asks once before it deletes
+    if(!dm.dataset.armed){
+      dm.dataset.armed='1'; dm.textContent='Delete?';
+      setTimeout(()=>{ if(dm.isConnected){ delete dm.dataset.armed; dm.textContent='×'; } },4000);
+      return;
+    }
     const row=S.meas.slice().sort((a,b)=>a.d<b.d?-1:1)[+dm.dataset.delmeas];
     const at=S.meas.indexOf(row);
     if(at>=0) S.meas.splice(at,1);
@@ -342,8 +350,14 @@ document.addEventListener('input',e=>{
       .forEach(el=>{ if(el!==T) el.value=T.value; });
     save(); return;
   }
-  if(T.id==='qWeight'){ setNum(S.weights,T.value,1,999); return; }
-  if(T.id==='qWaist'){ setNum(S.waist,T.value,1,999); return; }
+  if(T.id==='qWeight'){ setNum(S.weights,T.value,30,300); return; }        // the range a profile accepts: 849 is a missed decimal point
+  if(T.id==='qWaist'){ setNum(S.waist,T.value,30,300); return; }
+  if(T.dataset&&T.dataset.dayweight){                                         // a past weigh-in, corrected from the Map
+    const ds=T.dataset.dayweight; if(!isDate(ds)||ds>=TODAY) return;
+    const raw=latinNumber(T.value).trim(), n=numIn(raw,30,300,null);
+    if(raw==='') delete S.weights[ds]; else if(n!=null) S.weights[ds]=n; else return;
+    save(); clearTimeout(setNum.t); setNum.t=setTimeout(refreshTab,500); return;
+  }
   if(T.id==='qSteps'){ setNum(S.steps,T.value,0,500000); return; }
   const pf=T.closest('[data-prof]');
   if(pf){

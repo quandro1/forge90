@@ -162,7 +162,7 @@ export default [
       await typeSet(page, 'squat', 0, 80, 8);
       await page.locator('.logger[data-log="squat"] [data-savelog]').first().tap();
       assert.equal(await page.evaluate(() => (S.checks[TODAY] || []).includes('session')), false);
-      assert.match(await page.locator('.logger[data-log="squat"] [data-savelog]').first().innerText(), /saved/i);
+      assert.match(await page.locator('.logger[data-log="squat"] [data-savelog]').first().innerText(), /^done$/i);      // the button answers the tap
     },
   },
 ];

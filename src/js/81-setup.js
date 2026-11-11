@@ -74,7 +74,9 @@ function drawConfirm(){
     h+='<div class="sec"><div class="eyebrow">The new block starts</div><div class="seg">'
       +'<button data-plan-start="today"'+(PICK.start==='today'?' class="on"':'')+'>Today</button>'
       +'<button data-plan-start="monday"'+(PICK.start==='monday'?' class="on"':'')+'>Next Monday</button></div></div>';
-  h+='<button class="btn primary wide" data-plan-confirm style="margin-top:18px"'+(pickReady()?'':' disabled')+'>Confirm</button>';
+  const waitFor=PICK.days.length!==need?'':(!PICK.when?'Choose when the change starts.':(PICK.when==='new'&&!PICK.start?'Choose the day the new block starts.':''));
+  h+=(waitFor?'<p class="pickhint">'+waitFor+'</p>':'')
+    +'<button class="btn primary wide" data-plan-confirm style="margin-top:18px"'+(pickReady()?'':' disabled')+'>Confirm</button>';
   $('#sheetBody').innerHTML=h;
 }
 /* the block that is ending goes into the history; targets follow your current weight */
@@ -121,7 +123,8 @@ function setupOpen(){
 function setupClose(){ $('#setup').classList.remove('on'); document.body.style.overflow=''; SU=null; }
 function setupDraw(){
   const top='<div class="su-top"><div class="brand"><b>FORGE</b><i>90</i></div><span class="pill">Step '+SU.step+' of 3</span></div>';
-  const seg=(key,opts)=>'<div class="seg">'+opts.map(o=>'<button data-su="'+key+'" data-v="'+o[0]+'"'+(String(SU[key])===String(o[0])?' class="on"':'')+'>'+esc(o[1])+'</button>').join('')+'</div>';
+  const segName={sex:'Sex', exp:'Lifting experience', dpw:'Days a week', start:'Day 1'};
+  const seg=(key,opts)=>'<div class="seg" role="group" aria-label="'+(segName[key]||key)+'">'+opts.map(o=>'<button data-su="'+key+'" data-v="'+o[0]+'"'+(String(SU[key])===String(o[0])?' class="on"':'')+'>'+esc(o[1])+'</button>').join('')+'</div>';
   const num=(id,label,key,ph)=>'<div class="frow"><label for="'+id+'">'+label+'</label><input class="num" id="'+id+'" data-su-in="'+key+'" type="text" inputmode="decimal" autocomplete="off" placeholder="'+ph+'" value="'+esc(SU[key])+'"></div>';
   let h=top;
   if(SU.step===1){
@@ -134,7 +137,8 @@ function setupDraw(){
         .map(o=>'<option value="'+o[0]+'"'+(SU.act===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></div></div>'
       +'<div class="sec"><div class="eyebrow">Your goal</div><div class="choice">'
       +SU_GOALS.map(g=>'<button data-su="goal" data-v="'+g[0]+'" aria-pressed="'+(SU.goal===g[0])+'"><b>'+g[1]+'</b><span>'+g[2]+'</span></button>').join('')+'</div></div>'
-      +'<div class="sec"><div class="eyebrow">Have you lifted weights regularly for three months or more?</div>'+seg('exp',[['yes','Yes'],['no','No, or not lately']])+'</div>';
+      +'<div class="sec"><div class="eyebrow">Have you lifted weights regularly for three months or more?</div>'+seg('exp',[['yes','Yes'],['no','No, or not lately']])+'</div>'
+      +'<p class="su-restore">Used FORGE 90 before? <button class="btn sm" id="btnImport">Restore a backup</button></p>';
   }else if(SU.step===2){
     const rec=suggestPlan();
     if(!SU.program) SU.program=rec;
@@ -155,8 +159,11 @@ function setupDraw(){
   h+='<p class="su-err" role="alert">'+esc(SU.err)+'</p><div class="su-nav">'
     +(SU.step>1?'<button class="btn" data-su-back>Back</button>':'')
     +(SU.step<3?'<button class="btn primary" data-su-next>Next</button>':'<button class="btn primary" data-su-done'+(SU.days&&SU.days.length===+SU.dpw?'':' disabled')+'>Start</button>')+'</div>';
+  // a choice redraws the step in place; only a new step starts at the top
+  const su=$('#setup'), y=su.scrollTop, same=SU.drawn===SU.step;
   $('#setupBody').innerHTML=h;
-  $('#setup').scrollTop=0;
+  su.scrollTop=same?y:0; SU.drawn=SU.step;
+  segSync();
 }
 function setupNext(){
   if(SU.step===1){
@@ -167,6 +174,7 @@ function setupNext(){
     if(bad.length){ SU.err='Please check your '+bad.join(', ')+'.'; setupDraw(); return; }
   }
   SU.err=''; SU.step++; setupDraw();
+  try{ history.pushState({su:SU.step},''); }catch(e){}     // the phone's Back button returns to the step before
 }
 function setupDone(){
   if(!SU.days||SU.days.length!==+SU.dpw) return;
@@ -175,8 +183,13 @@ function setupDone(){
     targetW:null, program:SU.program, dpw:+SU.dpw, days:days, start:start, setup:true},false);
   S.plans=[{from:start, program:S.profile.program, dpw:S.profile.dpw, days:S.profile.days.slice()}];
   S.ui.helpSeen=0;
+  const steps=(history.state&&history.state.su)?SU.step-1:0;
   save(); setupClose(); rerenderAll();
+  if(steps>0){ try{ history.go(-steps); }catch(e){} }           // drop the steps set-up added to the history
 }
+$('#setup').addEventListener('keydown',e=>{            // plan cards are buttons for a keyboard too
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[role="button"]')){ e.preventDefault(); e.target.click(); }
+});
 $('#setup').addEventListener('input',e=>{
   const k=e.target.dataset&&e.target.dataset.suIn; if(k&&SU) SU[k]=e.target.value;
 });
@@ -199,7 +212,10 @@ $('#setup').addEventListener('click',e=>{
     setupDraw(); return;
   }
   if(T.closest('[data-su-next]')){ setupNext(); return; }
-  if(T.closest('[data-su-back]')){ SU.err=''; SU.step--; setupDraw(); return; }
+  if(T.closest('[data-su-back]')){
+    if(history.state&&history.state.su){ history.back(); return; }      // the popstate handler steps back
+    SU.err=''; SU.step--; setupDraw(); return;
+  }
   if(T.closest('[data-su-done]')){ setupDone(); return; }
 });
 

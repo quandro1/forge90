@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="fcc6c535cf">
+<meta name="forge-build" content="afc3380f3a">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -20,7 +20,7 @@
 :root{
   --ground:#0D1317; --surface:#141C21; --raised:#1B252B; --sunken:#0A0F12;
   --line:#26333B; --line-soft:#1E2A31;
-  --text:#E6EDF1; --text-dim:#9DAFBA; --text-faint:#75858F;
+  --text:#E6EDF1; --text-dim:#9DAFBA; --text-faint:#7D8D97;
   --ember:#F0764A; --ember-deep:#E8622A; --ember-ink:#1A0C06;
   --steel:#7FA8BF; --steel-dim:#4E6B7D;
   --good:#5FC08A; --warn:#E0A83B; --bad:#E0685F;
@@ -40,11 +40,11 @@
   :root:not([data-theme="dark"]){
     --ground:#EFF2F3; --surface:#FFFFFF; --raised:#F6F8F9; --sunken:#E4E9EB;
     --line:#CBD5D9; --line-soft:#DDE4E7;
-    --text:#111A20; --text-dim:#4C5D67; --text-faint:#6E8089;
-    --ember:#C9491A; --ember-deep:#AF3D12; --ember-ink:#FFF3ED;
+    --text:#111A20; --text-dim:#4C5D67; --text-faint:#586A74;
+    --ember:#B84014; --ember-deep:#9E350F; --ember-ink:#FFF3ED;
     --steel:#3E6C86; --steel-dim:#7C9AAA;
-    --good:#217A4C; --warn:#8A5D07; --bad:#B03A31;
-    --ember-wash:rgba(201,73,26,.10); --steel-wash:rgba(62,108,134,.10);
+    --good:#1F7447; --warn:#8A5D07; --bad:#B03A31;
+    --ember-wash:rgba(184,64,20,.10); --steel-wash:rgba(62,108,134,.10);
     --shadow:0 1px 2px rgba(16,32,40,.07), 0 8px 24px -14px rgba(16,32,40,.28);
     --fig:#41535E; --equip:#6C7D88; --plate:#8695A0;
     --zone-off:#C4D0D6; --silo-fill:#E7ECEF; --silo-line:#CBD5D9;
@@ -54,11 +54,11 @@
 :root[data-theme="light"]{
   --ground:#EFF2F3; --surface:#FFFFFF; --raised:#F6F8F9; --sunken:#E4E9EB;
   --line:#CBD5D9; --line-soft:#DDE4E7;
-  --text:#111A20; --text-dim:#4C5D67; --text-faint:#6E8089;
-  --ember:#C9491A; --ember-deep:#AF3D12; --ember-ink:#FFF3ED;
+  --text:#111A20; --text-dim:#4C5D67; --text-faint:#586A74;
+  --ember:#B84014; --ember-deep:#9E350F; --ember-ink:#FFF3ED;
   --steel:#3E6C86; --steel-dim:#7C9AAA;
-  --good:#217A4C; --warn:#8A5D07; --bad:#B03A31;
-  --ember-wash:rgba(201,73,26,.10); --steel-wash:rgba(62,108,134,.10);
+  --good:#1F7447; --warn:#8A5D07; --bad:#B03A31;
+  --ember-wash:rgba(184,64,20,.10); --steel-wash:rgba(62,108,134,.10);
   --shadow:0 1px 2px rgba(16,32,40,.07), 0 8px 24px -14px rgba(16,32,40,.28);
   --fig:#41535E; --equip:#6C7D88; --plate:#8695A0;
   --zone-off:#C4D0D6; --silo-fill:#E7ECEF; --silo-line:#CBD5D9;
@@ -288,7 +288,6 @@ summary .idx{font-family:var(--font-m); font-size:11px; color:var(--ember); flex
 .cue b{color:var(--text); font-weight:600}
 
 /* ============ MACHINE SETUP ============ */
-.setup{margin-top:11px; border:1px solid var(--line-soft); border-radius:10px; padding:11px 12px; background:var(--sunken)}
 .pos{margin:8px 0 0; display:grid; grid-template-columns:58px 1fr; gap:7px 10px; font-size:13px; color:var(--text-dim); line-height:1.45}
 .pos dt{font-family:var(--font-d); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--steel); padding-top:2px}
 .pos dd{margin:0}
@@ -431,7 +430,7 @@ details.how>summary .how-t{flex:1}
 .howheavy .hh-t{min-width:0}
 .prenote{margin:-2px 11px 10px; font-size:12px; color:var(--text-faint); line-height:1.4}
 .setrow.done input{border-color:color-mix(in srgb,var(--good) 45%,var(--line)); color:var(--text-dim)}
-.rest{margin:0 11px 11px; border:1px solid var(--line); border-radius:9px; background:var(--surface); overflow:hidden}
+.logger .rest{margin:0 11px 11px; border:1px solid var(--line); border-radius:9px; background:var(--surface); overflow:hidden}
 .rest .rt-idle{display:flex; align-items:center; gap:10px; padding:8px 8px 8px 11px}
 .rest .rt-idle .hint{flex:1; min-width:0; font-size:12px; color:var(--text-faint); line-height:1.35}
 .rest .rt-top{display:flex; align-items:baseline; gap:10px; padding:9px 11px 4px}
@@ -480,7 +479,7 @@ details.how>summary .how-t{flex:1}
   width:112px; background:var(--sunken); border:1px solid var(--line); border-radius:8px; padding:7px 9px;
   font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:14px; text-align:right;
 }
-.frow select{text-align:left; width:150px; font-family:var(--font-b); font-size:13px}
+.frow select{text-align:left; width:auto; max-width:60%; font-family:var(--font-b); font-size:13px}
 .frow input[type="date"]{width:150px; text-align:left; font-size:13px}
 .frow input,.frow select{min-height:40px}
 .frow input:focus,.frow select:focus{border-color:var(--ember); outline:none}
@@ -615,13 +614,31 @@ details.how>summary .how-t{flex:1}
   #dayList .ex-b{padding-left:8px; padding-right:8px}
   #dayList .sets{padding-left:8px; padding-right:8px}
   .setrow{grid-template-columns:14px minmax(0,1fr) minmax(0,1fr) 44px 40px; gap:5px}
+  .readout{grid-template-columns:repeat(2,1fr)}
+  .readout>div:last-child:nth-child(odd){grid-column:1/-1}
   .logger .lf{padding-left:8px; padding-right:8px}
-  .rest,.undobar{margin-left:8px; margin-right:8px}
+  .logger .rest,.undobar{margin-left:8px; margin-right:8px}
 }
+
+/* ============ sizes a thumb can hit ============ */
+.btn.sm,.seg button,.lk{min-height:40px}
+.dlchip{min-height:40px; padding:4px 12px; display:inline-flex; align-items:center}
+.lk.tiny{min-width:40px; min-height:40px; justify-content:center}
+#restPill .rp-x{align-self:stretch; min-width:44px}
+#measTable .del{min-width:40px; min-height:40px; font-size:18px; color:var(--text-faint)}
+#measTable .del[data-armed]{color:var(--bad); font-size:12px; font-family:var(--font-d); letter-spacing:.08em; text-transform:uppercase}
+/* a block or a card scrolled to lands under the sticky header, not behind it */
+details[data-dayblock],.ex{scroll-margin-top:62px}
+/* an update notice does not sit on top of a running rest */
+body:has(#restPill.on) #updBar{bottom:calc(132px + env(safe-area-inset-bottom))}
+.pickhint{font-size:12.5px; color:var(--warn); margin-top:14px}
+.su-restore{margin-top:18px; font-size:13px; color:var(--text-dim); display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 </style>
 <script>
-(function(){try{var s=JSON.parse(localStorage.getItem('forge90_v2')||localStorage.getItem('forge90_v1')||'{}');
-if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.theme);}catch(e){}})();
+/* the theme, before the first paint: from its own small key, so the whole log is not parsed just for this */
+(function(){try{var t=localStorage.getItem('forge90_theme');
+if(t===null){var s=JSON.parse(localStorage.getItem('forge90_v2')||localStorage.getItem('forge90_v1')||'{}');t=(s&&s.ui&&s.ui.theme)||'';}
+if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
 </script>
 </head>
 <body>
@@ -735,7 +752,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
           <thead><tr><th>Phase</th><th class="n">Steps/day</th><th>Zone 2</th><th>Intervals</th></tr></thead>
           <tbody>
             <tr><td>1 · Weeks 1–4</td><td class="n">build to 8k</td><td>2× · 25–30 min</td><td>none</td></tr>
-            <tr><td>2 · Weeks 5–8</td><td class="n">8–9k</td><td>2–3× · 30–35 min</td><td>1×</td></tr>
+            <tr><td>2 · Weeks 5–8</td><td class="n">8–9k</td><td>3× · 30–35 min</td><td>1×</td></tr>
             <tr><td>3 · Weeks 9–13</td><td class="n">9–10k</td><td>2× · 30–40 min</td><td>2×</td></tr>
           </tbody>
         </table></div>
@@ -807,7 +824,8 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
 <div id="updBar" role="status"><span>A new version is ready.</span><button class="btn sm primary" data-reload>Reload</button></div>
 <div id="saveBar" class="alertbar" role="alert"><span>Not saving: this phone's storage is full or blocked. Export a backup now.</span><button class="btn sm primary" data-export>Export</button></div>
 <div id="verBar" class="alertbar" role="alert"><span>This copy of the app is older than your saved data, so nothing you do here is saved.</span><button class="btn sm primary" data-reload>Reload</button></div>
-<div id="restPill" role="status" aria-live="polite"><button class="rp-go" data-rest-go><span class="rp-n"></span><span class="rp-t"></span></button><button class="rp-x" data-rest-stop aria-label="Stop rest timer">×</button></div>
+<span class="sr" role="status" id="restSay"></span>
+<div id="restPill"><button class="rp-go" data-rest-go><span class="rp-n"></span><span class="rp-t"></span></button><button class="rp-x" data-rest-stop aria-label="Stop rest timer">×</button></div>
 
 <div class="wrap foot">
   <div class="fm">FORGE 90</div>
@@ -2849,6 +2867,8 @@ const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000
 /* The training day runs from 03:00 to 03:00, so a session that crosses midnight
    stays on the day it began. TODAY is fixed for the life of the page; the page
    reloads when it is shown again on a later day. */
+/* a segmented control tells a screen reader which side is chosen, as well as showing it */
+function segSync(){ $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('on')))); }
 const BLOCK_DAYS=91;                        // a block is thirteen weeks
 const DAY_ROLL_H=3;
 const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));
@@ -2875,7 +2895,7 @@ const ICO={
    hand-edited, damaged — goes through normalize(), which always returns
    a valid v2 state and never throws.
    =================================================================== */
-const KEY='forge90_v2', KEY_V1='forge90_v1';
+const KEY='forge90_v2', KEY_V1='forge90_v1', KEY_THEME='forge90_theme';
 const DEFAULT_PROGRAM='vtaper';
 const GOALS=['cut','recomp','maintain','gain'];
 
@@ -2962,7 +2982,7 @@ function normalize(p){
     const out=a.filter((x,i)=>typeof x==='string'&&/^[a-z0-9_-]{1,24}$/i.test(x)&&a.indexOf(x)===i);
     return out.length?out:undefined;
   });
-  s.weights=dateMap(p.weights,v=>{ const n=numIn(v,1,999,null); return n==null?undefined:n; });
+  s.weights=dateMap(p.weights,v=>{ const n=numIn(v,30,300,null); return n==null?undefined:n; });   // the range a profile accepts
   s.waist  =dateMap(p.waist,  v=>{ const n=numIn(v,1,999,null); return n==null?undefined:n; });
   s.steps  =dateMap(p.steps,  v=>{ const n=numIn(v,0,500000,null); return n==null?undefined:n; });
   s.meas=(Array.isArray(p.meas)?p.meas:[]).filter(r=>isObj(r)&&isDate(r.d)).map(r=>{
@@ -3214,8 +3234,11 @@ function cloudBadge(){
     :CLOUD.status==='error'?'Backup failed — kept on this device'
     :'This device only';
 }
+/* the theme also lives in its own small key, read before the first paint */
+function rememberTheme(){ try{ localStorage.setItem(KEY_THEME,S.ui.theme||''); }catch(e){} }
 function rerenderAll(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
+  rememberTheme();
   const dl=$('#dayList'); if(dl) delete dl.dataset.plan;   // Train is cached per plan — invalidate
   setTab(currentTab,true);
 }
@@ -3685,7 +3708,9 @@ function chkButton(x,on,attr){
 function renderChecklist(){
   const list=checkList(), c=S.checks[TODAY]||[];
   $('#checklist').innerHTML=list.map(x=>chkButton(x, c.indexOf(x.k)>=0, 'data-chk="'+x.k+'"')).join('');
-  $('#chkCount').textContent=c.length+' / '+list.length;
+  // creatine is optional: it joins the count only once it is ticked
+  const optional=list.some(x=>x.k==='creatine')&&c.indexOf('creatine')<0;
+  $('#chkCount').textContent=c.length+' / '+(list.length-(optional?1:0));
 }
 function renderHelp(){
   if(S.ui.from===1){                         // came from the earlier version: say what changed, once
@@ -3705,10 +3730,10 @@ function renderHelp(){
   $('#helpCard').innerHTML='<div class="card help">'
     +'<div class="card-h"><h3>How to use this</h3><button class="btn sm" data-hidehelp>Got it</button></div>'
     +'<ol class="steps big">'
-    +'<li><b>Today</b> — the only screen you need most days. Tick the list, tap what you ate, log your weight.</li>'
+    +'<li><b>Today</b> — the screen you open first. Tick the list and log your weight and steps.</li>'
     +'<li><b>Train</b> — open today\'s session, then type the weight and reps for each set. The app reads your history and tells you what to do next time.</li>'
     +'<li><b>Map</b> — all 91 days. Tap any square to see what that day holds.</li>'
-    +'<li><b>Fuel</b> — the meal plan and the day counter.</li>'
+    +'<li><b>Fuel</b> — your calories and protein, an example day of meals, and the counter where you tap what you ate.</li>'
     +'<li><b>Progress</b> — weigh in daily, but only ever react to the <b>orange 7-day line</b>, never one morning\'s number.</li>'
     +'</ol>'
     +'<p style="font-size:12.5px;color:var(--text-dim);margin-top:11px">Everything saves on this device by itself. Nothing to press.</p>'
@@ -4063,7 +4088,7 @@ function logger(id,ref){
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
     +(prev&&!dlNow?'<button class="btn sm" data-repeat>Same as last time</button>':'')
-    +'<button class="btn sm primary" data-savelog>Save session</button></div>'
+    +'<button class="btn sm primary" data-savelog>Done with this lift</button></div>'
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';
 }
@@ -4137,7 +4162,7 @@ function restPanel(id,ref){
 }
 function restLabel(){
   const e=todayEntry(RT.id), full=setsWanted(itemFor(RT.id,RT.ref)), n=RT.set+1, tgt=(e&&e.dl)?deloadSets(full):full;   // a deload asks for a set fewer
-  if(RT.done) return n>=tgt?'Go — rest done. All '+tgt+' sets in, save the session':'Go — set '+(n+1);
+  if(RT.done) return n>=tgt?'Go — rest done. All '+tgt+' sets in: on to the next exercise':'Go — set '+(n+1);
   return n>=tgt?'Rest · then the next exercise':'Rest · then set '+(n+1);
 }
 function restPct(){ return Math.max(0,Math.min(100,(RT.end-Date.now())/RT.total*100)); }
@@ -4147,6 +4172,7 @@ function startRest(id,setIdx,ref,secs){
   audioUnlock();
   clearTimeout(rtGoTimer);
   document.title='FORGE 90';                 // a finished rest left "GO" in the title
+  { const say=$('#restSay'); if(say) say.textContent=''; }
   if(RT&&RT.id!==id){ const oid=RT.id; RT=null; idleRest(oid); }      // one timer at a time
   const total=(secs||restSecsFor(id,ref))*1000;
   RT={id, ref:ref||'', set:setIdx==null?-1:setIdx, end:Date.now()+total, total, done:false, warned:false};
@@ -4165,6 +4191,7 @@ function stopRest(){
   wakeLock(false); document.title='FORGE 90';
   if(id) idleRest(id);
   $('#restPill').className='';
+  const say=$('#restSay'); if(say) say.textContent='';
 }
 function tickRest(){
   if(!RT) return;
@@ -4173,6 +4200,7 @@ function tickRest(){
   if(!RT.done&&left<=0){
     RT.done=true; clearInterval(rtTick); rtTick=null; wakeLock(false);
     beep(3); buzz([220,110,220,110,480]); document.title='GO · FORGE 90';
+    const say=$('#restSay'); if(say) say.textContent='Rest done';        // read out once, not every second
     delete S.ui.rest; save();
     paintRest(true);
     rtGoTimer=setTimeout(()=>{ if(RT&&RT.done) stopRest(); },90000);   // a forgotten GO state clears itself
@@ -4673,7 +4701,7 @@ function renderPR(){
 }
 function renderHabit(){
   $('#streakPill').textContent=streak()+(streak()===1?' day':' days');
-  const total=checkList().length;
+  const total=checkList().length, optional=checkList().some(x=>x.k==='creatine');   // creatine counts only on days it is ticked
   let h='<div style="display:flex;gap:4px;align-items:flex-end;height:74px;margin-top:4px">';
   for(let w=1;w<=13;w++){
     let hit=0, poss=0;
@@ -4681,7 +4709,8 @@ function renderHabit(){
       const i=(w-1)*7+k+1; if(i>BLOCK_DAYS) break;
       const d=dayInfo(i);
       if(parseISO(d.date)>parseISO(TODAY)) continue;
-      poss+=total; hit+=(S.checks[d.date]||[]).length;
+      const c=S.checks[d.date]||[];
+      poss+=total-((optional&&c.indexOf('creatine')<0)?1:0); hit+=c.length;
     }
     const pct=poss?Math.round(hit/poss*100):0;
     h+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px" title="Week '+w+': '+pct+'%">'
@@ -4720,6 +4749,8 @@ function closeSheet(){
   if(history.state&&history.state.sheet){ sheetBack++; try{ history.back(); }catch(e){ sheetBack--; } }
 }
 window.addEventListener('popstate',()=>{
+  // in first-run set-up the Back button goes to the step before
+  if(SU&&SU.step>1&&!sheet.classList.contains('on')){ SU.err=''; SU.step--; setupDraw(); return; }
   if(sheetBack>0){
     sheetBack--;
     // a sheet opened again before the step back landed keeps a step of its own
@@ -4846,7 +4877,9 @@ function daySheet(i){
   }
   if(d.date<TODAY){            // a day that has passed: what was ticked, still open to correction
     const c=S.checks[d.date]||[];
-    body+='<div class="eyebrow" style="margin:16px 0 7px">What you did that day · tap to correct</div><div class="checks">'
+    body+='<div class="card" style="margin-top:14px"><div class="frow"><label for="dayWeight">Weight that morning (kg)</label>'
+      +'<input class="num" id="dayWeight" data-dayweight="'+d.date+'" type="text" inputmode="decimal" autocomplete="off" placeholder="none" value="'+(S.weights[d.date]!=null?esc(S.weights[d.date]):'')+'"></div></div>'
+      +'<div class="eyebrow" style="margin:16px 0 7px">What you did that day · tap to correct</div><div class="checks">'
       +checkList(d.date).map(x=>chkButton(x, c.indexOf(x.k)>=0, 'data-daychk="'+x.k+'" data-date="'+d.date+'"')).join('')+'</div>';
   }
   if(d.checkin) body+='<div class="note" style="margin-top:12px"><b>Weekly check-in.</b> Log the 7-day average weight, waist at the navel, photos front/side/back in the same light, and your key lifts. Judge on trends, act only on 2–3 weeks of them.</div>';
@@ -4928,7 +4961,9 @@ function drawConfirm(){
     h+='<div class="sec"><div class="eyebrow">The new block starts</div><div class="seg">'
       +'<button data-plan-start="today"'+(PICK.start==='today'?' class="on"':'')+'>Today</button>'
       +'<button data-plan-start="monday"'+(PICK.start==='monday'?' class="on"':'')+'>Next Monday</button></div></div>';
-  h+='<button class="btn primary wide" data-plan-confirm style="margin-top:18px"'+(pickReady()?'':' disabled')+'>Confirm</button>';
+  const waitFor=PICK.days.length!==need?'':(!PICK.when?'Choose when the change starts.':(PICK.when==='new'&&!PICK.start?'Choose the day the new block starts.':''));
+  h+=(waitFor?'<p class="pickhint">'+waitFor+'</p>':'')
+    +'<button class="btn primary wide" data-plan-confirm style="margin-top:18px"'+(pickReady()?'':' disabled')+'>Confirm</button>';
   $('#sheetBody').innerHTML=h;
 }
 /* the block that is ending goes into the history; targets follow your current weight */
@@ -4975,7 +5010,8 @@ function setupOpen(){
 function setupClose(){ $('#setup').classList.remove('on'); document.body.style.overflow=''; SU=null; }
 function setupDraw(){
   const top='<div class="su-top"><div class="brand"><b>FORGE</b><i>90</i></div><span class="pill">Step '+SU.step+' of 3</span></div>';
-  const seg=(key,opts)=>'<div class="seg">'+opts.map(o=>'<button data-su="'+key+'" data-v="'+o[0]+'"'+(String(SU[key])===String(o[0])?' class="on"':'')+'>'+esc(o[1])+'</button>').join('')+'</div>';
+  const segName={sex:'Sex', exp:'Lifting experience', dpw:'Days a week', start:'Day 1'};
+  const seg=(key,opts)=>'<div class="seg" role="group" aria-label="'+(segName[key]||key)+'">'+opts.map(o=>'<button data-su="'+key+'" data-v="'+o[0]+'"'+(String(SU[key])===String(o[0])?' class="on"':'')+'>'+esc(o[1])+'</button>').join('')+'</div>';
   const num=(id,label,key,ph)=>'<div class="frow"><label for="'+id+'">'+label+'</label><input class="num" id="'+id+'" data-su-in="'+key+'" type="text" inputmode="decimal" autocomplete="off" placeholder="'+ph+'" value="'+esc(SU[key])+'"></div>';
   let h=top;
   if(SU.step===1){
@@ -4988,7 +5024,8 @@ function setupDraw(){
         .map(o=>'<option value="'+o[0]+'"'+(SU.act===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></div></div>'
       +'<div class="sec"><div class="eyebrow">Your goal</div><div class="choice">'
       +SU_GOALS.map(g=>'<button data-su="goal" data-v="'+g[0]+'" aria-pressed="'+(SU.goal===g[0])+'"><b>'+g[1]+'</b><span>'+g[2]+'</span></button>').join('')+'</div></div>'
-      +'<div class="sec"><div class="eyebrow">Have you lifted weights regularly for three months or more?</div>'+seg('exp',[['yes','Yes'],['no','No, or not lately']])+'</div>';
+      +'<div class="sec"><div class="eyebrow">Have you lifted weights regularly for three months or more?</div>'+seg('exp',[['yes','Yes'],['no','No, or not lately']])+'</div>'
+      +'<p class="su-restore">Used FORGE 90 before? <button class="btn sm" id="btnImport">Restore a backup</button></p>';
   }else if(SU.step===2){
     const rec=suggestPlan();
     if(!SU.program) SU.program=rec;
@@ -5009,8 +5046,11 @@ function setupDraw(){
   h+='<p class="su-err" role="alert">'+esc(SU.err)+'</p><div class="su-nav">'
     +(SU.step>1?'<button class="btn" data-su-back>Back</button>':'')
     +(SU.step<3?'<button class="btn primary" data-su-next>Next</button>':'<button class="btn primary" data-su-done'+(SU.days&&SU.days.length===+SU.dpw?'':' disabled')+'>Start</button>')+'</div>';
+  // a choice redraws the step in place; only a new step starts at the top
+  const su=$('#setup'), y=su.scrollTop, same=SU.drawn===SU.step;
   $('#setupBody').innerHTML=h;
-  $('#setup').scrollTop=0;
+  su.scrollTop=same?y:0; SU.drawn=SU.step;
+  segSync();
 }
 function setupNext(){
   if(SU.step===1){
@@ -5021,6 +5061,7 @@ function setupNext(){
     if(bad.length){ SU.err='Please check your '+bad.join(', ')+'.'; setupDraw(); return; }
   }
   SU.err=''; SU.step++; setupDraw();
+  try{ history.pushState({su:SU.step},''); }catch(e){}     // the phone's Back button returns to the step before
 }
 function setupDone(){
   if(!SU.days||SU.days.length!==+SU.dpw) return;
@@ -5029,8 +5070,13 @@ function setupDone(){
     targetW:null, program:SU.program, dpw:+SU.dpw, days:days, start:start, setup:true},false);
   S.plans=[{from:start, program:S.profile.program, dpw:S.profile.dpw, days:S.profile.days.slice()}];
   S.ui.helpSeen=0;
+  const steps=(history.state&&history.state.su)?SU.step-1:0;
   save(); setupClose(); rerenderAll();
+  if(steps>0){ try{ history.go(-steps); }catch(e){} }           // drop the steps set-up added to the history
 }
+$('#setup').addEventListener('keydown',e=>{            // plan cards are buttons for a keyboard too
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[role="button"]')){ e.preventDefault(); e.target.click(); }
+});
 $('#setup').addEventListener('input',e=>{
   const k=e.target.dataset&&e.target.dataset.suIn; if(k&&SU) SU[k]=e.target.value;
 });
@@ -5053,7 +5099,10 @@ $('#setup').addEventListener('click',e=>{
     setupDraw(); return;
   }
   if(T.closest('[data-su-next]')){ setupNext(); return; }
-  if(T.closest('[data-su-back]')){ SU.err=''; SU.step--; setupDraw(); return; }
+  if(T.closest('[data-su-back]')){
+    if(history.state&&history.state.su){ history.back(); return; }      // the popstate handler steps back
+    SU.err=''; SU.step--; setupDraw(); return;
+  }
   if(T.closest('[data-su-done]')){ setupDone(); return; }
 });
 
@@ -5101,6 +5150,7 @@ function setTab(name,skipHash){
   if(name==='fuel') renderFuel();
   if(name==='prog') renderProg();
   if(name==='today') renderToday();
+  segSync();
 }
 $$('.tabbar button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 
@@ -5111,7 +5161,7 @@ $('#btnTheme').addEventListener('click',()=>{
   const next=cur==='light'?'dark':cur==='dark'?'light'
     :(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark');
   document.documentElement.setAttribute('data-theme',next);
-  S.ui.theme=next; save(); paintThemeColor();
+  S.ui.theme=next; rememberTheme(); save(); paintThemeColor();
 });
 
 /* how many days a week: picks that variant of the plan and its default weekdays */
@@ -5122,6 +5172,7 @@ function setDaysPerWeek(n){
   save(); return true;
 }
 
+window.addEventListener('click',segSync);        // runs after every handler on the document: whatever the tap redrew is in place
 /* --- delegated clicks -------------------------------------------- */
 document.addEventListener('click',e=>{
   const T=e.target;
@@ -5325,7 +5376,7 @@ document.addEventListener('click',e=>{
       if(en.sets.every(blankSet)){ S.logs[id]=S.logs[id].filter(x=>x!==en); if(!S.logs[id].length) delete S.logs[id]; }
       syncSession(); save(); refreshLogger(id);
       const btn=$('.logger[data-log="'+id+'"][data-ref="'+ref+'"] [data-savelog]');
-      if(btn){ btn.textContent='Saved'; setTimeout(()=>{ btn.textContent='Save session'; },1400); }
+      if(btn){ btn.textContent='Done'; setTimeout(()=>{ btn.textContent='Done with this lift'; },1400); }
       return;
     }
   }
@@ -5336,6 +5387,12 @@ document.addEventListener('click',e=>{
 
   const dm=T.closest('[data-delmeas]');
   if(dm){
+    // a first measurement cannot be taken again: the cross asks once before it deletes
+    if(!dm.dataset.armed){
+      dm.dataset.armed='1'; dm.textContent='Delete?';
+      setTimeout(()=>{ if(dm.isConnected){ delete dm.dataset.armed; dm.textContent='×'; } },4000);
+      return;
+    }
     const row=S.meas.slice().sort((a,b)=>a.d<b.d?-1:1)[+dm.dataset.delmeas];
     const at=S.meas.indexOf(row);
     if(at>=0) S.meas.splice(at,1);
@@ -5422,8 +5479,14 @@ document.addEventListener('input',e=>{
       .forEach(el=>{ if(el!==T) el.value=T.value; });
     save(); return;
   }
-  if(T.id==='qWeight'){ setNum(S.weights,T.value,1,999); return; }
-  if(T.id==='qWaist'){ setNum(S.waist,T.value,1,999); return; }
+  if(T.id==='qWeight'){ setNum(S.weights,T.value,30,300); return; }        // the range a profile accepts: 849 is a missed decimal point
+  if(T.id==='qWaist'){ setNum(S.waist,T.value,30,300); return; }
+  if(T.dataset&&T.dataset.dayweight){                                         // a past weigh-in, corrected from the Map
+    const ds=T.dataset.dayweight; if(!isDate(ds)||ds>=TODAY) return;
+    const raw=latinNumber(T.value).trim(), n=numIn(raw,30,300,null);
+    if(raw==='') delete S.weights[ds]; else if(n!=null) S.weights[ds]=n; else return;
+    save(); clearTimeout(setNum.t); setNum.t=setTimeout(refreshTab,500); return;
+  }
   if(T.id==='qSteps'){ setNum(S.steps,T.value,0,500000); return; }
   const pf=T.closest('[data-prof]');
   if(pf){
@@ -5649,7 +5712,7 @@ document.addEventListener('click',e=>{
   if(e.target.id==='btnWipe'){
     if(e.target.dataset.armed){
       SAVE_HALT=true;                        // nothing may write the old state back while the page closes
-      lsDrop(KEY); lsDrop(KEY_V1); lsDrop(KEY_DMG); lsDrop(KEY_REV);     // the revision goes too: the next copy starts from nothing
+      lsDrop(KEY); lsDrop(KEY_V1); lsDrop(KEY_DMG); lsDrop(KEY_REV); lsDrop(KEY_THEME);     // the revision goes too: the next copy starts from nothing
       const done=()=>location.reload();
       if(CLOUD.doc){ e.target.textContent='Erasing…'; CLOUD.doc.delete().then(done,done); } else done();
     }
@@ -5663,6 +5726,7 @@ document.addEventListener('click',e=>{
    =================================================================== */
 (function init(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
+  rememberTheme();
   if(BOOT.write){ DIRTY=true; writeNow(); }   // a converted or repaired state gets its own copy at once
   paintSaveState();
   ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW(); requestPersistence();
@@ -5684,8 +5748,14 @@ document.addEventListener('click',e=>{
   const h=location.hash.slice(1);
   if(TABS.indexOf(h)>=0) setTab(h,true); else renderToday();
   if(RT) paintRest(true);
-  if(!S.profile.setup&&!BOOT.newer) setupOpen();   // a new person: ask who they are before showing a plan
-  cloudInit();
+  segSync();
+  // A new person is asked who they are before a plan is shown. Inside claude.ai the saved copy may be
+  // in the cloud, so the question waits for that answer first.
+  const cloud=cloudInit();
+  if(!S.profile.setup&&!BOOT.newer){
+    if(typeof claude!=='undefined'&&claude.use) cloud.then(()=>{ if(!S.profile.setup&&!SU) setupOpen(); });
+    else setupOpen();
+  }
   const flush=()=>{ saveNow(); if(CLOUD.dirty||CLOUD.timer){ clearTimeout(CLOUD.timer); cloudPush(); } };
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flush(); });
   window.addEventListener('pagehide',flush);

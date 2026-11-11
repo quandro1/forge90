@@ -22,7 +22,7 @@ function restPanel(id,ref){
 }
 function restLabel(){
   const e=todayEntry(RT.id), full=setsWanted(itemFor(RT.id,RT.ref)), n=RT.set+1, tgt=(e&&e.dl)?deloadSets(full):full;   // a deload asks for a set fewer
-  if(RT.done) return n>=tgt?'Go — rest done. All '+tgt+' sets in, save the session':'Go — set '+(n+1);
+  if(RT.done) return n>=tgt?'Go — rest done. All '+tgt+' sets in: on to the next exercise':'Go — set '+(n+1);
   return n>=tgt?'Rest · then the next exercise':'Rest · then set '+(n+1);
 }
 function restPct(){ return Math.max(0,Math.min(100,(RT.end-Date.now())/RT.total*100)); }
@@ -32,6 +32,7 @@ function startRest(id,setIdx,ref,secs){
   audioUnlock();
   clearTimeout(rtGoTimer);
   document.title='FORGE 90';                 // a finished rest left "GO" in the title
+  { const say=$('#restSay'); if(say) say.textContent=''; }
   if(RT&&RT.id!==id){ const oid=RT.id; RT=null; idleRest(oid); }      // one timer at a time
   const total=(secs||restSecsFor(id,ref))*1000;
   RT={id, ref:ref||'', set:setIdx==null?-1:setIdx, end:Date.now()+total, total, done:false, warned:false};
@@ -50,6 +51,7 @@ function stopRest(){
   wakeLock(false); document.title='FORGE 90';
   if(id) idleRest(id);
   $('#restPill').className='';
+  const say=$('#restSay'); if(say) say.textContent='';
 }
 function tickRest(){
   if(!RT) return;
@@ -58,6 +60,7 @@ function tickRest(){
   if(!RT.done&&left<=0){
     RT.done=true; clearInterval(rtTick); rtTick=null; wakeLock(false);
     beep(3); buzz([220,110,220,110,480]); document.title='GO · FORGE 90';
+    const say=$('#restSay'); if(say) say.textContent='Rest done';        // read out once, not every second
     delete S.ui.rest; save();
     paintRest(true);
     rtGoTimer=setTimeout(()=>{ if(RT&&RT.done) stopRest(); },90000);   // a forgotten GO state clears itself

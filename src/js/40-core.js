@@ -21,6 +21,8 @@ const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000
 /* The training day runs from 03:00 to 03:00, so a session that crosses midnight
    stays on the day it began. TODAY is fixed for the life of the page; the page
    reloads when it is shown again on a later day. */
+/* a segmented control tells a screen reader which side is chosen, as well as showing it */
+function segSync(){ $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('on')))); }
 const BLOCK_DAYS=91;                        // a block is thirteen weeks
 const DAY_ROLL_H=3;
 const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));

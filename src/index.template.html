@@ -19,8 +19,10 @@
 /*__FORGE_CSS__*/
 </style>
 <script>
-(function(){try{var s=JSON.parse(localStorage.getItem('forge90_v2')||localStorage.getItem('forge90_v1')||'{}');
-if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.theme);}catch(e){}})();
+/* the theme, before the first paint: from its own small key, so the whole log is not parsed just for this */
+(function(){try{var t=localStorage.getItem('forge90_theme');
+if(t===null){var s=JSON.parse(localStorage.getItem('forge90_v2')||localStorage.getItem('forge90_v1')||'{}');t=(s&&s.ui&&s.ui.theme)||'';}
+if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
 </script>
 </head>
 <body>
@@ -134,7 +136,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
           <thead><tr><th>Phase</th><th class="n">Steps/day</th><th>Zone 2</th><th>Intervals</th></tr></thead>
           <tbody>
             <tr><td>1 · Weeks 1–4</td><td class="n">build to 8k</td><td>2× · 25–30 min</td><td>none</td></tr>
-            <tr><td>2 · Weeks 5–8</td><td class="n">8–9k</td><td>2–3× · 30–35 min</td><td>1×</td></tr>
+            <tr><td>2 · Weeks 5–8</td><td class="n">8–9k</td><td>3× · 30–35 min</td><td>1×</td></tr>
             <tr><td>3 · Weeks 9–13</td><td class="n">9–10k</td><td>2× · 30–40 min</td><td>2×</td></tr>
           </tbody>
         </table></div>
@@ -206,7 +208,8 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
 <div id="updBar" role="status"><span>A new version is ready.</span><button class="btn sm primary" data-reload>Reload</button></div>
 <div id="saveBar" class="alertbar" role="alert"><span>Not saving: this phone's storage is full or blocked. Export a backup now.</span><button class="btn sm primary" data-export>Export</button></div>
 <div id="verBar" class="alertbar" role="alert"><span>This copy of the app is older than your saved data, so nothing you do here is saved.</span><button class="btn sm primary" data-reload>Reload</button></div>
-<div id="restPill" role="status" aria-live="polite"><button class="rp-go" data-rest-go><span class="rp-n"></span><span class="rp-t"></span></button><button class="rp-x" data-rest-stop aria-label="Stop rest timer">×</button></div>
+<span class="sr" role="status" id="restSay"></span>
+<div id="restPill"><button class="rp-go" data-rest-go><span class="rp-n"></span><span class="rp-t"></span></button><button class="rp-x" data-rest-stop aria-label="Stop rest timer">×</button></div>
 
 <div class="wrap foot">
   <div class="fm">FORGE 90</div>

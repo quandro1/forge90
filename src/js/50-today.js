@@ -69,7 +69,9 @@ function chkButton(x,on,attr){
 function renderChecklist(){
   const list=checkList(), c=S.checks[TODAY]||[];
   $('#checklist').innerHTML=list.map(x=>chkButton(x, c.indexOf(x.k)>=0, 'data-chk="'+x.k+'"')).join('');
-  $('#chkCount').textContent=c.length+' / '+list.length;
+  // creatine is optional: it joins the count only once it is ticked
+  const optional=list.some(x=>x.k==='creatine')&&c.indexOf('creatine')<0;
+  $('#chkCount').textContent=c.length+' / '+(list.length-(optional?1:0));
 }
 function renderHelp(){
   if(S.ui.from===1){                         // came from the earlier version: say what changed, once
@@ -89,10 +91,10 @@ function renderHelp(){
   $('#helpCard').innerHTML='<div class="card help">'
     +'<div class="card-h"><h3>How to use this</h3><button class="btn sm" data-hidehelp>Got it</button></div>'
     +'<ol class="steps big">'
-    +'<li><b>Today</b> — the only screen you need most days. Tick the list, tap what you ate, log your weight.</li>'
+    +'<li><b>Today</b> — the screen you open first. Tick the list and log your weight and steps.</li>'
     +'<li><b>Train</b> — open today\'s session, then type the weight and reps for each set. The app reads your history and tells you what to do next time.</li>'
     +'<li><b>Map</b> — all 91 days. Tap any square to see what that day holds.</li>'
-    +'<li><b>Fuel</b> — the meal plan and the day counter.</li>'
+    +'<li><b>Fuel</b> — your calories and protein, an example day of meals, and the counter where you tap what you ate.</li>'
     +'<li><b>Progress</b> — weigh in daily, but only ever react to the <b>orange 7-day line</b>, never one morning\'s number.</li>'
     +'</ol>'
     +'<p style="font-size:12.5px;color:var(--text-dim);margin-top:11px">Everything saves on this device by itself. Nothing to press.</p>'

@@ -57,7 +57,7 @@ function logger(id,ref){
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
     +(prev&&!dlNow?'<button class="btn sm" data-repeat>Same as last time</button>':'')
-    +'<button class="btn sm primary" data-savelog>Save session</button></div>'
+    +'<button class="btn sm primary" data-savelog>Done with this lift</button></div>'
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';
 }

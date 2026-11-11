@@ -8,7 +8,7 @@
    hand-edited, damaged — goes through normalize(), which always returns
    a valid v2 state and never throws.
    =================================================================== */
-const KEY='forge90_v2', KEY_V1='forge90_v1';
+const KEY='forge90_v2', KEY_V1='forge90_v1', KEY_THEME='forge90_theme';
 const DEFAULT_PROGRAM='vtaper';
 const GOALS=['cut','recomp','maintain','gain'];
 
@@ -95,7 +95,7 @@ function normalize(p){
     const out=a.filter((x,i)=>typeof x==='string'&&/^[a-z0-9_-]{1,24}$/i.test(x)&&a.indexOf(x)===i);
     return out.length?out:undefined;
   });
-  s.weights=dateMap(p.weights,v=>{ const n=numIn(v,1,999,null); return n==null?undefined:n; });
+  s.weights=dateMap(p.weights,v=>{ const n=numIn(v,30,300,null); return n==null?undefined:n; });   // the range a profile accepts
   s.waist  =dateMap(p.waist,  v=>{ const n=numIn(v,1,999,null); return n==null?undefined:n; });
   s.steps  =dateMap(p.steps,  v=>{ const n=numIn(v,0,500000,null); return n==null?undefined:n; });
   s.meas=(Array.isArray(p.meas)?p.meas:[]).filter(r=>isObj(r)&&isDate(r.d)).map(r=>{
@@ -347,8 +347,11 @@ function cloudBadge(){
     :CLOUD.status==='error'?'Backup failed — kept on this device'
     :'This device only';
 }
+/* the theme also lives in its own small key, read before the first paint */
+function rememberTheme(){ try{ localStorage.setItem(KEY_THEME,S.ui.theme||''); }catch(e){} }
 function rerenderAll(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
+  rememberTheme();
   const dl=$('#dayList'); if(dl) delete dl.dataset.plan;   // Train is cached per plan — invalidate
   setTab(currentTab,true);
 }
