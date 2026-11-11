@@ -52,7 +52,7 @@ document.addEventListener('click',e=>{
     const at=arr.indexOf(k);
     if(at>=0) arr.splice(at,1); else arr.push(k);
     if(!arr.length) delete S.checks[TODAY];
-    if(k==='session') delete S.ui.autoSess;          // ticked or cleared by hand: the log no longer decides it
+    if(k==='session') delete S.ui.autoSess;          // ticked or cleared by hand; the next set you log decides it again
     manualTick(k,at<0);
     save(); renderToday(); return;
   }
@@ -109,7 +109,7 @@ document.addEventListener('click',e=>{
   const dpw=T.closest('[data-dpw]');
   if(dpw){
     if(setDaysPerWeek(+dpw.dataset.dpw)){
-      if(dpw.closest('#sheet')){ $$('#setDpw button').forEach(b=>b.classList.toggle('on',b===dpw)); renderToday(); }
+      if(dpw.closest('#sheet')){ $$('#setDpw button').forEach(b=>b.classList.toggle('on',b===dpw)); refreshTab(); }
       else renderTrain();
     }
     return;
@@ -170,7 +170,7 @@ document.addEventListener('click',e=>{
           if(blankSet(s)) return;
           while(en.sets.length<=i) en.sets.push({});
           if(!blankSet(en.sets[i])) return;            // never touch a row that already holds something
-          const o={}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;
+          const o={pre:1}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;      // a plan until it is ticked or changed
         });
         syncSession(); save(); refreshLogger(id);
       }
@@ -189,9 +189,11 @@ document.addEventListener('click',e=>{
     if(ok){
       const i=+ok.dataset.ok, en=upsert(id,it);
       while(en.sets.length<=i) en.sets.push({});
+      // the cross was hit by mistake and now the tick, as meant: the set comes back and is done
+      if(UNDO&&UNDO.id===id&&UNDO.i===i&&UNDO.d===TODAY&&!UNDO.popped&&blankSet(en.sets[i])){ en.sets[i]=UNDO.set; UNDO=null; }
       const s=en.sets[i], prev=i>0?en.sets[i-1]:null;
-      if(s.w==null&&prev&&prev.w!=null) s.w=prev.w;          // carry the bar weight forward
-      s.done=1;
+      if(s.w==null&&prev&&prev.w!=null&&EX[id].load!=='bw') s.w=prev.w;   // carry the bar weight forward
+      s.done=1; delete s.pre;
       if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
       syncSession(); save();
       // The rest starts first: nothing that happens while redrawing the logbook may stop it.
@@ -208,25 +210,33 @@ document.addEventListener('click',e=>{
       const i=+del.dataset.del, en=upsert(id,it), was=en.sets[i];
       // an extra row you added comes off entirely; a prescribed row just empties
       const popped=(i===en.sets.length-1 && en.sets.length>setsWanted(it));
-      UNDO=(was&&!blankSet(was))?{id:id, i:i, set:Object.assign({},was), popped:popped, d:TODAY}:null;
+      if(was&&!blankSet(was)){            // an empty row cleared somewhere else leaves the last Undo standing
+        const old=UNDO;
+        UNDO={id:id, i:i, set:Object.assign({},was), popped:popped, d:TODAY};
+        if(old&&old.id!==id) refreshLogger(old.id);
+      }else if(UNDO&&UNDO.id===id&&UNDO.i===i) UNDO=null;
       if(popped) en.sets.pop();
       else if(en.sets[i]) en.sets[i]={};
       syncSession(); save(); refreshLogger(id); return;
     }
     if(T.closest('[data-undo]')){                 // put the cleared row back, unless something was typed there since
-      const u=UNDO; UNDO=null;
-      if(u&&u.id===id&&u.d===TODAY){
-        const en=upsert(id,it);
-        if(u.popped&&en.sets.length===u.i) en.sets.push(u.set);
-        else{ while(en.sets.length<=u.i) en.sets.push({}); if(blankSet(en.sets[u.i])) en.sets[u.i]=u.set; }
-        syncSession(); save();
+      const u=(UNDO&&UNDO.id===id)?UNDO:null;
+      if(u){
+        UNDO=null;
+        if(u.d===TODAY){
+          const en=upsert(id,it);
+          if(u.popped&&en.sets.length===u.i) en.sets.push(u.set);
+          else{ while(en.sets.length<=u.i) en.sets.push({}); const cur=en.sets[u.i]; if(blankSet(cur)||cur.r==null) en.sets[u.i]=u.set; }
+          syncSession(); save();
+        }
       }
       refreshLogger(id); return;
     }
     const savelog=T.closest('[data-savelog]');
     if(savelog){
       const en=upsert(id,it);
-      UNDO=null;
+      if(UNDO&&UNDO.id===id) UNDO=null;
+      en.sets=en.sets.map(s=>planned(s)?{}:s);               // rows filled in from last time and never done are not sets
       // Trim only blank rows off the END. Filtering the whole array renumbered
       // the sets, so skipping set 2 silently turned set 3 into set 2.
       let n=en.sets.length;
@@ -297,17 +307,36 @@ document.addEventListener('input',e=>{
       const at=(T.selectionStart==null?T.value.length:T.selectionStart)-(T.value.length-raw.length);
       T.value=raw; try{ T.setSelectionRange(at,at); }catch(err){}
     }
+    if(raw!==''&&parseFloat(raw)>(f==='w'?1500:999)){             // a slip of the finger, not a lift
+      raw=raw.slice(0,-1); T.value=raw;
+    }
+    // A weight typed into a row with none: the rows under it that already have reps and no weight take it too,
+    // for as long as this field is being typed in. (On a bodyweight lift an empty weight means no added weight.)
+    if(f==='w'&&EX[id].load!=='bw'&&EX[id].load!=='time'&&!(MIRROR&&MIRROR.el===T)){
+      MIRROR=null;
+      if(en.sets[i].w==null){
+        const rows=[];
+        for(let k=i+1;k<en.sets.length;k++){ const sk=en.sets[k]; if(!sk||sk.w!=null) break; if(sk.r!=null) rows.push(k); }
+        if(rows.length) MIRROR={el:T, id:id, rows:rows};
+      }
+    }
+    if(en.sets[i].pre){ delete en.sets[i].pre; const row=T.closest('.setrow'); if(row) row.classList.remove('pre'); }
     if(raw===''){ delete en.sets[i][f]; }
     else{
       const v=parseFloat(raw);          // "7." parses to 7 and the field keeps "7."
       if(isFinite(v)) en.sets[i][f]=v; else return;
     }
+    if(f==='w'&&MIRROR&&MIRROR.el===T) MIRROR.rows.forEach(k=>{
+      if(en.sets[i].w==null) delete en.sets[k].w; else en.sets[k].w=en.sets[i].w;
+      $$('.logger[data-log="'+id+'"] input[data-set="'+k+'"][data-f="w"]').forEach(el=>{ el.value=en.sets[k].w==null?'':en.sets[k].w; });
+    });
     // reps on a row with no weight: the row takes the weight of the row above, in state and on screen
-    if(f==='r'&&en.sets[i].r!=null&&en.sets[i].w==null&&EX[id].load!=='time'){
+    if(f==='r'&&en.sets[i].r!=null&&en.sets[i].w==null&&EX[id].load!=='time'&&EX[id].load!=='bw'){
       for(let k=i-1;k>=0;k--){ if(en.sets[k]&&en.sets[k].w!=null){ en.sets[i].w=en.sets[k].w; break; } }
       if(en.sets[i].w!=null) $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="w"]').forEach(el=>{ el.value=en.sets[i].w; });
     }
     if(f==='r') syncSession();
+    paintVerdict(id);
     // keep the other open copy of this exercise in step while typing
     $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="'+f+'"]')
       .forEach(el=>{ if(el!==T) el.value=T.value; });
@@ -335,6 +364,9 @@ document.addEventListener('input',e=>{
     save(); refreshTab(); return;                      // the screen under the sheet follows at once
   }
 });
+/* the rows a weight being typed is also written to (see the set-field handler); it ends when the field is left */
+let MIRROR=null;
+document.addEventListener('focusout',e=>{ if(MIRROR&&e.target===MIRROR.el) MIRROR=null; });
 function setNum(obj,v,lo,hi){
   const n=numIn(v,lo,hi,null);
   if(n==null) delete obj[TODAY]; else obj[TODAY]=n;

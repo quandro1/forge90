@@ -102,15 +102,27 @@ function howTo(id){
   if(e.safe) h+='<div class="avoid how-note"><span class="ic" aria-hidden="true">⚠</span><span><b>Safety:</b> '+e.safe+'</span></div>';
   return h;
 }
+/* A heavy barbell lift that is not the first of the day (the session's warm-up covers the first)
+   still needs lighter sets before its working weight. */
+function rampNote(id,ref){
+  const sl=ref?slotAt(ref):null, ex=EX[id];
+  if(!sl||sl.k===0||ex.load!=='bb'||!Array.isArray(sl.it.reps)||sl.it.reps[1]>6) return '';
+  const prev=prevSession(id), w=prev?workWeight(judged(prev,sl.it.sets)):0, st=+ex.step||2.5;
+  return '<div class="note ramp"><b>Two lighter sets first.</b> '
+    +(w>0?kg(roundTo(w*0.5,st))+' × 5, then '+kg(roundTo(w*0.75,st))+' × 3.'
+         :'About half of today\'s weight for 5 reps, then about three-quarters for 3.')+'</div>';
+}
 /* another exercise for the same muscle, when the station is taken or the gym does not have it */
 function swapRow(id,ref){
   const sl=ref?slotAt(ref):null; if(!sl) return '';
   const base=sl.it.base||sl.it.ex;
-  const opts=[base].concat(EX[base].swap||[]).filter((x,i,a)=>EX[x]&&a.indexOf(x)===i&&x!==id);
+  // not something already in this session: two cards for one exercise would share one logbook
+  const taken=sessions()[sl.si].items.filter((o,k)=>k!==sl.k).map(o=>o.ex);
+  const opts=[base].concat(EX[base].swap||[]).filter((x,i,a)=>EX[x]&&a.indexOf(x)===i&&x!==id&&taken.indexOf(x)<0);
   if(!opts.length) return '';
   return '<div class="how-sec"><div class="eyebrow">Station taken, or not in your gym?</div><div class="swaps">'
     +opts.map(x=>'<button class="btn sm" data-swap="'+x+'">'+(x===base?'Back to ':'Use ')+esc(EX[x].name)+'</button>').join('')
-    +'</div><p class="swapnote">The sets, reps and rest stay the same. Each exercise keeps its own history.</p></div>';
+    +'</div><p class="swapnote">The number of sets stays the same. Each exercise keeps its own history.</p></div>';
 }
 function fillEx(box,id,ref){
   // Order: what you need between sets first (the one-line cue, the demo links,
@@ -121,6 +133,7 @@ function fillEx(box,id,ref){
   const known=(S.logs[id]||[]).some(x=>loggedSets(x).length>0);
   box.innerHTML='<p class="cue">'+e.cue+'</p>'
     +demoLinks(e.name)
+    +rampNote(id,ref)
     +logger(id,ref)
     +'<details class="how"'+(known?'':' open')+'><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary>'
     +'<div class="how-b">'+mapsFor(e)+howTo(id)+swapRow(id,ref)+'</div></details>';

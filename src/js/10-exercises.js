@@ -163,7 +163,7 @@ EX.pecdeck = {
 EX.pushup = {
   name: "Push-Up", group: "Chest", tag: "Chest",
   prim: ["chest"], sec: ["uchest", "fdelt", "triceps"],
-  equip: "Floor (a bench makes it easier or harder)", kind: "compound", load: "bw", step: 2.5,
+  equip: "Floor (a bench makes it easier or harder)", kind: "compound", load: "bw", step: 0,
   typ: { sets: 3, reps: [8, 15], rest: 120 },
   cue: "Body in one straight line; chest to the floor, then push away.",
   setup: [

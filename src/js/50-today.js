@@ -189,7 +189,7 @@ function renderCondSection(){
       +'<td>'+(COND[p].hiit?COND[p].hiit+'×':'none')+'</td></tr>').join('')
     +'</tbody></table></div>'
     +'<ul class="klist" style="margin-top:12px">'
-    +'<li><b>Never</b> do hard cardio the day before a leg session.</li>'
+    +'<li><b>Never</b> do hard cardio the day before you train legs.</li>'
     +'<li>Zone 2 goes on a rest day, or <em>after</em> you lift — never before.</li>'
     +'<li>'+esc(condDaysLine(ph))+'</li>'
     +'<li>If your lifts drop from week to week, <b>cut the intervals first</b>, then some Zone 2. Never cut protein or sleep to make room for cardio.</li>'

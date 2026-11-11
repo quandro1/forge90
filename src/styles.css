@@ -406,6 +406,9 @@ details.how>summary .how-t{flex:1}
 }
 .setrow .ok:hover{border-color:var(--good); color:var(--good)}
 .setrow.done .ok{background:var(--good); border-color:var(--good); color:#08140D; font-weight:700}
+.setrow.pre input{color:var(--text-faint); border-style:dashed}
+.note.ramp{margin-top:10px; font-size:13px}
+.prenote{margin:-2px 11px 10px; font-size:12px; color:var(--text-faint); line-height:1.4}
 .setrow.done input{border-color:color-mix(in srgb,var(--good) 45%,var(--line)); color:var(--text-dim)}
 .rest{margin:0 11px 11px; border:1px solid var(--line); border-radius:9px; background:var(--surface); overflow:hidden}
 .rest .rt-idle{display:flex; align-items:center; gap:10px; padding:8px 8px 8px 11px}

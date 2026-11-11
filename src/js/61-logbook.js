@@ -13,6 +13,8 @@ function itemFor(id,ref){
 }
 function setsWanted(it){ return +(it&&it.sets)||3; }
 function blankSet(s){ return !s || (s.w==null && s.r==null && !s.done); }
+/* a row copied from last time and not yet ticked or changed: a plan, not a set done */
+function planned(s){ return !!(s&&s.pre&&!s.done); }
 function todayEntry(id){ return (S.logs[id]||[]).find(x=>x.d===TODAY)||null; }
 function upsert(id,it){
   const arr=S.logs[id]||(S.logs[id]=[]);
@@ -37,23 +39,24 @@ function logger(id,ref){
   let rows='', lastW=null;
   for(let i=0;i<nSets;i++){
     const s=cur[i]||{};
-    const pw=lastW!=null?lastW:(ex.load==='bw'?'+kg':'kg');          // carry the last weight you entered as the hint
+    const pw=(lastW!=null&&s.r==null)?lastW:(ex.load==='bw'?'+kg':'kg');   // the weight this row will take; a row with reps and no weight was left empty on purpose
     if(s.w!=null) lastW=s.w;
-    rows+='<div class="setrow'+(s.done?' done':'')+'"><span class="sn">'+(i+1)+'</span>'
+    rows+='<div class="setrow'+(s.done?' done':'')+(planned(s)?' pre':'')+'"><span class="sn">'+(i+1)+'</span>'
       +(noW?'<span class="nw" aria-hidden="true">—</span>'
            :'<input class="num" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" placeholder="'+pw+'" data-set="'+i+'" data-f="w" value="'+(s.w!=null?s.w:'')+'" aria-label="Set '+(i+1)+' weight in kg">')
       +'<input class="num" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="'+(hold?'sec':'reps')+'" data-set="'+i+'" data-f="r" value="'+(s.r!=null?s.r:'')+'" aria-label="Set '+(i+1)+(hold?' seconds':' reps')+'">'
       +'<button class="ok" data-ok="'+i+'" aria-label="Set '+(i+1)+' done, start rest">✓</button>'
       +'<button class="del" data-del="'+i+'" aria-label="Clear set '+(i+1)+'">×</button></div>';
   }
-  const prev=prevSession(id), vd=safeVerdict(id,it);
+  const prev=prevSession(id), vd=safeVerdict(id,it), dlNow=draft?!!draft.dl:isDeload(), anyPre=cur.some(planned);
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
     +'<div class="lh"><b>Logbook</b>'+((draft?draft.dl:isDeload())?'<button class="dlchip on" data-dl aria-pressed="true" title="A lighter session that is not used as your reference. Tap if you trained normally.">Deload</button>':(isDeload()?'<button class="dlchip" data-dl aria-pressed="false" title="Mark this as a deload session">Deload</button>':''))+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
     +'<div class="sets">'+rows+'</div>'
+    +(anyPre?'<p class="prenote">Filled in from last time. Tick each set when it is done, or type what you did. Rows left like this are not counted.</p>':'')
     +(UNDO&&UNDO.id===id&&UNDO.d===TODAY?'<div class="undobar"><span>Set '+(UNDO.i+1)+' cleared.</span><button class="btn sm" data-undo>Undo</button></div>':'')
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
-    +(prev?'<button class="btn sm" data-repeat>Same as last time</button>':'')
+    +(prev&&!dlNow?'<button class="btn sm" data-repeat>Same as last time</button>':'')
     +'<button class="btn sm primary" data-savelog>Save session</button></div>'
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';
@@ -64,7 +67,7 @@ function sessionProgress(){
   const info=infoForDate(TODAY);
   if(!info||info.type!=='lift'||!info.session) return null;
   let touched=0;
-  info.session.items.forEach(it=>{ const e=todayEntry(it.ex); if(e&&e.sets.some(s=>s&&(s.r>0||s.done))) touched++; });
+  info.session.items.forEach(it=>{ const e=todayEntry(it.ex); if(e&&e.sets.some(s=>s&&((s.r>0&&!s.pre)||s.done))) touched++; });
   return {touched:touched, total:info.session.items.length, need:Math.ceil(info.session.items.length*0.6)};
 }
 function syncSession(){
@@ -75,6 +78,15 @@ function syncSession(){
     arr.splice(arr.indexOf('session'),1); if(!arr.length) delete S.checks[TODAY];
     delete S.ui.autoSess;
   }
+}
+/* the advice line follows what is typed, without redrawing the fields being typed in */
+function paintVerdict(id){
+  $$('.logger[data-log="'+id+'"]').forEach(b=>{
+    const el=$('.verdict',b); if(!el) return;
+    const vd=safeVerdict(id,itemFor(id,b.dataset.ref));
+    el.className='verdict '+vd.cls;
+    el.innerHTML='<span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span>';
+  });
 }
 /* The same exercise can sit on two days of a plan, so two logbooks for it can
    be open at once. Redraw every copy (each with its own slot's prescription)

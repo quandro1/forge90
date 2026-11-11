@@ -61,9 +61,10 @@ function cleanSet(s){
   if(w!=null) o.w=w;
   if(r!=null) o.r=r;
   if(s.done) o.done=1;
+  else if(s.pre) o.pre=1;                    // copied from last time, not yet done
   return o;
 }
-function cleanLogs(m){
+function cleanLogs(m,legacy){
   const o={};
   if(!isObj(m)) return o;
   for(const id in m){
@@ -74,8 +75,9 @@ function cleanLogs(m){
       seen[e.d]=1;
       const o={d:e.d, sets:(Array.isArray(e.sets)?e.sets:[]).map(cleanSet)};
       if(e.dl) o.dl=1;
-      // a row with reps but no weight takes the weight of the row above (it was shown there in grey, never stored)
-      if(!(EX[id]&&EX[id].load==='time')){ let lw=null; o.sets.forEach(s=>{ if(s.w!=null) lw=s.w; else if(s.r>0&&lw!=null) s.w=lw; }); }
+      // A row with reps but no weight takes the weight of the row above (version 1 showed it there in grey and never
+      // stored it). On a bodyweight lift in version 2 an empty weight means no added weight, so it is left alone.
+      if(!(EX[id]&&(EX[id].load==='time'||(EX[id].load==='bw'&&!legacy)))){ let lw=null; o.sets.forEach(s=>{ if(s.w!=null) lw=s.w; else if(s.r>0&&lw!=null) s.w=lw; }); }
       arr.push(o);
     }
     arr.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
@@ -101,7 +103,7 @@ function normalize(p){
     ['waist','chest','sh','arm','thigh'].forEach(k=>{ const n=numIn(r[k],1,999,null); if(n!=null) o[k]=n; });
     return o;
   });
-  s.logs=pruneLogs(cleanLogs(p.logs));
+  s.logs=pruneLogs(cleanLogs(p.logs,legacy));
   if(legacy){        // version 1 prescribed a lighter week in weeks 6 and 12 but did not mark those sessions
     const st=parseISO(s.profile.start);
     for(const id in s.logs) s.logs[id].forEach(e=>{
@@ -185,7 +187,7 @@ function mergeStates(theirs,mine){
    posed as "last time" forever. Past sessions with no numbers are not history. */
 function pruneLogs(logs){
   for(const id in logs){
-    logs[id]=logs[id].filter(x=>x.d>=TODAY||x.sets.some(s=>s.r>0||s.w!=null||s.done));
+    logs[id]=logs[id].filter(x=>x.d>=TODAY||x.sets.some(s=>!s.pre&&(s.r>0||s.w!=null||s.done)));
     if(!logs[id].length) delete logs[id];
   }
   return logs;

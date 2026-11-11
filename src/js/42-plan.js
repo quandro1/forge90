@@ -35,10 +35,21 @@ function sessionsOf(prog,dpw){
   if(c&&c.sig===sig) return c.list;
   const list=v.sessions.map((s,si)=>Object.assign({},s,{items:s.items.map((it,k)=>{
     const sw=S.swaps&&S.swaps[key+'/'+si+'/'+k];
-    return (sw&&EX[sw]&&sw!==it.ex)?Object.assign({},it,{ex:sw,base:it.ex}):it;
+    return (sw&&EX[sw]&&sw!==it.ex)?swapItem(it,sw):it;
   })}));
   _sessCache[key]={sig:sig, list:list};
   return list;
+}
+/* Another exercise in a slot keeps the slot's number of sets. It keeps the reps and rest too when it is
+   the same kind of lift; when it is not (seconds against reps, a small lift for a big one, a dumbbell
+   or machine lift in a 3-5 rep barbell slot) it takes its own, so nobody is told to plank for 12 reps
+   or to goblet squat a 5-rep maximum. "Each side" always follows the exercise that is actually done. */
+function swapItem(it,sw){
+  const o=Object.assign({},it,{ex:sw,base:it.ex}), a=EX[it.ex], b=EX[sw], t=b.typ;
+  const misfit=(!!it.hold!==!!t.hold)||a.kind!==b.kind||(Array.isArray(it.reps)&&it.reps[1]<=5&&b.load!=='bb');
+  if(misfit){ delete o.hold; delete o.reps; if(t.hold) o.hold=t.hold.slice(); else o.reps=t.reps.slice(); o.rest=t.rest; }
+  if(t.each) o.each=true; else delete o.each;
+  return o;
 }
 function sessions(){ return sessionsOf(S.profile.program,S.profile.dpw); }
 /* "2.3" -> {si,k,it} for the third item of the second session */

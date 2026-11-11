@@ -74,7 +74,8 @@ export default [
       await page.locator('.logger[data-log="inclineBB"] [data-repeat]').first().tap();
       const s = await sets(page, 'inclineBB');
       assert.deepEqual(s[0], { w: 62.5, r: 8, done: 1 }, 'the set already logged today was overwritten');
-      assert.deepEqual(s.slice(1), [{ w: 60, r: 8 }, { w: 60, r: 8 }, { w: 60, r: 7 }]);
+      // the copied rows are marked as a plan: they count as sets only once ticked or changed
+      assert.deepEqual(s.slice(1), [{ pre: 1, w: 60, r: 8 }, { pre: 1, w: 60, r: 8 }, { pre: 1, w: 60, r: 7 }]);
     },
   },
   {

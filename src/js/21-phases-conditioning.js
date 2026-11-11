@@ -4,7 +4,7 @@
    lose (lose fat, or lose slowly and build), hold (stay at this weight),
    gain (build muscle). */
 const PHASES=[
- {n:1, name:'Foundation', sub:'Weeks 1–4', w:[1,4], color:'steel',
+ {n:1, name:'Groundwork', sub:'Weeks 1–4', w:[1,4], color:'steel',
   goal:'Build the habit and the technique. Leave two or three reps in hand and learn how every lift should feel.',
   train:['Every set clean, stopping two or three reps before failure.','Log every session from day one: week 1 is your baseline.','Add weight only when the logbook tells you to.'],
   eat:{
@@ -23,7 +23,7 @@ const PHASES=[
    lose:['Hold the calorie target.','Put most of your carbs in the meals around training.','Weekends count: that is where a week is most often undone.'],
    hold:['Keep eating at your target.','Put most of your carbs in the meals around training.'],
    gain:['Keep the surplus small and steady.','If the scale has not moved in two weeks, add about 150 kcal a day.']},
-  cond:['Hold your step target.','Zone 2 two or three times a week.','One interval session a week if you want it, never the day before a leg session.'],
+  cond:['About 8,500 steps a day.','Zone 2 three times a week.','One interval session a week if you want it, never the day before you train legs.'],
   out:{
    lose:'A steady loss week to week, stronger lifts, a smaller waist.',
    hold:'Stronger on every main lift at the same bodyweight.',
@@ -35,7 +35,7 @@ const PHASES=[
    lose:['Hold the deficit. If you feel worn down, eat at maintenance for 3 to 5 days, then go back.','Watch the oil and ghee your food is cooked in: that is where calories hide.','Protein stays high.'],
    hold:['Keep doing what works.','Protein stays high.'],
    gain:['Keep the surplus small.','If your waist grows faster than your lifts, take 100–150 kcal a day off.']},
-  cond:['Hold your step target.','Zone 2 twice a week; intervals up to twice if your lifts are not dropping.'],
+  cond:['About 9,500 steps a day.','Zone 2 twice a week; intervals up to twice if your lifts are not dropping. One is enough on a three-day plan.'],
   out:{
    lose:'Your leanest point of the block, with your strength intact.',
    hold:'A stronger, fitter version of the same bodyweight.',
@@ -49,9 +49,9 @@ const COND={
  1:{steps:'Build to 8k', z2:2, z2min:'25–30 min', hiit:0,
     note:'No intervals in this phase: steps and easy Zone 2 only.'},
  2:{steps:'8–9k',  z2:3, z2min:'30–35 min', hiit:1,
-    note:'Intervals may start now, once a week. Never the day before a leg session.'},
+    note:'Intervals may start now, once a week. Never the day before you train legs.'},
  3:{steps:'9–10k', z2:2, z2min:'30–40 min', hiit:2,
-    note:'Your fittest phase. Cut the intervals first if your lifts start to drop.'}
+    note:'Your fittest phase. Up to two interval sessions; one is enough on a three-day plan. Cut the intervals first if your lifts start to drop.'}
 };
 const CONDTOOLS=[
  {k:'steps', n:'Daily steps', tag:'The biggest lever',
@@ -62,7 +62,7 @@ const CONDTOOLS=[
   how:`Incline treadmill walk, stationary bike or elliptical: easy on the joints, so your legs stay fresh. Do it on a rest day or <em>after</em> lifting, never before.`},
  {k:'hiit', n:'Intervals', tag:'A small dose, from phase 2',
   b:`Hard intervals build fitness fast but are <b>costly to recover from</b>, so the dose stays small and starts only once the easy base is there. If your lifts start to drop, this is the first thing to cut.`,
-  how:`8–10 rounds of <b>20 seconds hard, 60–90 seconds easy</b> on a bike, rower or incline. Twenty minutes in all, warm-up included. On a rest day, or after an upper-body session.`}
+  how:`8–10 rounds of <b>20 seconds hard, 60–90 seconds easy</b> on a bike, rower or incline. Twenty minutes in all, warm-up included. On a rest day, or straight after a lifting session (after upper body, if your plan has upper-body days). Keep them off the day before you train legs.`}
 ];
 const CARDIO_DEMOS=[
  ['Incline treadmill walk','Zone 2 · easiest on the joints'],

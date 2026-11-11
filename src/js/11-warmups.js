@@ -19,4 +19,6 @@ const WARMSETS = {
   legs:  { drills: ["legswing", "worldsgreat", "bwsquat"] },
   hinge: { drills: ["legswing", "catcow", "glutebridge"] },
   full:  { drills: ["armCircle", "legswing", "bwsquat"] },
+  // a heavy lower-body lift and a heavy press in one session
+  strength: { drills: ["bandPull", "legswing", "bwsquat"] },
 };

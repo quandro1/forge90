@@ -78,6 +78,7 @@ PROGRAMS.vtaper = {
         { ex: "pulldown", sets: 4, reps: [10, 12], rest: 120 },
         { ex: "machPress", sets: 3, reps: [8, 12], rest: 120 },
         { ex: "latRaise", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "straightArm", sets: 3, reps: [12, 15], rest: 60 },
         { ex: "facepull", sets: 3, reps: [15, 20], rest: 60 },
         { ex: "ohext", sets: 3, reps: [10, 12], rest: 75 },
       ] },
@@ -174,7 +175,7 @@ PROGRAMS.glutes = {
     "One upper-body day, plus a little on the last day, keeps the rest of you strong.",
   ],
   variants: {
-    4: { days: [1, 2, 4, 5], sessions: [
+    4: { days: [1, 2, 4, 6], sessions: [
       { name: "Glutes & Hamstrings", tag: "Lower 1", focus: "Hip thrust and hip-hinge first.", warm: "hinge", items: [
         { ex: "hipthrust", sets: 3, reps: [8, 12], rest: 150 },
         { ex: "rdl", sets: 3, reps: [8, 12], rest: 150 },
@@ -217,7 +218,7 @@ PROGRAMS.lean = {
   line: "Keep your muscle while the fat comes off.",
   who: "For anyone losing fat who wants shorter sessions and room for cardio.",
   focus: ["quads", "lats", "uchest", "sdelt"],
-  level: 1, def: 3,
+  level: 2, def: 3,
   check: { profile: "maintain", emphasis: [], maxMin: 66 },
   about: [
     "Three full-body days. Each one has a leg lift, a press, a pull and a little for the shoulders or core.",
@@ -266,21 +267,21 @@ PROGRAMS.strength = {
   ],
   variants: {
     3: { days: [1, 3, 5], sessions: [
-      { name: "Squat & Bench", tag: "A", focus: "Heavy squat and bench press, then back and hamstrings.", warm: "legs", items: [
+      { name: "Squat & Bench", tag: "A", focus: "Heavy squat and bench press, then back and hamstrings.", warm: "strength", items: [
         { ex: "squat", sets: 4, reps: [3, 5], rest: 210 },
         { ex: "benchBB", sets: 4, reps: [3, 5], rest: 180 },
         { ex: "csRow", sets: 4, reps: [6, 10], rest: 120 },
         { ex: "seatedLegCurl", sets: 3, reps: [8, 12], rest: 75 },
         { ex: "facepull", sets: 3, reps: [12, 15], rest: 60 },
       ] },
-      { name: "Deadlift & Press", tag: "B", focus: "Heavy deadlift and overhead press, then pull-ups.", warm: "hinge", items: [
+      { name: "Deadlift & Press", tag: "B", focus: "Heavy deadlift and overhead press, then pull-ups.", warm: "strength", items: [
         { ex: "deadlift", sets: 3, reps: [3, 5], rest: 240 },
         { ex: "ohp", sets: 4, reps: [3, 5], rest: 180 },
         { ex: "pullup", sets: 4, reps: [5, 8], rest: 150 },
         { ex: "bulgarian", sets: 3, reps: [6, 10], each: true, rest: 90 },
         { ex: "ohext", sets: 3, reps: [8, 12], rest: 75 },
       ] },
-      { name: "Squat & Bench 2", tag: "C", focus: "The second squat and bench day, then pulldowns and core.", warm: "legs", items: [
+      { name: "Squat & Bench 2", tag: "C", focus: "The second squat and bench day, then pulldowns and core.", warm: "strength", items: [
         { ex: "squat", sets: 4, reps: [3, 5], rest: 210 },
         { ex: "benchBB", sets: 4, reps: [3, 5], rest: 180 },
         { ex: "pulldown", sets: 4, reps: [8, 10], rest: 120 },
@@ -299,8 +300,8 @@ PROGRAMS.foundation = {
   level: 1, def: 3,
   check: { profile: "maintain", emphasis: [], maxMin: 61 },
   about: [
-    "Three short full-body days on machines, dumbbells and your own bodyweight.",
-    "Keep two or three reps in hand on every set for the first two weeks. Clean reps come before heavy ones.",
+    "Three short full-body days, mostly on machines, dumbbells and your own bodyweight. The two barbell lifts, the Romanian deadlift and the hip thrust, start with the empty bar; the Romanian deadlift can be done with two dumbbells.",
+    "Keep two or three reps in hand on every set for the first four weeks. Clean reps come before heavy ones.",
   ],
   variants: {
     3: { days: [1, 3, 5], sessions: [

@@ -194,7 +194,7 @@ document.addEventListener('click',e=>{
   if(history.state&&history.state.sheet){ try{ history.replaceState(null,''); }catch(e){} }   // a sheet step left over from before a reload
   // a rest timer that was running when the page closed picks up where it was
   const r=S.ui.rest;
-  if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); }
+  if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); wakeLock(true); }
   else if(r){ delete S.ui.rest; save(true); }
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible') return;

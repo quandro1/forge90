@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="d02fa1c301">
+<meta name="forge-build" content="b96e499857">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -424,6 +424,9 @@ details.how>summary .how-t{flex:1}
 }
 .setrow .ok:hover{border-color:var(--good); color:var(--good)}
 .setrow.done .ok{background:var(--good); border-color:var(--good); color:#08140D; font-weight:700}
+.setrow.pre input{color:var(--text-faint); border-style:dashed}
+.note.ramp{margin-top:10px; font-size:13px}
+.prenote{margin:-2px 11px 10px; font-size:12px; color:var(--text-faint); line-height:1.4}
 .setrow.done input{border-color:color-mix(in srgb,var(--good) 45%,var(--line)); color:var(--text-dim)}
 .rest{margin:0 11px 11px; border:1px solid var(--line); border-radius:9px; background:var(--surface); overflow:hidden}
 .rest .rt-idle{display:flex; align-items:center; gap:10px; padding:8px 8px 8px 11px}
@@ -733,7 +736,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
             <tr><td>3 · Weeks 9–13</td><td class="n">9–10k</td><td>2× · 30–40 min</td><td>2×</td></tr>
           </tbody>
         </table></div>
-        <div class="note" style="margin-top:12px">Zone 2 is a pace you could hold a conversation at — roughly <b id="z2hr">118–138 bpm</b> for you. Never do hard cardio the day before a leg session. If your lifts start dropping, cut the intervals first.</div>
+        <div class="note" style="margin-top:12px">Zone 2 is a pace you could hold a conversation at — roughly <b id="z2hr">118–138 bpm</b> for you. Never do hard cardio the day before you train legs. If your lifts start dropping, cut the intervals first.</div>
       </div>
     </div>
   </section>
@@ -1034,7 +1037,7 @@ EX.pecdeck = {
 EX.pushup = {
   name: "Push-Up", group: "Chest", tag: "Chest",
   prim: ["chest"], sec: ["uchest", "fdelt", "triceps"],
-  equip: "Floor (a bench makes it easier or harder)", kind: "compound", load: "bw", step: 2.5,
+  equip: "Floor (a bench makes it easier or harder)", kind: "compound", load: "bw", step: 0,
   typ: { sets: 3, reps: [8, 15], rest: 120 },
   cue: "Body in one straight line; chest to the floor, then push away.",
   setup: [
@@ -2021,6 +2024,8 @@ const WARMSETS = {
   legs:  { drills: ["legswing", "worldsgreat", "bwsquat"] },
   hinge: { drills: ["legswing", "catcow", "glutebridge"] },
   full:  { drills: ["armCircle", "legswing", "bwsquat"] },
+  // a heavy lower-body lift and a heavy press in one session
+  strength: { drills: ["bandPull", "legswing", "bwsquat"] },
 };
 /* ===================================================================
    PROGRAMS
@@ -2102,6 +2107,7 @@ PROGRAMS.vtaper = {
         { ex: "pulldown", sets: 4, reps: [10, 12], rest: 120 },
         { ex: "machPress", sets: 3, reps: [8, 12], rest: 120 },
         { ex: "latRaise", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "straightArm", sets: 3, reps: [12, 15], rest: 60 },
         { ex: "facepull", sets: 3, reps: [15, 20], rest: 60 },
         { ex: "ohext", sets: 3, reps: [10, 12], rest: 75 },
       ] },
@@ -2198,7 +2204,7 @@ PROGRAMS.glutes = {
     "One upper-body day, plus a little on the last day, keeps the rest of you strong.",
   ],
   variants: {
-    4: { days: [1, 2, 4, 5], sessions: [
+    4: { days: [1, 2, 4, 6], sessions: [
       { name: "Glutes & Hamstrings", tag: "Lower 1", focus: "Hip thrust and hip-hinge first.", warm: "hinge", items: [
         { ex: "hipthrust", sets: 3, reps: [8, 12], rest: 150 },
         { ex: "rdl", sets: 3, reps: [8, 12], rest: 150 },
@@ -2241,7 +2247,7 @@ PROGRAMS.lean = {
   line: "Keep your muscle while the fat comes off.",
   who: "For anyone losing fat who wants shorter sessions and room for cardio.",
   focus: ["quads", "lats", "uchest", "sdelt"],
-  level: 1, def: 3,
+  level: 2, def: 3,
   check: { profile: "maintain", emphasis: [], maxMin: 66 },
   about: [
     "Three full-body days. Each one has a leg lift, a press, a pull and a little for the shoulders or core.",
@@ -2290,21 +2296,21 @@ PROGRAMS.strength = {
   ],
   variants: {
     3: { days: [1, 3, 5], sessions: [
-      { name: "Squat & Bench", tag: "A", focus: "Heavy squat and bench press, then back and hamstrings.", warm: "legs", items: [
+      { name: "Squat & Bench", tag: "A", focus: "Heavy squat and bench press, then back and hamstrings.", warm: "strength", items: [
         { ex: "squat", sets: 4, reps: [3, 5], rest: 210 },
         { ex: "benchBB", sets: 4, reps: [3, 5], rest: 180 },
         { ex: "csRow", sets: 4, reps: [6, 10], rest: 120 },
         { ex: "seatedLegCurl", sets: 3, reps: [8, 12], rest: 75 },
         { ex: "facepull", sets: 3, reps: [12, 15], rest: 60 },
       ] },
-      { name: "Deadlift & Press", tag: "B", focus: "Heavy deadlift and overhead press, then pull-ups.", warm: "hinge", items: [
+      { name: "Deadlift & Press", tag: "B", focus: "Heavy deadlift and overhead press, then pull-ups.", warm: "strength", items: [
         { ex: "deadlift", sets: 3, reps: [3, 5], rest: 240 },
         { ex: "ohp", sets: 4, reps: [3, 5], rest: 180 },
         { ex: "pullup", sets: 4, reps: [5, 8], rest: 150 },
         { ex: "bulgarian", sets: 3, reps: [6, 10], each: true, rest: 90 },
         { ex: "ohext", sets: 3, reps: [8, 12], rest: 75 },
       ] },
-      { name: "Squat & Bench 2", tag: "C", focus: "The second squat and bench day, then pulldowns and core.", warm: "legs", items: [
+      { name: "Squat & Bench 2", tag: "C", focus: "The second squat and bench day, then pulldowns and core.", warm: "strength", items: [
         { ex: "squat", sets: 4, reps: [3, 5], rest: 210 },
         { ex: "benchBB", sets: 4, reps: [3, 5], rest: 180 },
         { ex: "pulldown", sets: 4, reps: [8, 10], rest: 120 },
@@ -2323,8 +2329,8 @@ PROGRAMS.foundation = {
   level: 1, def: 3,
   check: { profile: "maintain", emphasis: [], maxMin: 61 },
   about: [
-    "Three short full-body days on machines, dumbbells and your own bodyweight.",
-    "Keep two or three reps in hand on every set for the first two weeks. Clean reps come before heavy ones.",
+    "Three short full-body days, mostly on machines, dumbbells and your own bodyweight. The two barbell lifts, the Romanian deadlift and the hip thrust, start with the empty bar; the Romanian deadlift can be done with two dumbbells.",
+    "Keep two or three reps in hand on every set for the first four weeks. Clean reps come before heavy ones.",
   ],
   variants: {
     3: { days: [1, 3, 5], sessions: [
@@ -2361,7 +2367,7 @@ PROGRAMS.foundation = {
    lose (lose fat, or lose slowly and build), hold (stay at this weight),
    gain (build muscle). */
 const PHASES=[
- {n:1, name:'Foundation', sub:'Weeks 1–4', w:[1,4], color:'steel',
+ {n:1, name:'Groundwork', sub:'Weeks 1–4', w:[1,4], color:'steel',
   goal:'Build the habit and the technique. Leave two or three reps in hand and learn how every lift should feel.',
   train:['Every set clean, stopping two or three reps before failure.','Log every session from day one: week 1 is your baseline.','Add weight only when the logbook tells you to.'],
   eat:{
@@ -2380,7 +2386,7 @@ const PHASES=[
    lose:['Hold the calorie target.','Put most of your carbs in the meals around training.','Weekends count: that is where a week is most often undone.'],
    hold:['Keep eating at your target.','Put most of your carbs in the meals around training.'],
    gain:['Keep the surplus small and steady.','If the scale has not moved in two weeks, add about 150 kcal a day.']},
-  cond:['Hold your step target.','Zone 2 two or three times a week.','One interval session a week if you want it, never the day before a leg session.'],
+  cond:['About 8,500 steps a day.','Zone 2 three times a week.','One interval session a week if you want it, never the day before you train legs.'],
   out:{
    lose:'A steady loss week to week, stronger lifts, a smaller waist.',
    hold:'Stronger on every main lift at the same bodyweight.',
@@ -2392,7 +2398,7 @@ const PHASES=[
    lose:['Hold the deficit. If you feel worn down, eat at maintenance for 3 to 5 days, then go back.','Watch the oil and ghee your food is cooked in: that is where calories hide.','Protein stays high.'],
    hold:['Keep doing what works.','Protein stays high.'],
    gain:['Keep the surplus small.','If your waist grows faster than your lifts, take 100–150 kcal a day off.']},
-  cond:['Hold your step target.','Zone 2 twice a week; intervals up to twice if your lifts are not dropping.'],
+  cond:['About 9,500 steps a day.','Zone 2 twice a week; intervals up to twice if your lifts are not dropping. One is enough on a three-day plan.'],
   out:{
    lose:'Your leanest point of the block, with your strength intact.',
    hold:'A stronger, fitter version of the same bodyweight.',
@@ -2406,9 +2412,9 @@ const COND={
  1:{steps:'Build to 8k', z2:2, z2min:'25–30 min', hiit:0,
     note:'No intervals in this phase: steps and easy Zone 2 only.'},
  2:{steps:'8–9k',  z2:3, z2min:'30–35 min', hiit:1,
-    note:'Intervals may start now, once a week. Never the day before a leg session.'},
+    note:'Intervals may start now, once a week. Never the day before you train legs.'},
  3:{steps:'9–10k', z2:2, z2min:'30–40 min', hiit:2,
-    note:'Your fittest phase. Cut the intervals first if your lifts start to drop.'}
+    note:'Your fittest phase. Up to two interval sessions; one is enough on a three-day plan. Cut the intervals first if your lifts start to drop.'}
 };
 const CONDTOOLS=[
  {k:'steps', n:'Daily steps', tag:'The biggest lever',
@@ -2419,7 +2425,7 @@ const CONDTOOLS=[
   how:`Incline treadmill walk, stationary bike or elliptical: easy on the joints, so your legs stay fresh. Do it on a rest day or <em>after</em> lifting, never before.`},
  {k:'hiit', n:'Intervals', tag:'A small dose, from phase 2',
   b:`Hard intervals build fitness fast but are <b>costly to recover from</b>, so the dose stays small and starts only once the easy base is there. If your lifts start to drop, this is the first thing to cut.`,
-  how:`8–10 rounds of <b>20 seconds hard, 60–90 seconds easy</b> on a bike, rower or incline. Twenty minutes in all, warm-up included. On a rest day, or after an upper-body session.`}
+  how:`8–10 rounds of <b>20 seconds hard, 60–90 seconds easy</b> on a bike, rower or incline. Twenty minutes in all, warm-up included. On a rest day, or straight after a lifting session (after upper body, if your plan has upper-body days). Keep them off the day before you train legs.`}
 ];
 const CARDIO_DEMOS=[
  ['Incline treadmill walk','Zone 2 · easiest on the joints'],
@@ -2813,9 +2819,10 @@ function cleanSet(s){
   if(w!=null) o.w=w;
   if(r!=null) o.r=r;
   if(s.done) o.done=1;
+  else if(s.pre) o.pre=1;                    // copied from last time, not yet done
   return o;
 }
-function cleanLogs(m){
+function cleanLogs(m,legacy){
   const o={};
   if(!isObj(m)) return o;
   for(const id in m){
@@ -2826,8 +2833,9 @@ function cleanLogs(m){
       seen[e.d]=1;
       const o={d:e.d, sets:(Array.isArray(e.sets)?e.sets:[]).map(cleanSet)};
       if(e.dl) o.dl=1;
-      // a row with reps but no weight takes the weight of the row above (it was shown there in grey, never stored)
-      if(!(EX[id]&&EX[id].load==='time')){ let lw=null; o.sets.forEach(s=>{ if(s.w!=null) lw=s.w; else if(s.r>0&&lw!=null) s.w=lw; }); }
+      // A row with reps but no weight takes the weight of the row above (version 1 showed it there in grey and never
+      // stored it). On a bodyweight lift in version 2 an empty weight means no added weight, so it is left alone.
+      if(!(EX[id]&&(EX[id].load==='time'||(EX[id].load==='bw'&&!legacy)))){ let lw=null; o.sets.forEach(s=>{ if(s.w!=null) lw=s.w; else if(s.r>0&&lw!=null) s.w=lw; }); }
       arr.push(o);
     }
     arr.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
@@ -2853,7 +2861,7 @@ function normalize(p){
     ['waist','chest','sh','arm','thigh'].forEach(k=>{ const n=numIn(r[k],1,999,null); if(n!=null) o[k]=n; });
     return o;
   });
-  s.logs=pruneLogs(cleanLogs(p.logs));
+  s.logs=pruneLogs(cleanLogs(p.logs,legacy));
   if(legacy){        // version 1 prescribed a lighter week in weeks 6 and 12 but did not mark those sessions
     const st=parseISO(s.profile.start);
     for(const id in s.logs) s.logs[id].forEach(e=>{
@@ -2937,7 +2945,7 @@ function mergeStates(theirs,mine){
    posed as "last time" forever. Past sessions with no numbers are not history. */
 function pruneLogs(logs){
   for(const id in logs){
-    logs[id]=logs[id].filter(x=>x.d>=TODAY||x.sets.some(s=>s.r>0||s.w!=null||s.done));
+    logs[id]=logs[id].filter(x=>x.d>=TODAY||x.sets.some(s=>!s.pre&&(s.r>0||s.w!=null||s.done)));
     if(!logs[id].length) delete logs[id];
   }
   return logs;
@@ -3139,10 +3147,21 @@ function sessionsOf(prog,dpw){
   if(c&&c.sig===sig) return c.list;
   const list=v.sessions.map((s,si)=>Object.assign({},s,{items:s.items.map((it,k)=>{
     const sw=S.swaps&&S.swaps[key+'/'+si+'/'+k];
-    return (sw&&EX[sw]&&sw!==it.ex)?Object.assign({},it,{ex:sw,base:it.ex}):it;
+    return (sw&&EX[sw]&&sw!==it.ex)?swapItem(it,sw):it;
   })}));
   _sessCache[key]={sig:sig, list:list};
   return list;
+}
+/* Another exercise in a slot keeps the slot's number of sets. It keeps the reps and rest too when it is
+   the same kind of lift; when it is not (seconds against reps, a small lift for a big one, a dumbbell
+   or machine lift in a 3-5 rep barbell slot) it takes its own, so nobody is told to plank for 12 reps
+   or to goblet squat a 5-rep maximum. "Each side" always follows the exercise that is actually done. */
+function swapItem(it,sw){
+  const o=Object.assign({},it,{ex:sw,base:it.ex}), a=EX[it.ex], b=EX[sw], t=b.typ;
+  const misfit=(!!it.hold!==!!t.hold)||a.kind!==b.kind||(Array.isArray(it.reps)&&it.reps[1]<=5&&b.load!=='bb');
+  if(misfit){ delete o.hold; delete o.reps; if(t.hold) o.hold=t.hold.slice(); else o.reps=t.reps.slice(); o.rest=t.rest; }
+  if(t.each) o.each=true; else delete o.each;
+  return o;
 }
 function sessions(){ return sessionsOf(S.profile.program,S.profile.dpw); }
 /* "2.3" -> {si,k,it} for the third item of the second session */
@@ -3319,13 +3338,15 @@ function sessionDone(ds){ return (S.checks[ds]||[]).indexOf('session')>=0; }
      switch to "Next session".
    - Only the prescribed number of sets is judged (extra sets are bonus
      work), and sets are named by the row they sit on.
+   - A row filled in by "Same as last time" is a plan (set.pre), not a set
+     done, until it is ticked or changed.
    - Every branch returns a sentence: this must never throw or print a blank.
    =================================================================== */
-function loggedSets(e){ return ((e&&e.sets)||[]).filter(s=>s&&s.r>0); }
+function loggedSets(e){ return ((e&&e.sets)||[]).filter(s=>s&&s.r>0&&!s.pre); }
 /* the rows that count: the first `n` rows that have reps, each with its real row number */
 function judged(e,n){
   const out=[];
-  ((e&&e.sets)||[]).forEach((s,i)=>{ if(s&&s.r>0&&out.length<n) out.push({i:i, w:+s.w||0, r:s.r}); });
+  ((e&&e.sets)||[]).forEach((s,i)=>{ if(s&&s.r>0&&!s.pre&&out.length<n) out.push({i:i, w:+s.w||0, r:s.r}); });
   return out;
 }
 /* the weight most of the sets used; a tie goes to the heavier one */
@@ -3342,7 +3363,18 @@ function nextLoad(ex,w){
   if(ex.load==='db') return 'the next dumbbells up ('+kg(w+st)+' each)';
   if(ex.load==='db1') return 'the next dumbbell up ('+kg(w+st)+')';
   if(ex.load==='machine'||ex.load==='cable') return 'one plate heavier (about '+kg(w+st)+')';
-  return kg(w+st);
+  if(ex.load==='bw') return '+'+kg(w+st)+' of added weight';
+  // a 5 kg jump on a barbell: the half jump is there for the day 5 kg is too much
+  return kg(w+st)+(st>=5?' (or '+kg(w+st/2)+' if that jump is too big)':'');
+}
+/* A step lighter: a tenth off, to the nearest jump the equipment has, and never the
+   weight you are already on. Under one jump there is nothing lighter to name. */
+function lighter(ex,w){
+  const st=+ex.step||2.5;
+  let d=roundTo(w*0.9,st); if(d>=w) d=w-st;
+  d=Math.round(d*100)/100;
+  if(d>0) return 'about '+(ex.load==='bw'?'+':'')+kg(d);
+  return ex.load==='bw'?'bodyweight only':'the lightest setting';
 }
 function setText(ex,it,s){                 // one logged set, as the logbook prints it
   const w=s.w==null?null:+s.w;
@@ -3357,8 +3389,10 @@ function deloadSets(n){ return Math.max(2,n-1); }
 function adviceFrom(ex,it,e,hist){
   const rr=repRange(it), tgt=+it.sets||3, hold=!!it.hold, unit=hold?' s':'';
   const rows=judged(e,tgt), w=workWeight(rows), noLoad=!w;
-  const at=noLoad?((ex.load==='bw'||hold)?'bodyweight':'the same weight'):kg(w);
-  const step=+ex.step||2.5, drop=noLoad?'':kg(roundTo(w*0.9,step));
+  const own=ex.load==='bw'||hold;                      // a lift where no weight is the normal case
+  const at=noLoad?(own?'bodyweight':'the same weight'):kg(w);
+  const same=(noLoad&&!own)?'the same weight':'same '+at, Same=same.charAt(0).toUpperCase()+same.slice(1);
+  const step=+ex.step||2.5, drop=noLoad?'':lighter(ex,w);
   const UP=t=>({cls:'up', txt:t}), HOLD=t=>({cls:'hold', txt:t});
 
   if(!rr){                                 // "as many as you can": the total is the score
@@ -3368,24 +3402,26 @@ function adviceFrom(ex,it,e,hist){
     return UP('beat '+total+' total reps ('+rows.map(s=>s.r).join(', ')+') by at least one.');
   }
   if(rows.length<tgt)
-    return HOLD('last time you logged '+rows.length+' of '+tgt+' sets. Same '+at+', all '+tgt+' sets.');
-  const mixed=rows.some(s=>s.w!==w)?' (Judged on your '+at+' sets.)':'';
-  const atW=rows.filter(s=>s.w===w);
+    return HOLD('last time you logged '+rows.length+' of '+tgt+' sets. '+Same+', all '+tgt+' sets.');
+  const mixed=(!noLoad&&rows.some(s=>s.w!==w))?' (Judged on your '+at+' sets.)':'';
+  const atW=rows.filter(s=>s.w>=w);                    // a set done heavier counts as well
   if(atW.length>=tgt&&atW.every(s=>s.r>=rr[1])){
     const hit=rr[1]>rr[0]?'you reached '+rr[1]+unit+' on every set':'you got every set of '+rr[1]+unit;
     const again=rr[1]>rr[0]?' and start again at '+rr[0]+unit:'';
     if(hold) return UP(hit+'. Make it harder: a plate on your back or a harder version, and build back up from '+rr[0]+' s.');
-    if(noLoad) return UP(hit+', so add '+kg(step)+' (hold a dumbbell or use a belt)'+again+'.');
+    if(noLoad&&ex.load==='bw'&&+ex.step>0) return UP(hit+', so add '+kg(step)+' (a dumbbell between your feet, or a belt)'+again+'.');
+    if(noLoad&&ex.load==='bw') return UP(hit+'. Move to the harder version (see "Picking the weight" below)'+again+'.');
+    if(noLoad) return UP(hit+'. Go up one step next time'+again+', and type the weight so the app can track it.');
     return UP(hit+', so go to '+nextLoad(ex,w)+again+'.');
   }
   const weak=rows.findIndex(s=>s.r<rr[0]);
   if(weak===0&&!noLoad&&!hold&&rows[0].r<=rr[0]-2)
-    return HOLD('set 1 only reached '+rows[0].r+', well under '+rr[0]+'. That is too heavy for this range: drop to about '+drop+'.'+mixed);
+    return HOLD('set 1 only reached '+rows[0].r+', well under '+rr[0]+'. That is too heavy for this range: drop to '+drop+'.'+mixed);
   if(weak>=0){
     // under the floor two sessions running: take weight off instead of grinding
     const before=(hist||[]).filter(x=>x.d<e.d&&!x.dl), prev=before.length?before[before.length-1]:null;
     if(prev&&!noLoad&&!hold&&workWeight(judged(prev,tgt))===w&&judged(prev,tgt).some(s=>s.r<rr[0]))
-      return HOLD('under '+rr[0]+' reps two sessions running at '+at+'. Drop to about '+drop+' and build back up.'+mixed);
+      return HOLD('under '+rr[0]+' reps two sessions running at '+at+'. Drop to '+drop+' and build back up.'+mixed);
     return HOLD('set '+(rows[weak].i+1)+' fell to '+rows[weak].r+unit+'. Stay at '+at+' until every set reaches '+rr[0]+unit+'.'+mixed);
   }
   // three sessions at one weight with no extra reps: stop grinding
@@ -3393,11 +3429,11 @@ function adviceFrom(ex,it,e,hist){
   if(upto.length>=3&&!noLoad&&!hold){
     const last3=upto.slice(-3), tot=x=>judged(x,tgt).reduce((a,s)=>a+s.r,0);
     if(last3.every(x=>workWeight(judged(x,tgt))===w)&&tot(last3[2])<=tot(last3[1])&&tot(last3[1])<=tot(last3[0]))
-      return HOLD('three sessions at '+at+' without an extra rep. Take 10% off ('+drop+'), build back up, and check your sleep and protein.');
+      return HOLD('three sessions at '+at+' without an extra rep. Drop to '+drop+', build back up, and check your sleep and protein.');
   }
   const next=rows.findIndex(s=>s.r<rr[1]);
-  if(next<0) return UP('same '+at+', and make every set as clean as the best one.'+mixed);
-  return UP('same '+at+' — '+(hold?'5 more seconds':'one more rep')+' on set '+(rows[next].i+1)+' ('+rows[next].r+unit+' → '+(rows[next].r+(hold?5:1))+unit+').'+mixed);
+  if(next<0) return UP(same+', and make every set as clean as the best one.'+mixed);
+  return UP(same+' — '+(hold?'5 more seconds':'one more rep')+' on set '+(rows[next].i+1)+' ('+rows[next].r+unit+' → '+(rows[next].r+(hold?5:1))+unit+').'+mixed);
 }
 function firstTime(ex,it){
   const rr=repRange(it);
@@ -3405,7 +3441,7 @@ function firstTime(ex,it){
   if(!rr) return 'Do as many clean reps as you can on each set, stopping one short of failure. Log them and the next session gets a target.';
   const range=rr[0]+(rr[1]>rr[0]?'–'+rr[1]:'');
   if(ex.load==='bw') return 'Aim for '+range+' clean reps a set. Log them and the next session gets a target.';
-  return 'Pick a weight you can lift '+range+' times with one or two reps left at the end. Log it and the next session gets a target.';
+  return 'Pick a weight you can lift '+range+' times with two or three reps left at the end. Log it and the next session gets a target.';
 }
 
 function verdict(id,it){
@@ -3414,17 +3450,19 @@ function verdict(id,it){
   const mk=(cls,txt)=>({cls:cls, ic:cls==='up'?ICO.up:cls==='hold'?ICO.hold:ICO.dot, txt:txt});
   const all=(S.logs[id]||[]).filter(x=>loggedSets(x).length);
   const todayE=all.find(x=>x.d===TODAY)||null;
+  // deload or not is read from today's entry as soon as it exists, so the chip answers at once
+  const rawToday=(S.logs[id]||[]).find(x=>x.d===TODAY)||null, dlToday=rawToday?!!rawToday.dl:isDeload();
   const normal=all.filter(x=>x.d<TODAY&&!x.dl);
   const ref=normal.length?normal[normal.length-1]:null;
   const nToday=todayE?judged(todayE,99).length:0;
 
   // ---- a deload session: nothing to beat, and it never becomes the reference
-  if((todayE&&todayE.dl)||(!todayE&&isDeload())){
+  if(dlToday){
     const n=deloadSets(tgt);
     let t='Deload: ';
     if(ref){
       const w=workWeight(judged(ref,tgt));
-      t+=(w?'about '+kg(roundTo(w*0.9,+ex.step||2.5))+' (10% under last time), ':'')+n+' sets, stop three reps short of failure.';
+      t+=(w?lighter(ex,w)+' (lighter than last time), ':'')+n+' sets, stop three reps short of failure.';
     }else t+='lighter than you could, '+n+' sets, stop three reps short of failure.';
     if(todayE) t+=' · '+Math.min(nToday,n)+' of '+n+' sets done';
     return mk('none',t+(nToday>=n&&todayE?' — that is enough for today.':''));
@@ -3437,7 +3475,8 @@ function verdict(id,it){
   if(nToday<tgt){
     const rows=judged(todayE,tgt), prog=' · '+nToday+' of '+tgt+' sets done';
     const weak=rr?rows.findIndex(s=>s.r<rr[0]):-1;
-    if(weak>=0) return mk('hold','Set '+(rows[weak].i+1)+' fell to '+rows[weak].r+unit+', under '+rr[0]+unit+'. Rest a little longer, or take some weight off for the sets left.'+prog);
+    if(weak>=0) return mk('hold','Set '+(rows[weak].i+1)+' fell to '+rows[weak].r+unit+', under '+rr[0]+unit+'. '
+      +(it.hold?'Rest a little longer before the next one.':rows[weak].w>0?'Rest a little longer, or take some weight off for the sets left.':'Rest a little longer, or use the easier version for the sets left.')+prog);
     if(plan) return mk(plan.cls,'Today: '+plan.txt+prog);
     return mk('none',(rr?'Aim for at least '+rr[0]+unit+' on each set.':'Stop one rep short of failure on each set.')+prog);
   }
@@ -3642,7 +3681,7 @@ function renderCondSection(){
       +'<td>'+(COND[p].hiit?COND[p].hiit+'×':'none')+'</td></tr>').join('')
     +'</tbody></table></div>'
     +'<ul class="klist" style="margin-top:12px">'
-    +'<li><b>Never</b> do hard cardio the day before a leg session.</li>'
+    +'<li><b>Never</b> do hard cardio the day before you train legs.</li>'
     +'<li>Zone 2 goes on a rest day, or <em>after</em> you lift — never before.</li>'
     +'<li>'+esc(condDaysLine(ph))+'</li>'
     +'<li>If your lifts drop from week to week, <b>cut the intervals first</b>, then some Zone 2. Never cut protein or sleep to make room for cardio.</li>'
@@ -3784,15 +3823,27 @@ function howTo(id){
   if(e.safe) h+='<div class="avoid how-note"><span class="ic" aria-hidden="true">⚠</span><span><b>Safety:</b> '+e.safe+'</span></div>';
   return h;
 }
+/* A heavy barbell lift that is not the first of the day (the session's warm-up covers the first)
+   still needs lighter sets before its working weight. */
+function rampNote(id,ref){
+  const sl=ref?slotAt(ref):null, ex=EX[id];
+  if(!sl||sl.k===0||ex.load!=='bb'||!Array.isArray(sl.it.reps)||sl.it.reps[1]>6) return '';
+  const prev=prevSession(id), w=prev?workWeight(judged(prev,sl.it.sets)):0, st=+ex.step||2.5;
+  return '<div class="note ramp"><b>Two lighter sets first.</b> '
+    +(w>0?kg(roundTo(w*0.5,st))+' × 5, then '+kg(roundTo(w*0.75,st))+' × 3.'
+         :'About half of today\'s weight for 5 reps, then about three-quarters for 3.')+'</div>';
+}
 /* another exercise for the same muscle, when the station is taken or the gym does not have it */
 function swapRow(id,ref){
   const sl=ref?slotAt(ref):null; if(!sl) return '';
   const base=sl.it.base||sl.it.ex;
-  const opts=[base].concat(EX[base].swap||[]).filter((x,i,a)=>EX[x]&&a.indexOf(x)===i&&x!==id);
+  // not something already in this session: two cards for one exercise would share one logbook
+  const taken=sessions()[sl.si].items.filter((o,k)=>k!==sl.k).map(o=>o.ex);
+  const opts=[base].concat(EX[base].swap||[]).filter((x,i,a)=>EX[x]&&a.indexOf(x)===i&&x!==id&&taken.indexOf(x)<0);
   if(!opts.length) return '';
   return '<div class="how-sec"><div class="eyebrow">Station taken, or not in your gym?</div><div class="swaps">'
     +opts.map(x=>'<button class="btn sm" data-swap="'+x+'">'+(x===base?'Back to ':'Use ')+esc(EX[x].name)+'</button>').join('')
-    +'</div><p class="swapnote">The sets, reps and rest stay the same. Each exercise keeps its own history.</p></div>';
+    +'</div><p class="swapnote">The number of sets stays the same. Each exercise keeps its own history.</p></div>';
 }
 function fillEx(box,id,ref){
   // Order: what you need between sets first (the one-line cue, the demo links,
@@ -3803,6 +3854,7 @@ function fillEx(box,id,ref){
   const known=(S.logs[id]||[]).some(x=>loggedSets(x).length>0);
   box.innerHTML='<p class="cue">'+e.cue+'</p>'
     +demoLinks(e.name)
+    +rampNote(id,ref)
     +logger(id,ref)
     +'<details class="how"'+(known?'':' open')+'><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary>'
     +'<div class="how-b">'+mapsFor(e)+howTo(id)+swapRow(id,ref)+'</div></details>';
@@ -3834,6 +3886,8 @@ function itemFor(id,ref){
 }
 function setsWanted(it){ return +(it&&it.sets)||3; }
 function blankSet(s){ return !s || (s.w==null && s.r==null && !s.done); }
+/* a row copied from last time and not yet ticked or changed: a plan, not a set done */
+function planned(s){ return !!(s&&s.pre&&!s.done); }
 function todayEntry(id){ return (S.logs[id]||[]).find(x=>x.d===TODAY)||null; }
 function upsert(id,it){
   const arr=S.logs[id]||(S.logs[id]=[]);
@@ -3858,23 +3912,24 @@ function logger(id,ref){
   let rows='', lastW=null;
   for(let i=0;i<nSets;i++){
     const s=cur[i]||{};
-    const pw=lastW!=null?lastW:(ex.load==='bw'?'+kg':'kg');          // carry the last weight you entered as the hint
+    const pw=(lastW!=null&&s.r==null)?lastW:(ex.load==='bw'?'+kg':'kg');   // the weight this row will take; a row with reps and no weight was left empty on purpose
     if(s.w!=null) lastW=s.w;
-    rows+='<div class="setrow'+(s.done?' done':'')+'"><span class="sn">'+(i+1)+'</span>'
+    rows+='<div class="setrow'+(s.done?' done':'')+(planned(s)?' pre':'')+'"><span class="sn">'+(i+1)+'</span>'
       +(noW?'<span class="nw" aria-hidden="true">—</span>'
            :'<input class="num" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" placeholder="'+pw+'" data-set="'+i+'" data-f="w" value="'+(s.w!=null?s.w:'')+'" aria-label="Set '+(i+1)+' weight in kg">')
       +'<input class="num" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="'+(hold?'sec':'reps')+'" data-set="'+i+'" data-f="r" value="'+(s.r!=null?s.r:'')+'" aria-label="Set '+(i+1)+(hold?' seconds':' reps')+'">'
       +'<button class="ok" data-ok="'+i+'" aria-label="Set '+(i+1)+' done, start rest">✓</button>'
       +'<button class="del" data-del="'+i+'" aria-label="Clear set '+(i+1)+'">×</button></div>';
   }
-  const prev=prevSession(id), vd=safeVerdict(id,it);
+  const prev=prevSession(id), vd=safeVerdict(id,it), dlNow=draft?!!draft.dl:isDeload(), anyPre=cur.some(planned);
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
     +'<div class="lh"><b>Logbook</b>'+((draft?draft.dl:isDeload())?'<button class="dlchip on" data-dl aria-pressed="true" title="A lighter session that is not used as your reference. Tap if you trained normally.">Deload</button>':(isDeload()?'<button class="dlchip" data-dl aria-pressed="false" title="Mark this as a deload session">Deload</button>':''))+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
     +'<div class="sets">'+rows+'</div>'
+    +(anyPre?'<p class="prenote">Filled in from last time. Tick each set when it is done, or type what you did. Rows left like this are not counted.</p>':'')
     +(UNDO&&UNDO.id===id&&UNDO.d===TODAY?'<div class="undobar"><span>Set '+(UNDO.i+1)+' cleared.</span><button class="btn sm" data-undo>Undo</button></div>':'')
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
-    +(prev?'<button class="btn sm" data-repeat>Same as last time</button>':'')
+    +(prev&&!dlNow?'<button class="btn sm" data-repeat>Same as last time</button>':'')
     +'<button class="btn sm primary" data-savelog>Save session</button></div>'
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';
@@ -3885,7 +3940,7 @@ function sessionProgress(){
   const info=infoForDate(TODAY);
   if(!info||info.type!=='lift'||!info.session) return null;
   let touched=0;
-  info.session.items.forEach(it=>{ const e=todayEntry(it.ex); if(e&&e.sets.some(s=>s&&(s.r>0||s.done))) touched++; });
+  info.session.items.forEach(it=>{ const e=todayEntry(it.ex); if(e&&e.sets.some(s=>s&&((s.r>0&&!s.pre)||s.done))) touched++; });
   return {touched:touched, total:info.session.items.length, need:Math.ceil(info.session.items.length*0.6)};
 }
 function syncSession(){
@@ -3896,6 +3951,15 @@ function syncSession(){
     arr.splice(arr.indexOf('session'),1); if(!arr.length) delete S.checks[TODAY];
     delete S.ui.autoSess;
   }
+}
+/* the advice line follows what is typed, without redrawing the fields being typed in */
+function paintVerdict(id){
+  $$('.logger[data-log="'+id+'"]').forEach(b=>{
+    const el=$('.verdict',b); if(!el) return;
+    const vd=safeVerdict(id,itemFor(id,b.dataset.ref));
+    el.className='verdict '+vd.cls;
+    el.innerHTML='<span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span>';
+  });
 }
 /* The same exercise can sit on two days of a plan, so two logbooks for it can
    be open at once. Redraw every copy (each with its own slot's prescription)
@@ -3939,7 +4003,7 @@ function restPanel(id,ref){
     +'<button class="btn sm skip" data-rest-stop>'+(RT.done?'Dismiss':'Skip')+'</button></div></div>';
 }
 function restLabel(){
-  const n=RT.set+1, tgt=setsWanted(itemFor(RT.id,RT.ref));
+  const e=todayEntry(RT.id), full=setsWanted(itemFor(RT.id,RT.ref)), n=RT.set+1, tgt=(e&&e.dl)?deloadSets(full):full;   // a deload asks for a set fewer
   if(RT.done) return n>=tgt?'Go — rest done. All '+tgt+' sets in, save the session':'Go — set '+(n+1);
   return n>=tgt?'Rest · then the next exercise':'Rest · then set '+(n+1);
 }
@@ -3949,6 +4013,7 @@ function idleRest(id){ $$('.rest[data-rest="'+id+'"]').forEach(o=>{ o.outerHTML=
 function startRest(id,setIdx,ref,secs){
   audioUnlock();
   clearTimeout(rtGoTimer);
+  document.title='FORGE 90';                 // a finished rest left "GO" in the title
   if(RT&&RT.id!==id){ const oid=RT.id; RT=null; idleRest(oid); }      // one timer at a time
   const total=(secs||restSecsFor(id,ref))*1000;
   RT={id, ref:ref||'', set:setIdx==null?-1:setIdx, end:Date.now()+total, total, done:false, warned:false};
@@ -4416,7 +4481,7 @@ function renderMeas(){
 /* the best set of a session: the heaviest weight, then the most reps at it (a set needs reps to count) */
 function bestSet(e){
   let b=null;
-  (e.sets||[]).forEach(s=>{ if(!(s.r>0)) return; const w=+s.w||0; if(!b||w>b.w||(w===b.w&&s.r>b.r)) b={w:w, r:s.r}; });
+  (e.sets||[]).forEach(s=>{ if(!(s.r>0)||s.pre) return; const w=+s.w||0; if(!b||w>b.w||(w===b.w&&s.r>b.r)) b={w:w, r:s.r}; });
   return b;
 }
 function renderPR(){
@@ -4900,7 +4965,7 @@ document.addEventListener('click',e=>{
     const at=arr.indexOf(k);
     if(at>=0) arr.splice(at,1); else arr.push(k);
     if(!arr.length) delete S.checks[TODAY];
-    if(k==='session') delete S.ui.autoSess;          // ticked or cleared by hand: the log no longer decides it
+    if(k==='session') delete S.ui.autoSess;          // ticked or cleared by hand; the next set you log decides it again
     manualTick(k,at<0);
     save(); renderToday(); return;
   }
@@ -4957,7 +5022,7 @@ document.addEventListener('click',e=>{
   const dpw=T.closest('[data-dpw]');
   if(dpw){
     if(setDaysPerWeek(+dpw.dataset.dpw)){
-      if(dpw.closest('#sheet')){ $$('#setDpw button').forEach(b=>b.classList.toggle('on',b===dpw)); renderToday(); }
+      if(dpw.closest('#sheet')){ $$('#setDpw button').forEach(b=>b.classList.toggle('on',b===dpw)); refreshTab(); }
       else renderTrain();
     }
     return;
@@ -5018,7 +5083,7 @@ document.addEventListener('click',e=>{
           if(blankSet(s)) return;
           while(en.sets.length<=i) en.sets.push({});
           if(!blankSet(en.sets[i])) return;            // never touch a row that already holds something
-          const o={}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;
+          const o={pre:1}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;      // a plan until it is ticked or changed
         });
         syncSession(); save(); refreshLogger(id);
       }
@@ -5037,9 +5102,11 @@ document.addEventListener('click',e=>{
     if(ok){
       const i=+ok.dataset.ok, en=upsert(id,it);
       while(en.sets.length<=i) en.sets.push({});
+      // the cross was hit by mistake and now the tick, as meant: the set comes back and is done
+      if(UNDO&&UNDO.id===id&&UNDO.i===i&&UNDO.d===TODAY&&!UNDO.popped&&blankSet(en.sets[i])){ en.sets[i]=UNDO.set; UNDO=null; }
       const s=en.sets[i], prev=i>0?en.sets[i-1]:null;
-      if(s.w==null&&prev&&prev.w!=null) s.w=prev.w;          // carry the bar weight forward
-      s.done=1;
+      if(s.w==null&&prev&&prev.w!=null&&EX[id].load!=='bw') s.w=prev.w;   // carry the bar weight forward
+      s.done=1; delete s.pre;
       if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
       syncSession(); save();
       // The rest starts first: nothing that happens while redrawing the logbook may stop it.
@@ -5056,25 +5123,33 @@ document.addEventListener('click',e=>{
       const i=+del.dataset.del, en=upsert(id,it), was=en.sets[i];
       // an extra row you added comes off entirely; a prescribed row just empties
       const popped=(i===en.sets.length-1 && en.sets.length>setsWanted(it));
-      UNDO=(was&&!blankSet(was))?{id:id, i:i, set:Object.assign({},was), popped:popped, d:TODAY}:null;
+      if(was&&!blankSet(was)){            // an empty row cleared somewhere else leaves the last Undo standing
+        const old=UNDO;
+        UNDO={id:id, i:i, set:Object.assign({},was), popped:popped, d:TODAY};
+        if(old&&old.id!==id) refreshLogger(old.id);
+      }else if(UNDO&&UNDO.id===id&&UNDO.i===i) UNDO=null;
       if(popped) en.sets.pop();
       else if(en.sets[i]) en.sets[i]={};
       syncSession(); save(); refreshLogger(id); return;
     }
     if(T.closest('[data-undo]')){                 // put the cleared row back, unless something was typed there since
-      const u=UNDO; UNDO=null;
-      if(u&&u.id===id&&u.d===TODAY){
-        const en=upsert(id,it);
-        if(u.popped&&en.sets.length===u.i) en.sets.push(u.set);
-        else{ while(en.sets.length<=u.i) en.sets.push({}); if(blankSet(en.sets[u.i])) en.sets[u.i]=u.set; }
-        syncSession(); save();
+      const u=(UNDO&&UNDO.id===id)?UNDO:null;
+      if(u){
+        UNDO=null;
+        if(u.d===TODAY){
+          const en=upsert(id,it);
+          if(u.popped&&en.sets.length===u.i) en.sets.push(u.set);
+          else{ while(en.sets.length<=u.i) en.sets.push({}); const cur=en.sets[u.i]; if(blankSet(cur)||cur.r==null) en.sets[u.i]=u.set; }
+          syncSession(); save();
+        }
       }
       refreshLogger(id); return;
     }
     const savelog=T.closest('[data-savelog]');
     if(savelog){
       const en=upsert(id,it);
-      UNDO=null;
+      if(UNDO&&UNDO.id===id) UNDO=null;
+      en.sets=en.sets.map(s=>planned(s)?{}:s);               // rows filled in from last time and never done are not sets
       // Trim only blank rows off the END. Filtering the whole array renumbered
       // the sets, so skipping set 2 silently turned set 3 into set 2.
       let n=en.sets.length;
@@ -5145,17 +5220,36 @@ document.addEventListener('input',e=>{
       const at=(T.selectionStart==null?T.value.length:T.selectionStart)-(T.value.length-raw.length);
       T.value=raw; try{ T.setSelectionRange(at,at); }catch(err){}
     }
+    if(raw!==''&&parseFloat(raw)>(f==='w'?1500:999)){             // a slip of the finger, not a lift
+      raw=raw.slice(0,-1); T.value=raw;
+    }
+    // A weight typed into a row with none: the rows under it that already have reps and no weight take it too,
+    // for as long as this field is being typed in. (On a bodyweight lift an empty weight means no added weight.)
+    if(f==='w'&&EX[id].load!=='bw'&&EX[id].load!=='time'&&!(MIRROR&&MIRROR.el===T)){
+      MIRROR=null;
+      if(en.sets[i].w==null){
+        const rows=[];
+        for(let k=i+1;k<en.sets.length;k++){ const sk=en.sets[k]; if(!sk||sk.w!=null) break; if(sk.r!=null) rows.push(k); }
+        if(rows.length) MIRROR={el:T, id:id, rows:rows};
+      }
+    }
+    if(en.sets[i].pre){ delete en.sets[i].pre; const row=T.closest('.setrow'); if(row) row.classList.remove('pre'); }
     if(raw===''){ delete en.sets[i][f]; }
     else{
       const v=parseFloat(raw);          // "7." parses to 7 and the field keeps "7."
       if(isFinite(v)) en.sets[i][f]=v; else return;
     }
+    if(f==='w'&&MIRROR&&MIRROR.el===T) MIRROR.rows.forEach(k=>{
+      if(en.sets[i].w==null) delete en.sets[k].w; else en.sets[k].w=en.sets[i].w;
+      $$('.logger[data-log="'+id+'"] input[data-set="'+k+'"][data-f="w"]').forEach(el=>{ el.value=en.sets[k].w==null?'':en.sets[k].w; });
+    });
     // reps on a row with no weight: the row takes the weight of the row above, in state and on screen
-    if(f==='r'&&en.sets[i].r!=null&&en.sets[i].w==null&&EX[id].load!=='time'){
+    if(f==='r'&&en.sets[i].r!=null&&en.sets[i].w==null&&EX[id].load!=='time'&&EX[id].load!=='bw'){
       for(let k=i-1;k>=0;k--){ if(en.sets[k]&&en.sets[k].w!=null){ en.sets[i].w=en.sets[k].w; break; } }
       if(en.sets[i].w!=null) $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="w"]').forEach(el=>{ el.value=en.sets[i].w; });
     }
     if(f==='r') syncSession();
+    paintVerdict(id);
     // keep the other open copy of this exercise in step while typing
     $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="'+f+'"]')
       .forEach(el=>{ if(el!==T) el.value=T.value; });
@@ -5183,6 +5277,9 @@ document.addEventListener('input',e=>{
     save(); refreshTab(); return;                      // the screen under the sheet follows at once
   }
 });
+/* the rows a weight being typed is also written to (see the set-field handler); it ends when the field is left */
+let MIRROR=null;
+document.addEventListener('focusout',e=>{ if(MIRROR&&e.target===MIRROR.el) MIRROR=null; });
 function setNum(obj,v,lo,hi){
   const n=numIn(v,lo,hi,null);
   if(n==null) delete obj[TODAY]; else obj[TODAY]=n;
@@ -5406,7 +5503,7 @@ document.addEventListener('click',e=>{
   if(history.state&&history.state.sheet){ try{ history.replaceState(null,''); }catch(e){} }   // a sheet step left over from before a reload
   // a rest timer that was running when the page closed picks up where it was
   const r=S.ui.rest;
-  if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); }
+  if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); wakeLock(true); }
   else if(r){ delete S.ui.rest; save(true); }
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible') return;

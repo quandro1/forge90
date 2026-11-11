@@ -20,9 +20,9 @@ export default [
       // step 2: target
       await page.locator('#setup [data-su="program"][data-v="glutes"]').tap();
       await page.locator('#setup [data-su-next]').tap();
-      // step 3: the week (Glutes & Legs is 4 days: move Friday to Saturday)
-      await page.locator('#setup [data-su-day="5"]').tap();
+      // step 3: the week (Glutes & Legs is 4 days, Mon Tue Thu Sat: move Saturday to Sunday)
       await page.locator('#setup [data-su-day="6"]').tap();
+      await page.locator('#setup [data-su-day="0"]').tap();
       await page.locator('#setup [data-su="start"][data-v="today"]').tap();
       await page.locator('#setup [data-su-done]').tap();
       await page.locator('#setup.on').waitFor({ state: 'detached', timeout: 3000 }).catch(() => {});
@@ -30,14 +30,14 @@ export default [
 
       const p = await page.evaluate(() => S.profile);
       assert.deepEqual({ sex: p.sex, age: p.age, h: p.h, w: p.w, goal: p.goal, program: p.program, dpw: p.dpw, days: p.days, start: p.start, setup: p.setup },
-        { sex: 'f', age: 30, h: 165, w: 62, goal: 'cut', program: 'glutes', dpw: 4, days: [1, 2, 4, 6], start: '2026-11-11', setup: true });
+        { sex: 'f', age: 30, h: 165, w: 62, goal: 'cut', program: 'glutes', dpw: 4, days: [1, 2, 4, 0], start: '2026-11-11', setup: true });
       assert.match(await page.locator('#dayline').innerText(), /day 1 of 91/i);
       const t = await page.evaluate(() => targets());
       assert.equal(t.bmr, 1340, 'the female formula was not used');           // 10*62 + 6.25*165 - 5*30 - 161
       await tab(page, 'train');
       assert.equal(await page.locator('#dayList details[data-dayblock]').count(), 4);
       assert.match(await page.locator('#planBar').innerText(), /Glutes & Legs/i);
-      assert.match(await page.locator('#dayList details[data-dayblock="3"] .daytag').innerText(), /saturday/i);
+      assert.match(await page.locator('#dayList details[data-dayblock="3"] .daytag').innerText(), /sunday/i);
       await page.reload();
       await page.waitForFunction(() => typeof S === 'object');
       assert.equal(await page.locator('#setup.on').count(), 0, 'set-up came back after a reload');

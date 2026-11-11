@@ -21,7 +21,7 @@ function restPanel(id,ref){
     +'<button class="btn sm skip" data-rest-stop>'+(RT.done?'Dismiss':'Skip')+'</button></div></div>';
 }
 function restLabel(){
-  const n=RT.set+1, tgt=setsWanted(itemFor(RT.id,RT.ref));
+  const e=todayEntry(RT.id), full=setsWanted(itemFor(RT.id,RT.ref)), n=RT.set+1, tgt=(e&&e.dl)?deloadSets(full):full;   // a deload asks for a set fewer
   if(RT.done) return n>=tgt?'Go — rest done. All '+tgt+' sets in, save the session':'Go — set '+(n+1);
   return n>=tgt?'Rest · then the next exercise':'Rest · then set '+(n+1);
 }
@@ -31,6 +31,7 @@ function idleRest(id){ $$('.rest[data-rest="'+id+'"]').forEach(o=>{ o.outerHTML=
 function startRest(id,setIdx,ref,secs){
   audioUnlock();
   clearTimeout(rtGoTimer);
+  document.title='FORGE 90';                 // a finished rest left "GO" in the title
   if(RT&&RT.id!==id){ const oid=RT.id; RT=null; idleRest(oid); }      // one timer at a time
   const total=(secs||restSecsFor(id,ref))*1000;
   RT={id, ref:ref||'', set:setIdx==null?-1:setIdx, end:Date.now()+total, total, done:false, warned:false};

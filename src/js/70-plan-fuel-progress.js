@@ -359,7 +359,7 @@ function renderMeas(){
 /* the best set of a session: the heaviest weight, then the most reps at it (a set needs reps to count) */
 function bestSet(e){
   let b=null;
-  (e.sets||[]).forEach(s=>{ if(!(s.r>0)) return; const w=+s.w||0; if(!b||w>b.w||(w===b.w&&s.r>b.r)) b={w:w, r:s.r}; });
+  (e.sets||[]).forEach(s=>{ if(!(s.r>0)||s.pre) return; const w=+s.w||0; if(!b||w>b.w||(w===b.w&&s.r>b.r)) b={w:w, r:s.r}; });
   return b;
 }
 function renderPR(){
