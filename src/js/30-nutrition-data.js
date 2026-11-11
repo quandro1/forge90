@@ -161,7 +161,7 @@ const GROCERY=[
 ];
 const SUPPS=[
  ['Creatine monohydrate','3–5 g every day','The best-studied supplement there is, and the cheapest thing on this page. It takes 3–4 weeks to build up, then gives a small strength increase. Timing does not matter: training day or not, just take it. Plain monohydrate; skip the expensive versions.'],
- ['Whey protein','1–2 scoops a day, if you need them','Not magic: fast, cheap protein that makes the daily target reachable on a busy day. Whole food first, whey to close the gap. Halal-certified brands are easy to find.'],
+ ['Whey protein','1–2 scoops a day, if you need them','Not magic: fast, cheap protein that makes the daily target reachable on a busy day. Whole food first, whey to close the gap. Check the label if you need it halal or vegetarian.'],
  ['Vitamin D3','1,000–2,000 IU with a meal','Low levels are common with an indoor life. Cheap insurance for bone health. Have it tested first if you can.'],
  ['Electrolytes','Around training and in hot weather','A pinch of salt and a squeeze of lemon in water does the job for almost nothing.'],
  ['Everything else','Skip it','Fat burners, detox teas, testosterone boosters, BCAAs. They do not help and some are not safe. Coffee or tea before training is fine; keep it at least eight hours before bed.']

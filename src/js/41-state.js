@@ -129,6 +129,11 @@ function normalize(p){
   else if(u.from) s.ui.from=u.from===2?2:1;
   if(isDate(u.autoSess)) s.ui.autoSess=u.autoSess;
   if(isDate(u.dietOn)) s.ui.dietOn=u.dietOn;
+  if(isObj(u.auto)&&isDate(u.auto.d)){
+    const ks=x=>Array.isArray(x)?x.filter(k=>k==='protein'||k==='steps'):[];
+    const a={d:u.auto.d, k:ks(u.auto.k), off:ks(u.auto.off)};
+    if(a.k.length||a.off.length) s.ui.auto=a;
+  }
   // plan history: which plan was in force from which date, so a change never re-judges the past
   s.plans=(Array.isArray(p.plans)?p.plans:[]).filter(x=>isObj(x)&&isDate(x.from)&&typeof x.program==='string'&&safeKey(x.program)
       &&PROGRAMS[x.program]&&PROGRAMS[x.program].variants[x.dpw]&&validDays(x.days,PROGRAMS[x.program].variants[x.dpw].sessions.length))
@@ -305,7 +310,6 @@ function cloudBadge(){
 }
 function rerenderAll(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
-  $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===S.ui.diet));
   const dl=$('#dayList'); if(dl) delete dl.dataset.plan;   // Train is cached per plan — invalidate
   setTab(currentTab,true);
 }

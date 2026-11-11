@@ -178,9 +178,10 @@ function renderFuel(){
 /* ---- the day counter: kcal, protein, carbs, fat ------------------ */
 let foodCat=0;
 function foodItems(){ return (S.food&&S.food[TODAY])||[]; }
-function foodTotals(){
-  return foodItems().reduce((a,x)=>({k:a.k+x.k, p:a.p+x.p, c:a.c+x.c, f:a.f+x.f}), {k:0,p:0,c:0,f:0});
+function foodTotalsOn(ds){
+  return ((S.food&&S.food[ds])||[]).reduce((a,x)=>({k:a.k+x.k, p:a.p+x.p, c:a.c+x.c, f:a.f+x.f}), {k:0,p:0,c:0,f:0});
 }
+function foodTotals(){ return foodTotalsOn(TODAY); }
 function renderProt(){
   const t=targets(), isT=dietType()==='train';
   const goal={k:isT?t.train:t.rest, p:t.prot, c:isT?t.carbT:t.carbR, f:t.fat};

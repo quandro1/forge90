@@ -144,20 +144,49 @@ function infoForDate(ds){
 }
 
 /* ---- checklist -------------------------------------------------- */
-function checkList(){
-  const t=targets(), i=infoForDate(TODAY);
+function checkList(ds){
+  ds=ds||TODAY;
+  const t=targets(), i=infoForDate(ds), now=ds===TODAY;
   const lifting=i&&i.type==='lift';
-  const ft=foodTotals();   // live from the day counter, so the list reflects what you logged
-  const kc=dietType()==='train'?t.train:t.rest, st=i?stepsTarget(i.week):8000, walked=S.steps[TODAY];
+  const ft=foodTotalsOn(ds);   // live from the day counter, so the list reflects what you logged
+  const kc=(now?dietType()==='train':lifting)?t.train:t.rest, st=i?stepsTarget(i.week):8000, walked=S.steps[ds];
   return [
     {k:'protein', l:'Hit protein',        h:(ft.p?Math.round(ft.p)+' / ':'')+t.prot+' g'},
     {k:'cals',    l:'Stay near calories', h:(ft.k?Math.round(ft.k)+' / ':'')+kc+' kcal'},
     {k:'steps',   l:'Walk',               h:(walked?walked.toLocaleString()+' / ':'')+st.toLocaleString()+' steps'},
     {k:'water',   l:'Water',              h:'about '+t.water+' L'},
     {k:'session', l:lifting?'Train':'Session or rest as planned', h:lifting?(i.session.name):'—'},
-    {k:'sleep',   l:'Sleep 7–9 h',        h:'last night'},
+    {k:'sleep',   l:'Sleep 7–9 h',        h:now?'last night':'the night before'},
     {k:'creatine',l:'Creatine',           h:'3–5 g, if you take it'}
   ];
+}
+/* Ticks the app can see for itself: protein from the day counter, steps from the step log.
+   S.ui.auto remembers which of today's ticks it made (k) and which you took off by hand (off),
+   so a tick you made is never removed and one you removed is never put back. True if anything changed. */
+function syncAuto(){
+  const t=targets(), i=infoForDate(TODAY);
+  const reached={protein:foodTotals().p>=t.prot, steps:(+S.steps[TODAY]||0)>=(i?stepsTarget(i.week):8000)};
+  const au=S.ui.auto&&S.ui.auto.d===TODAY?S.ui.auto:{k:[],off:[]};
+  let mine=(au.k||[]).slice(), arr=(S.checks[TODAY]||[]).slice(), changed=!!(S.ui.auto&&S.ui.auto.d!==TODAY);
+  const off=au.off||[];
+  ['protein','steps'].forEach(k=>{
+    const has=arr.indexOf(k)>=0, own=mine.indexOf(k)>=0;
+    if(reached[k]&&!has&&off.indexOf(k)<0){ arr.push(k); mine.push(k); changed=true; }
+    else if(!reached[k]&&has&&own){ arr=arr.filter(x=>x!==k); mine=mine.filter(x=>x!==k); changed=true; }
+    else if(!has&&own){ mine=mine.filter(x=>x!==k); changed=true; }
+  });
+  if(!changed) return false;
+  if(arr.length) S.checks[TODAY]=arr; else delete S.checks[TODAY];
+  if(mine.length||off.length) S.ui.auto={d:TODAY, k:mine, off:off.slice()}; else delete S.ui.auto;
+  return true;
+}
+/* a tick changed by hand today: from now on the app leaves that one alone */
+function manualTick(k,nowOn){
+  if(k!=='protein'&&k!=='steps') return;
+  const au=S.ui.auto&&S.ui.auto.d===TODAY?S.ui.auto:{k:[],off:[]};
+  const mine=(au.k||[]).filter(x=>x!==k), off=(au.off||[]).filter(x=>x!==k);
+  if(!nowOn) off.push(k);
+  if(mine.length||off.length) S.ui.auto={d:TODAY, k:mine, off:off}; else delete S.ui.auto;
 }
 const CORE=['protein','steps','sleep'];
 function dayDone(ds){

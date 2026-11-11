@@ -53,7 +53,20 @@ document.addEventListener('click',e=>{
     if(at>=0) arr.splice(at,1); else arr.push(k);
     if(!arr.length) delete S.checks[TODAY];
     if(k==='session') delete S.ui.autoSess;          // ticked or cleared by hand: the log no longer decides it
+    manualTick(k,at<0);
     save(); renderToday(); return;
+  }
+  const dchk=T.closest('[data-daychk]');
+  if(dchk){                                          // a past day, corrected from the Map
+    const ds=dchk.dataset.date, k=dchk.dataset.daychk;
+    if(isDate(ds)&&ds<TODAY){
+      const arr=S.checks[ds]||(S.checks[ds]=[]), at=arr.indexOf(k);
+      if(at>=0) arr.splice(at,1); else arr.push(k);
+      if(!arr.length) delete S.checks[ds];
+      dchk.setAttribute('aria-pressed',String(at<0));
+      save(); refreshTab();
+    }
+    return;
   }
   const shop=T.closest('[data-shop]');
   if(shop){
@@ -136,13 +149,13 @@ document.addEventListener('click',e=>{
   if(chip){
     const p=chip.dataset.food.split('|'), f=FOODCATS[+p[0]][1][+p[1]];
     (S.food[TODAY]||(S.food[TODAY]=[])).push({n:f[0],k:f[2],p:f[3],c:f[4],f:f[5]});
-    save(); renderProt(); return;
+    syncAuto(); save(); renderProt(); return;
   }
   const unfood=T.closest('[data-unfood]');
   if(unfood){
     const a=S.food[TODAY];
     if(a){ a.splice(+unfood.dataset.unfood,1); if(!a.length) delete S.food[TODAY]; }
-    save(); renderProt(); return;
+    syncAuto(); save(); renderProt(); return;
   }
 
   /* ---- the logbook ---- */
@@ -192,15 +205,28 @@ document.addEventListener('click',e=>{
     }
     const del=T.closest('[data-del]');
     if(del){
-      const i=+del.dataset.del, en=upsert(id,it);
+      const i=+del.dataset.del, en=upsert(id,it), was=en.sets[i];
       // an extra row you added comes off entirely; a prescribed row just empties
-      if(i===en.sets.length-1 && en.sets.length>setsWanted(it)) en.sets.pop();
+      const popped=(i===en.sets.length-1 && en.sets.length>setsWanted(it));
+      UNDO=(was&&!blankSet(was))?{id:id, i:i, set:Object.assign({},was), popped:popped, d:TODAY}:null;
+      if(popped) en.sets.pop();
       else if(en.sets[i]) en.sets[i]={};
       syncSession(); save(); refreshLogger(id); return;
+    }
+    if(T.closest('[data-undo]')){                 // put the cleared row back, unless something was typed there since
+      const u=UNDO; UNDO=null;
+      if(u&&u.id===id&&u.d===TODAY){
+        const en=upsert(id,it);
+        if(u.popped&&en.sets.length===u.i) en.sets.push(u.set);
+        else{ while(en.sets.length<=u.i) en.sets.push({}); if(blankSet(en.sets[u.i])) en.sets[u.i]=u.set; }
+        syncSession(); save();
+      }
+      refreshLogger(id); return;
     }
     const savelog=T.closest('[data-savelog]');
     if(savelog){
       const en=upsert(id,it);
+      UNDO=null;
       // Trim only blank rows off the END. Filtering the whole array renumbered
       // the sets, so skipping set 2 silently turned set 3 into set 2.
       let n=en.sets.length;
@@ -262,6 +288,7 @@ document.addEventListener('input',e=>{
     const box=T.closest('.logger'), id=box.dataset.log, i=+T.dataset.set, f=T.dataset.f;
     const en=upsert(id,itemFor(id,box.dataset.ref));
     while(en.sets.length<=i) en.sets.push({});
+    if(UNDO&&UNDO.id===id&&UNDO.i===i){ UNDO=null; $$('.logger[data-log="'+id+'"] .undobar').forEach(b=>b.remove()); }   // typing there replaces what was cleared
     // keep only digits (and one dot for weight), so junk never reaches state
     let raw=latinNumber(T.value).replace(f==='w'?/[^0-9.]/g:/[^0-9]/g,'');
     if(f==='w') raw=raw.replace(/(\..*)\./g,'$1');
@@ -300,15 +327,25 @@ document.addEventListener('input',e=>{
     else{ if(raw==='') return; next[k]=+raw; }
     const ok=cleanProfile(next,false);
     if(k!=='start'&&k!=='sex'&&k!=='goal'&&next[k]!=null&&ok[k]!==next[k]) return;      // out of range
-    S.profile=ok; save(); renderToday(); return;
+    S.profile=ok; save(); refreshTab(); return;        // the screen under the sheet follows at once
   }
 });
 function setNum(obj,v,lo,hi){
   const n=numIn(v,lo,hi,null);
   if(n==null) delete obj[TODAY]; else obj[TODAY]=n;
+  if(obj===S.steps) syncAuto();
   save();
   clearTimeout(setNum.t);
-  setNum.t=setTimeout(()=>{ if(currentTab==='today'){ renderTodayReadout(); renderCond(); } },500);
+  // the fields themselves are left alone while you type; only what is read from them is redrawn
+  setNum.t=setTimeout(()=>{ if(currentTab==='today'){ renderTodayReadout(); renderCond(); renderChecklist(); } },500);
+}
+/* redraw the tab that is showing, in place, after the numbers behind it changed */
+function refreshTab(){
+  if(currentTab==='today') renderToday();
+  else if(currentTab==='train') renderTrain();
+  else if(currentTab==='plan') renderPlan();
+  else if(currentTab==='fuel') renderFuel();
+  else if(currentTab==='prog') renderProg();
 }
 function renderTodayReadout(){
   const t=targets(), wl=weightList(), latest=wl.length?wl[wl.length-1][1]:null;

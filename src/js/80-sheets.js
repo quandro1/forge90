@@ -7,8 +7,24 @@ function openSheet(title,html){
   $('#sheetBody').innerHTML=html;
   sheet.classList.add('on');
   document.body.style.overflow='hidden';
+  // an open sheet is one step of history, so the phone's Back button closes it instead of leaving the app
+  if(!(history.state&&history.state.sheet)){ try{ history.pushState({sheet:1},''); }catch(e){} }
 }
-function closeSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; }
+function hideSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; }
+let sheetBack=0;                 // history steps this code is taking back itself
+function closeSheet(){
+  hideSheet();
+  if(history.state&&history.state.sheet){ sheetBack++; try{ history.back(); }catch(e){ sheetBack--; } }
+}
+window.addEventListener('popstate',()=>{
+  if(sheetBack>0){
+    sheetBack--;
+    // a sheet opened again before the step back landed keeps a step of its own
+    if(sheet.classList.contains('on')){ try{ history.pushState({sheet:1},''); }catch(e){} }
+  }else if(sheet.classList.contains('on')&&!(history.state&&history.state.sheet)) hideSheet();
+  // the step underneath may carry an older tab: keep the address on the tab that is showing
+  if(TABS.indexOf(location.hash.slice(1))>=0&&location.hash.slice(1)!==currentTab){ try{ history.replaceState(history.state,'','#'+currentTab); }catch(e){} }
+});
 sheet.addEventListener('click',e=>{ if(e.target.closest('[data-close]')) closeSheet(); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sheet.classList.contains('on')) closeSheet(); });
 
@@ -124,6 +140,11 @@ function daySheet(i){
   }else{
     body+='<div class="session rest"><div class="tag">Rest</div><h3>Nothing to lift</h3>'
       +'<p class="focus">Walk, hit protein, sleep long. Muscle is built on these days, not in the gym.</p></div>';
+  }
+  if(d.date<TODAY){            // a day that has passed: what was ticked, still open to correction
+    const c=S.checks[d.date]||[];
+    body+='<div class="eyebrow" style="margin:16px 0 7px">What you did that day · tap to correct</div><div class="checks">'
+      +checkList(d.date).map(x=>chkButton(x, c.indexOf(x.k)>=0, 'data-daychk="'+x.k+'" data-date="'+d.date+'"')).join('')+'</div>';
   }
   if(d.checkin) body+='<div class="note" style="margin-top:12px"><b>Weekly check-in.</b> Log the 7-day average weight, waist at the navel, photos front/side/back in the same light, and your key lifts. Judge on trends, act only on 2–3 weeks of them.</div>';
   openSheet(fmtDate(d.date), body);

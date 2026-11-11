@@ -4,6 +4,8 @@
    A logbook is drawn inside an exercise card; the card's slot ("2.3" =
    session 2, item 3) says how the lift is prescribed there.
    =================================================================== */
+/* the last set row cleared by hand, so a slip of the thumb can be put back: {id, i, set, popped, d} */
+let UNDO=null;
 /* how this lift is prescribed in that slot (or its usual prescription when it is not in a plan) */
 function itemFor(id,ref){
   const sl=ref?slotAt(ref):null;
@@ -48,6 +50,7 @@ function logger(id,ref){
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
     +'<div class="lh"><b>Logbook</b>'+((draft?draft.dl:isDeload())?'<button class="dlchip on" data-dl aria-pressed="true" title="A lighter session that is not used as your reference. Tap if you trained normally.">Deload</button>':(isDeload()?'<button class="dlchip" data-dl aria-pressed="false" title="Mark this as a deload session">Deload</button>':''))+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
     +'<div class="sets">'+rows+'</div>'
+    +(UNDO&&UNDO.id===id&&UNDO.d===TODAY?'<div class="undobar"><span>Set '+(UNDO.i+1)+' cleared.</span><button class="btn sm" data-undo>Undo</button></div>':'')
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
     +(prev?'<button class="btn sm" data-repeat>Same as last time</button>':'')

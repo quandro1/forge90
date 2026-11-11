@@ -377,28 +377,32 @@ details.how>summary .how-t{flex:1}
 .logger .lh b{font-family:var(--font-d); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--text-dim)}
 .logger .lh .last{margin-left:auto; font-family:var(--font-m); font-size:11px; color:var(--text-faint)}
 .sets{display:flex; flex-direction:column; gap:6px; padding:10px 11px}
-.setrow{display:grid; grid-template-columns:22px 1fr 1fr 36px 28px; gap:6px; align-items:center}
+.setrow{display:grid; grid-template-columns:16px minmax(0,1fr) minmax(0,1fr) 48px 40px; gap:6px; align-items:center}
 .setrow .sn{font-family:var(--font-m); font-size:11.5px; color:var(--text-faint)}
 .setrow input{
-  width:100%; background:var(--surface); border:1px solid var(--line); border-radius:7px; padding:8px 9px;
-  font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:14px; text-align:center; min-width:0;
+  width:100%; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 5px; min-height:44px;
+  font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:15px; text-align:center; min-width:0;
 }
 .setrow input::placeholder{color:var(--text-faint); font-size:12px}
 .setrow .nw{text-align:center; color:var(--text-faint); font-family:var(--font-m)}
 .dlchip{font-family:var(--font-d); font-size:10px; letter-spacing:.14em; text-transform:uppercase; padding:4px 9px; border-radius:99px; border:1px solid var(--line); color:var(--text-faint)}
 .dlchip.on{border-color:color-mix(in srgb,var(--warn) 55%,transparent); color:var(--warn)}
 .setrow input:focus{border-color:var(--ember); outline:none}
-.setrow .del{color:var(--text-faint); font-size:17px; line-height:1; padding:4px}
+.setrow .del{color:var(--text-faint); font-size:20px; line-height:1; height:44px; display:grid; place-items:center; border-radius:8px}
 .setrow .del:hover{color:var(--bad)}
-.logger .lf{display:flex; gap:8px; padding:0 11px 11px}
+.logger .lf{display:flex; flex-wrap:wrap; gap:8px; padding:0 11px 11px}
+.logger .lf .btn{min-height:40px}
+.undobar{display:flex; align-items:center; gap:10px; margin:0 11px 10px; padding:5px 5px 5px 11px; border:1px dashed var(--line); border-radius:9px; font-size:12.5px; color:var(--text-dim)}
+.undobar span{flex:1; min-width:0}
+.undobar .btn{min-height:38px}
 .verdict{padding:9px 11px; border-top:1px solid var(--line); font-size:12.5px; display:flex; gap:8px; align-items:flex-start}
 .verdict .ic{flex:none; margin-top:1px}
 .verdict.up{color:var(--good)} .verdict.hold{color:var(--warn)} .verdict.none{color:var(--text-faint)}
 
 /* ---- set-done tick + rest timer ---- */
 .setrow .ok{
-  height:36px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--text-faint);
-  font-size:15px; line-height:1; display:grid; place-items:center; transition:.15s
+  height:44px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--text-faint);
+  font-size:18px; line-height:1; display:grid; place-items:center; transition:.15s
 }
 .setrow .ok:hover{border-color:var(--good); color:var(--good)}
 .setrow.done .ok{background:var(--good); border-color:var(--good); color:#08140D; font-weight:700}
@@ -412,7 +416,7 @@ details.how>summary .how-t{flex:1}
 .rest .rt-bar{height:5px; margin:6px 11px 0; border-radius:99px; background:var(--sunken); overflow:hidden}
 .rest .rt-bar i{display:block; height:100%; width:100%; background:var(--ember); border-radius:99px; transition:width .25s linear}
 .rest .rt-ctl{display:flex; gap:6px; padding:9px 11px 10px}
-.rest .rt-ctl .btn{flex:1; padding:7px 4px}
+.rest .rt-ctl .btn{flex:1; padding:7px 4px; min-height:40px}
 .rest .rt-ctl .btn.skip{flex:1.3}
 .rest.go{border-color:var(--good); background:color-mix(in srgb,var(--good) 12%,var(--surface)); animation:restgo 1s ease-in-out 3}
 .rest.go .rt-t{color:var(--good)} .rest.go .rt-bar i{background:var(--good)}
@@ -491,7 +495,7 @@ details.how>summary .how-t{flex:1}
 #foodCats{overflow-x:auto}
 #foodCats button{white-space:nowrap; padding:8px 7px; font-size:10.5px; letter-spacing:.05em}
 .tally{display:flex; flex-wrap:wrap; gap:6px}
-.tallyitem{font-family:var(--font-m); font-size:11.5px; color:var(--text-dim); border:1px solid var(--line-soft); border-radius:7px; padding:5px 9px; min-height:32px}
+.tallyitem{font-family:var(--font-m); font-size:11.5px; color:var(--text-dim); border:1px solid var(--line-soft); border-radius:7px; padding:5px 9px; min-height:38px}
 .tallyitem:hover{border-color:var(--bad); color:var(--bad)}
 .tallyitem b{color:var(--ember); font-weight:600}
 
@@ -572,3 +576,13 @@ details.how>summary .how-t{flex:1}
 
 .fuelgoal{font-size:13px; color:var(--text-dim); line-height:1.5}
 .fuelgoal b{color:var(--text)}
+
+/* a narrow phone: the set fields get the width the nested boxes were taking */
+@media (max-width:359px){
+  #dayList .dbody{padding-left:8px; padding-right:8px}
+  #dayList .ex-b{padding-left:8px; padding-right:8px}
+  #dayList .sets{padding-left:8px; padding-right:8px}
+  .setrow{grid-template-columns:14px minmax(0,1fr) minmax(0,1fr) 44px 40px; gap:5px}
+  .logger .lf{padding-left:8px; padding-right:8px}
+  .rest,.undobar{margin-left:8px; margin-right:8px}
+}

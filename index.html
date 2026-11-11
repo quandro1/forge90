@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="ffd05b757b">
+<meta name="forge-build" content="cd57a2d5b5">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -395,28 +395,32 @@ details.how>summary .how-t{flex:1}
 .logger .lh b{font-family:var(--font-d); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--text-dim)}
 .logger .lh .last{margin-left:auto; font-family:var(--font-m); font-size:11px; color:var(--text-faint)}
 .sets{display:flex; flex-direction:column; gap:6px; padding:10px 11px}
-.setrow{display:grid; grid-template-columns:22px 1fr 1fr 36px 28px; gap:6px; align-items:center}
+.setrow{display:grid; grid-template-columns:16px minmax(0,1fr) minmax(0,1fr) 48px 40px; gap:6px; align-items:center}
 .setrow .sn{font-family:var(--font-m); font-size:11.5px; color:var(--text-faint)}
 .setrow input{
-  width:100%; background:var(--surface); border:1px solid var(--line); border-radius:7px; padding:8px 9px;
-  font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:14px; text-align:center; min-width:0;
+  width:100%; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 5px; min-height:44px;
+  font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:15px; text-align:center; min-width:0;
 }
 .setrow input::placeholder{color:var(--text-faint); font-size:12px}
 .setrow .nw{text-align:center; color:var(--text-faint); font-family:var(--font-m)}
 .dlchip{font-family:var(--font-d); font-size:10px; letter-spacing:.14em; text-transform:uppercase; padding:4px 9px; border-radius:99px; border:1px solid var(--line); color:var(--text-faint)}
 .dlchip.on{border-color:color-mix(in srgb,var(--warn) 55%,transparent); color:var(--warn)}
 .setrow input:focus{border-color:var(--ember); outline:none}
-.setrow .del{color:var(--text-faint); font-size:17px; line-height:1; padding:4px}
+.setrow .del{color:var(--text-faint); font-size:20px; line-height:1; height:44px; display:grid; place-items:center; border-radius:8px}
 .setrow .del:hover{color:var(--bad)}
-.logger .lf{display:flex; gap:8px; padding:0 11px 11px}
+.logger .lf{display:flex; flex-wrap:wrap; gap:8px; padding:0 11px 11px}
+.logger .lf .btn{min-height:40px}
+.undobar{display:flex; align-items:center; gap:10px; margin:0 11px 10px; padding:5px 5px 5px 11px; border:1px dashed var(--line); border-radius:9px; font-size:12.5px; color:var(--text-dim)}
+.undobar span{flex:1; min-width:0}
+.undobar .btn{min-height:38px}
 .verdict{padding:9px 11px; border-top:1px solid var(--line); font-size:12.5px; display:flex; gap:8px; align-items:flex-start}
 .verdict .ic{flex:none; margin-top:1px}
 .verdict.up{color:var(--good)} .verdict.hold{color:var(--warn)} .verdict.none{color:var(--text-faint)}
 
 /* ---- set-done tick + rest timer ---- */
 .setrow .ok{
-  height:36px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--text-faint);
-  font-size:15px; line-height:1; display:grid; place-items:center; transition:.15s
+  height:44px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--text-faint);
+  font-size:18px; line-height:1; display:grid; place-items:center; transition:.15s
 }
 .setrow .ok:hover{border-color:var(--good); color:var(--good)}
 .setrow.done .ok{background:var(--good); border-color:var(--good); color:#08140D; font-weight:700}
@@ -430,7 +434,7 @@ details.how>summary .how-t{flex:1}
 .rest .rt-bar{height:5px; margin:6px 11px 0; border-radius:99px; background:var(--sunken); overflow:hidden}
 .rest .rt-bar i{display:block; height:100%; width:100%; background:var(--ember); border-radius:99px; transition:width .25s linear}
 .rest .rt-ctl{display:flex; gap:6px; padding:9px 11px 10px}
-.rest .rt-ctl .btn{flex:1; padding:7px 4px}
+.rest .rt-ctl .btn{flex:1; padding:7px 4px; min-height:40px}
 .rest .rt-ctl .btn.skip{flex:1.3}
 .rest.go{border-color:var(--good); background:color-mix(in srgb,var(--good) 12%,var(--surface)); animation:restgo 1s ease-in-out 3}
 .rest.go .rt-t{color:var(--good)} .rest.go .rt-bar i{background:var(--good)}
@@ -509,7 +513,7 @@ details.how>summary .how-t{flex:1}
 #foodCats{overflow-x:auto}
 #foodCats button{white-space:nowrap; padding:8px 7px; font-size:10.5px; letter-spacing:.05em}
 .tally{display:flex; flex-wrap:wrap; gap:6px}
-.tallyitem{font-family:var(--font-m); font-size:11.5px; color:var(--text-dim); border:1px solid var(--line-soft); border-radius:7px; padding:5px 9px; min-height:32px}
+.tallyitem{font-family:var(--font-m); font-size:11.5px; color:var(--text-dim); border:1px solid var(--line-soft); border-radius:7px; padding:5px 9px; min-height:38px}
 .tallyitem:hover{border-color:var(--bad); color:var(--bad)}
 .tallyitem b{color:var(--ember); font-weight:600}
 
@@ -590,6 +594,16 @@ details.how>summary .how-t{flex:1}
 
 .fuelgoal{font-size:13px; color:var(--text-dim); line-height:1.5}
 .fuelgoal b{color:var(--text)}
+
+/* a narrow phone: the set fields get the width the nested boxes were taking */
+@media (max-width:359px){
+  #dayList .dbody{padding-left:8px; padding-right:8px}
+  #dayList .ex-b{padding-left:8px; padding-right:8px}
+  #dayList .sets{padding-left:8px; padding-right:8px}
+  .setrow{grid-template-columns:14px minmax(0,1fr) minmax(0,1fr) 44px 40px; gap:5px}
+  .logger .lf{padding-left:8px; padding-right:8px}
+  .rest,.undobar{margin-left:8px; margin-right:8px}
+}
 </style>
 <script>
 (function(){try{var s=JSON.parse(localStorage.getItem('forge90_v2')||localStorage.getItem('forge90_v1')||'{}');
@@ -649,9 +663,9 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
   </section>
 
   <section class="screen" id="s-train" aria-labelledby="h-train">
-    <div class="eyebrow">The engine · 70% of the result</div>
+    <div class="eyebrow">Your plan · your logbook</div>
     <h2 id="h-train">Train</h2>
-    <p class="lede">Every session below carries its own logbook. Enter what you lift and the app tells you what to do next week — that decision is the whole program.</p>
+    <p class="lede">Every session below carries its own logbook. Enter what you lift and the app tells you what to do next time.</p>
     <div class="stack">
       <div id="planBar"></div>
       <div class="seg" id="splitSeg" role="group" aria-label="Days a week"></div>
@@ -687,7 +701,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
   <section class="screen" id="s-plan" aria-labelledby="h-plan">
     <div class="eyebrow">13 weeks · 3 phases</div>
     <h2 id="h-plan">The Map</h2>
-    <p class="lede">Ninety-one days, every one of them assigned. Build the engine, load it, then tune it — you don't chase all three at once.</p>
+    <p class="lede">Ninety-one days in three phases: learn the lifts, push the weights, then finish strong. Every day has a job.</p>
     <div class="stack">
       <div class="card">
         <div class="card-h"><h3>All 91 days</h3><span class="pill" id="punchPct">0%</span></div>
@@ -725,7 +739,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
       <p class="fuelgoal" id="fuelGoal"></p>
       <div class="card">
         <div class="card-h"><h3>Day counter</h3><span class="pill cool" id="foodDate"></span></div>
-        <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px">Tap what you ate. It works out calories, protein, carbs and fat for you — no weighing, no app.</p>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px">Tap what you ate. It works out calories, protein, carbs and fat for you. No weighing needed.</p>
         <div id="foodTotals"></div>
         <div class="seg" id="foodCats" style="margin-top:14px" role="group" aria-label="Food category"></div>
         <div class="chips" id="foodChips"></div>
@@ -758,7 +772,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
       <div id="verdictCard"></div>
       <div class="card">
         <div class="card-h"><h3>Measurements</h3><button class="btn sm" id="addMeas">Add entry</button></div>
-        <p style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">Every two weeks, morning, relaxed. Waist at the navel is your single best lower-belly signal — it moves when the scale won't.</p>
+        <p style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">Every two weeks, in the morning, relaxed. Waist at the navel is the best single sign of fat loss or gain: it moves when the scale does not.</p>
         <div class="tw" id="measTable"></div>
       </div>
       <div class="card">
@@ -2568,7 +2582,7 @@ const GROCERY=[
 ];
 const SUPPS=[
  ['Creatine monohydrate','3–5 g every day','The best-studied supplement there is, and the cheapest thing on this page. It takes 3–4 weeks to build up, then gives a small strength increase. Timing does not matter: training day or not, just take it. Plain monohydrate; skip the expensive versions.'],
- ['Whey protein','1–2 scoops a day, if you need them','Not magic: fast, cheap protein that makes the daily target reachable on a busy day. Whole food first, whey to close the gap. Halal-certified brands are easy to find.'],
+ ['Whey protein','1–2 scoops a day, if you need them','Not magic: fast, cheap protein that makes the daily target reachable on a busy day. Whole food first, whey to close the gap. Check the label if you need it halal or vegetarian.'],
  ['Vitamin D3','1,000–2,000 IU with a meal','Low levels are common with an indoor life. Cheap insurance for bone health. Have it tested first if you can.'],
  ['Electrolytes','Around training and in hot weather','A pinch of salt and a squeeze of lemon in water does the job for almost nothing.'],
  ['Everything else','Skip it','Fat burners, detox teas, testosterone boosters, BCAAs. They do not help and some are not safe. Coffee or tea before training is fine; keep it at least eight hours before bed.']
@@ -2850,6 +2864,11 @@ function normalize(p){
   else if(u.from) s.ui.from=u.from===2?2:1;
   if(isDate(u.autoSess)) s.ui.autoSess=u.autoSess;
   if(isDate(u.dietOn)) s.ui.dietOn=u.dietOn;
+  if(isObj(u.auto)&&isDate(u.auto.d)){
+    const ks=x=>Array.isArray(x)?x.filter(k=>k==='protein'||k==='steps'):[];
+    const a={d:u.auto.d, k:ks(u.auto.k), off:ks(u.auto.off)};
+    if(a.k.length||a.off.length) s.ui.auto=a;
+  }
   // plan history: which plan was in force from which date, so a change never re-judges the past
   s.plans=(Array.isArray(p.plans)?p.plans:[]).filter(x=>isObj(x)&&isDate(x.from)&&typeof x.program==='string'&&safeKey(x.program)
       &&PROGRAMS[x.program]&&PROGRAMS[x.program].variants[x.dpw]&&validDays(x.days,PROGRAMS[x.program].variants[x.dpw].sessions.length))
@@ -3026,7 +3045,6 @@ function cloudBadge(){
 }
 function rerenderAll(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
-  $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===S.ui.diet));
   const dl=$('#dayList'); if(dl) delete dl.dataset.plan;   // Train is cached per plan — invalidate
   setTab(currentTab,true);
 }
@@ -3176,20 +3194,49 @@ function infoForDate(ds){
 }
 
 /* ---- checklist -------------------------------------------------- */
-function checkList(){
-  const t=targets(), i=infoForDate(TODAY);
+function checkList(ds){
+  ds=ds||TODAY;
+  const t=targets(), i=infoForDate(ds), now=ds===TODAY;
   const lifting=i&&i.type==='lift';
-  const ft=foodTotals();   // live from the day counter, so the list reflects what you logged
-  const kc=dietType()==='train'?t.train:t.rest, st=i?stepsTarget(i.week):8000, walked=S.steps[TODAY];
+  const ft=foodTotalsOn(ds);   // live from the day counter, so the list reflects what you logged
+  const kc=(now?dietType()==='train':lifting)?t.train:t.rest, st=i?stepsTarget(i.week):8000, walked=S.steps[ds];
   return [
     {k:'protein', l:'Hit protein',        h:(ft.p?Math.round(ft.p)+' / ':'')+t.prot+' g'},
     {k:'cals',    l:'Stay near calories', h:(ft.k?Math.round(ft.k)+' / ':'')+kc+' kcal'},
     {k:'steps',   l:'Walk',               h:(walked?walked.toLocaleString()+' / ':'')+st.toLocaleString()+' steps'},
     {k:'water',   l:'Water',              h:'about '+t.water+' L'},
     {k:'session', l:lifting?'Train':'Session or rest as planned', h:lifting?(i.session.name):'—'},
-    {k:'sleep',   l:'Sleep 7–9 h',        h:'last night'},
+    {k:'sleep',   l:'Sleep 7–9 h',        h:now?'last night':'the night before'},
     {k:'creatine',l:'Creatine',           h:'3–5 g, if you take it'}
   ];
+}
+/* Ticks the app can see for itself: protein from the day counter, steps from the step log.
+   S.ui.auto remembers which of today's ticks it made (k) and which you took off by hand (off),
+   so a tick you made is never removed and one you removed is never put back. True if anything changed. */
+function syncAuto(){
+  const t=targets(), i=infoForDate(TODAY);
+  const reached={protein:foodTotals().p>=t.prot, steps:(+S.steps[TODAY]||0)>=(i?stepsTarget(i.week):8000)};
+  const au=S.ui.auto&&S.ui.auto.d===TODAY?S.ui.auto:{k:[],off:[]};
+  let mine=(au.k||[]).slice(), arr=(S.checks[TODAY]||[]).slice(), changed=!!(S.ui.auto&&S.ui.auto.d!==TODAY);
+  const off=au.off||[];
+  ['protein','steps'].forEach(k=>{
+    const has=arr.indexOf(k)>=0, own=mine.indexOf(k)>=0;
+    if(reached[k]&&!has&&off.indexOf(k)<0){ arr.push(k); mine.push(k); changed=true; }
+    else if(!reached[k]&&has&&own){ arr=arr.filter(x=>x!==k); mine=mine.filter(x=>x!==k); changed=true; }
+    else if(!has&&own){ mine=mine.filter(x=>x!==k); changed=true; }
+  });
+  if(!changed) return false;
+  if(arr.length) S.checks[TODAY]=arr; else delete S.checks[TODAY];
+  if(mine.length||off.length) S.ui.auto={d:TODAY, k:mine, off:off.slice()}; else delete S.ui.auto;
+  return true;
+}
+/* a tick changed by hand today: from now on the app leaves that one alone */
+function manualTick(k,nowOn){
+  if(k!=='protein'&&k!=='steps') return;
+  const au=S.ui.auto&&S.ui.auto.d===TODAY?S.ui.auto:{k:[],off:[]};
+  const mine=(au.k||[]).filter(x=>x!==k), off=(au.off||[]).filter(x=>x!==k);
+  if(!nowOn) off.push(k);
+  if(mine.length||off.length) S.ui.auto={d:TODAY, k:mine, off:off}; else delete S.ui.auto;
 }
 const CORE=['protein','steps','sleep'];
 function dayDone(ds){
@@ -3351,6 +3398,7 @@ function safeVerdict(id,it){
   catch(err){ return {cls:'none', ic:ICO.dot, txt:'Log this session and the next one gets a target.'}; }
 }
 function renderToday(){
+  if(syncAuto()) save();                       // ticks the logs already prove
   const t=targets(), di=todayIndex(), info=infoForDate(TODAY);
   const started=di>=1, done=di>BLOCK_DAYS;
 
@@ -3402,12 +3450,7 @@ function renderToday(){
   }
   $('#sessionCard').innerHTML=sc;
 
-  // checklist
-  const list=checkList(), c=S.checks[TODAY]||[];
-  $('#checklist').innerHTML=list.map(x=>
-    '<button class="chk" data-chk="'+x.k+'" aria-pressed="'+(c.indexOf(x.k)>=0)+'">'
-    +'<span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(x.l)+'</span><span class="hint">'+esc(x.h)+'</span></button>').join('');
-  $('#chkCount').textContent=c.length+' / '+list.length;
+  renderChecklist();
 
   $('#logDate').textContent=fmtDate(TODAY);
   $('#qWeight').value=S.weights[TODAY]!=null?S.weights[TODAY]:'';
@@ -3417,6 +3460,15 @@ function renderToday(){
   renderHelp();
   renderCond();
   $('#miniPunch').innerHTML=punch(Math.max(0,Math.min(10,Math.ceil((started&&!done?di:1)/7)-1)),3);
+}
+function chkButton(x,on,attr){
+  return '<button class="chk" '+attr+' aria-pressed="'+!!on+'">'
+    +'<span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(x.l)+'</span><span class="hint">'+esc(x.h)+'</span></button>';
+}
+function renderChecklist(){
+  const list=checkList(), c=S.checks[TODAY]||[];
+  $('#checklist').innerHTML=list.map(x=>chkButton(x, c.indexOf(x.k)>=0, 'data-chk="'+x.k+'"')).join('');
+  $('#chkCount').textContent=c.length+' / '+list.length;
 }
 function renderHelp(){
   if(S.ui.from===1){                         // came from the earlier version: say what changed, once
@@ -3450,7 +3502,7 @@ function ro(k,v,u,hot){
 function condToday(info){
   const c=COND[info.phase];
   if(info.type==='cardio') return 'Zone 2 · '+c.z2min;
-  return c.steps+' steps';
+  return stepsTarget(info.week).toLocaleString()+' steps';
 }
 /* ---- conditioning tracking --------------------------------------- */
 function stepsTarget(week){
@@ -3718,6 +3770,8 @@ function demoLinks(name,compact){
    A logbook is drawn inside an exercise card; the card's slot ("2.3" =
    session 2, item 3) says how the lift is prescribed there.
    =================================================================== */
+/* the last set row cleared by hand, so a slip of the thumb can be put back: {id, i, set, popped, d} */
+let UNDO=null;
 /* how this lift is prescribed in that slot (or its usual prescription when it is not in a plan) */
 function itemFor(id,ref){
   const sl=ref?slotAt(ref):null;
@@ -3762,6 +3816,7 @@ function logger(id,ref){
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
     +'<div class="lh"><b>Logbook</b>'+((draft?draft.dl:isDeload())?'<button class="dlchip on" data-dl aria-pressed="true" title="A lighter session that is not used as your reference. Tap if you trained normally.">Deload</button>':(isDeload()?'<button class="dlchip" data-dl aria-pressed="false" title="Mark this as a deload session">Deload</button>':''))+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
     +'<div class="sets">'+rows+'</div>'
+    +(UNDO&&UNDO.id===id&&UNDO.d===TODAY?'<div class="undobar"><span>Set '+(UNDO.i+1)+' cleared.</span><button class="btn sm" data-undo>Undo</button></div>':'')
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
     +(prev?'<button class="btn sm" data-repeat>Same as last time</button>':'')
@@ -4125,9 +4180,10 @@ function renderFuel(){
 /* ---- the day counter: kcal, protein, carbs, fat ------------------ */
 let foodCat=0;
 function foodItems(){ return (S.food&&S.food[TODAY])||[]; }
-function foodTotals(){
-  return foodItems().reduce((a,x)=>({k:a.k+x.k, p:a.p+x.p, c:a.c+x.c, f:a.f+x.f}), {k:0,p:0,c:0,f:0});
+function foodTotalsOn(ds){
+  return ((S.food&&S.food[ds])||[]).reduce((a,x)=>({k:a.k+x.k, p:a.p+x.p, c:a.c+x.c, f:a.f+x.f}), {k:0,p:0,c:0,f:0});
 }
+function foodTotals(){ return foodTotalsOn(TODAY); }
 function renderProt(){
   const t=targets(), isT=dietType()==='train';
   const goal={k:isT?t.train:t.rest, p:t.prot, c:isT?t.carbT:t.carbR, f:t.fat};
@@ -4367,8 +4423,24 @@ function openSheet(title,html){
   $('#sheetBody').innerHTML=html;
   sheet.classList.add('on');
   document.body.style.overflow='hidden';
+  // an open sheet is one step of history, so the phone's Back button closes it instead of leaving the app
+  if(!(history.state&&history.state.sheet)){ try{ history.pushState({sheet:1},''); }catch(e){} }
 }
-function closeSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; }
+function hideSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; }
+let sheetBack=0;                 // history steps this code is taking back itself
+function closeSheet(){
+  hideSheet();
+  if(history.state&&history.state.sheet){ sheetBack++; try{ history.back(); }catch(e){ sheetBack--; } }
+}
+window.addEventListener('popstate',()=>{
+  if(sheetBack>0){
+    sheetBack--;
+    // a sheet opened again before the step back landed keeps a step of its own
+    if(sheet.classList.contains('on')){ try{ history.pushState({sheet:1},''); }catch(e){} }
+  }else if(sheet.classList.contains('on')&&!(history.state&&history.state.sheet)) hideSheet();
+  // the step underneath may carry an older tab: keep the address on the tab that is showing
+  if(TABS.indexOf(location.hash.slice(1))>=0&&location.hash.slice(1)!==currentTab){ try{ history.replaceState(history.state,'','#'+currentTab); }catch(e){} }
+});
 sheet.addEventListener('click',e=>{ if(e.target.closest('[data-close]')) closeSheet(); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sheet.classList.contains('on')) closeSheet(); });
 
@@ -4484,6 +4556,11 @@ function daySheet(i){
   }else{
     body+='<div class="session rest"><div class="tag">Rest</div><h3>Nothing to lift</h3>'
       +'<p class="focus">Walk, hit protein, sleep long. Muscle is built on these days, not in the gym.</p></div>';
+  }
+  if(d.date<TODAY){            // a day that has passed: what was ticked, still open to correction
+    const c=S.checks[d.date]||[];
+    body+='<div class="eyebrow" style="margin:16px 0 7px">What you did that day · tap to correct</div><div class="checks">'
+      +checkList(d.date).map(x=>chkButton(x, c.indexOf(x.k)>=0, 'data-daychk="'+x.k+'" data-date="'+d.date+'"')).join('')+'</div>';
   }
   if(d.checkin) body+='<div class="note" style="margin-top:12px"><b>Weekly check-in.</b> Log the 7-day average weight, waist at the navel, photos front/side/back in the same light, and your key lifts. Judge on trends, act only on 2–3 weeks of them.</div>';
   openSheet(fmtDate(d.date), body);
@@ -4769,7 +4846,20 @@ document.addEventListener('click',e=>{
     if(at>=0) arr.splice(at,1); else arr.push(k);
     if(!arr.length) delete S.checks[TODAY];
     if(k==='session') delete S.ui.autoSess;          // ticked or cleared by hand: the log no longer decides it
+    manualTick(k,at<0);
     save(); renderToday(); return;
+  }
+  const dchk=T.closest('[data-daychk]');
+  if(dchk){                                          // a past day, corrected from the Map
+    const ds=dchk.dataset.date, k=dchk.dataset.daychk;
+    if(isDate(ds)&&ds<TODAY){
+      const arr=S.checks[ds]||(S.checks[ds]=[]), at=arr.indexOf(k);
+      if(at>=0) arr.splice(at,1); else arr.push(k);
+      if(!arr.length) delete S.checks[ds];
+      dchk.setAttribute('aria-pressed',String(at<0));
+      save(); refreshTab();
+    }
+    return;
   }
   const shop=T.closest('[data-shop]');
   if(shop){
@@ -4852,13 +4942,13 @@ document.addEventListener('click',e=>{
   if(chip){
     const p=chip.dataset.food.split('|'), f=FOODCATS[+p[0]][1][+p[1]];
     (S.food[TODAY]||(S.food[TODAY]=[])).push({n:f[0],k:f[2],p:f[3],c:f[4],f:f[5]});
-    save(); renderProt(); return;
+    syncAuto(); save(); renderProt(); return;
   }
   const unfood=T.closest('[data-unfood]');
   if(unfood){
     const a=S.food[TODAY];
     if(a){ a.splice(+unfood.dataset.unfood,1); if(!a.length) delete S.food[TODAY]; }
-    save(); renderProt(); return;
+    syncAuto(); save(); renderProt(); return;
   }
 
   /* ---- the logbook ---- */
@@ -4908,15 +4998,28 @@ document.addEventListener('click',e=>{
     }
     const del=T.closest('[data-del]');
     if(del){
-      const i=+del.dataset.del, en=upsert(id,it);
+      const i=+del.dataset.del, en=upsert(id,it), was=en.sets[i];
       // an extra row you added comes off entirely; a prescribed row just empties
-      if(i===en.sets.length-1 && en.sets.length>setsWanted(it)) en.sets.pop();
+      const popped=(i===en.sets.length-1 && en.sets.length>setsWanted(it));
+      UNDO=(was&&!blankSet(was))?{id:id, i:i, set:Object.assign({},was), popped:popped, d:TODAY}:null;
+      if(popped) en.sets.pop();
       else if(en.sets[i]) en.sets[i]={};
       syncSession(); save(); refreshLogger(id); return;
+    }
+    if(T.closest('[data-undo]')){                 // put the cleared row back, unless something was typed there since
+      const u=UNDO; UNDO=null;
+      if(u&&u.id===id&&u.d===TODAY){
+        const en=upsert(id,it);
+        if(u.popped&&en.sets.length===u.i) en.sets.push(u.set);
+        else{ while(en.sets.length<=u.i) en.sets.push({}); if(blankSet(en.sets[u.i])) en.sets[u.i]=u.set; }
+        syncSession(); save();
+      }
+      refreshLogger(id); return;
     }
     const savelog=T.closest('[data-savelog]');
     if(savelog){
       const en=upsert(id,it);
+      UNDO=null;
       // Trim only blank rows off the END. Filtering the whole array renumbered
       // the sets, so skipping set 2 silently turned set 3 into set 2.
       let n=en.sets.length;
@@ -4978,6 +5081,7 @@ document.addEventListener('input',e=>{
     const box=T.closest('.logger'), id=box.dataset.log, i=+T.dataset.set, f=T.dataset.f;
     const en=upsert(id,itemFor(id,box.dataset.ref));
     while(en.sets.length<=i) en.sets.push({});
+    if(UNDO&&UNDO.id===id&&UNDO.i===i){ UNDO=null; $$('.logger[data-log="'+id+'"] .undobar').forEach(b=>b.remove()); }   // typing there replaces what was cleared
     // keep only digits (and one dot for weight), so junk never reaches state
     let raw=latinNumber(T.value).replace(f==='w'?/[^0-9.]/g:/[^0-9]/g,'');
     if(f==='w') raw=raw.replace(/(\..*)\./g,'$1');
@@ -5016,15 +5120,25 @@ document.addEventListener('input',e=>{
     else{ if(raw==='') return; next[k]=+raw; }
     const ok=cleanProfile(next,false);
     if(k!=='start'&&k!=='sex'&&k!=='goal'&&next[k]!=null&&ok[k]!==next[k]) return;      // out of range
-    S.profile=ok; save(); renderToday(); return;
+    S.profile=ok; save(); refreshTab(); return;        // the screen under the sheet follows at once
   }
 });
 function setNum(obj,v,lo,hi){
   const n=numIn(v,lo,hi,null);
   if(n==null) delete obj[TODAY]; else obj[TODAY]=n;
+  if(obj===S.steps) syncAuto();
   save();
   clearTimeout(setNum.t);
-  setNum.t=setTimeout(()=>{ if(currentTab==='today'){ renderTodayReadout(); renderCond(); } },500);
+  // the fields themselves are left alone while you type; only what is read from them is redrawn
+  setNum.t=setTimeout(()=>{ if(currentTab==='today'){ renderTodayReadout(); renderCond(); renderChecklist(); } },500);
+}
+/* redraw the tab that is showing, in place, after the numbers behind it changed */
+function refreshTab(){
+  if(currentTab==='today') renderToday();
+  else if(currentTab==='train') renderTrain();
+  else if(currentTab==='plan') renderPlan();
+  else if(currentTab==='fuel') renderFuel();
+  else if(currentTab==='prog') renderProg();
 }
 function renderTodayReadout(){
   const t=targets(), wl=weightList(), latest=wl.length?wl[wl.length-1][1]:null;
@@ -5223,7 +5337,7 @@ document.addEventListener('click',e=>{
   paintSaveState();
   ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW(); requestPersistence();
   if(isStandalone()) document.documentElement.classList.add('standalone');
-  $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===S.ui.diet));
+  if(history.state&&history.state.sheet){ try{ history.replaceState(null,''); }catch(e){} }   // a sheet step left over from before a reload
   // a rest timer that was running when the page closed picks up where it was
   const r=S.ui.rest;
   if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); }

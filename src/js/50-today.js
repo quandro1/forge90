@@ -1,4 +1,5 @@
 function renderToday(){
+  if(syncAuto()) save();                       // ticks the logs already prove
   const t=targets(), di=todayIndex(), info=infoForDate(TODAY);
   const started=di>=1, done=di>BLOCK_DAYS;
 
@@ -50,12 +51,7 @@ function renderToday(){
   }
   $('#sessionCard').innerHTML=sc;
 
-  // checklist
-  const list=checkList(), c=S.checks[TODAY]||[];
-  $('#checklist').innerHTML=list.map(x=>
-    '<button class="chk" data-chk="'+x.k+'" aria-pressed="'+(c.indexOf(x.k)>=0)+'">'
-    +'<span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(x.l)+'</span><span class="hint">'+esc(x.h)+'</span></button>').join('');
-  $('#chkCount').textContent=c.length+' / '+list.length;
+  renderChecklist();
 
   $('#logDate').textContent=fmtDate(TODAY);
   $('#qWeight').value=S.weights[TODAY]!=null?S.weights[TODAY]:'';
@@ -65,6 +61,15 @@ function renderToday(){
   renderHelp();
   renderCond();
   $('#miniPunch').innerHTML=punch(Math.max(0,Math.min(10,Math.ceil((started&&!done?di:1)/7)-1)),3);
+}
+function chkButton(x,on,attr){
+  return '<button class="chk" '+attr+' aria-pressed="'+!!on+'">'
+    +'<span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(x.l)+'</span><span class="hint">'+esc(x.h)+'</span></button>';
+}
+function renderChecklist(){
+  const list=checkList(), c=S.checks[TODAY]||[];
+  $('#checklist').innerHTML=list.map(x=>chkButton(x, c.indexOf(x.k)>=0, 'data-chk="'+x.k+'"')).join('');
+  $('#chkCount').textContent=c.length+' / '+list.length;
 }
 function renderHelp(){
   if(S.ui.from===1){                         // came from the earlier version: say what changed, once
@@ -98,7 +103,7 @@ function ro(k,v,u,hot){
 function condToday(info){
   const c=COND[info.phase];
   if(info.type==='cardio') return 'Zone 2 · '+c.z2min;
-  return c.steps+' steps';
+  return stepsTarget(info.week).toLocaleString()+' steps';
 }
 /* ---- conditioning tracking --------------------------------------- */
 function stepsTarget(week){

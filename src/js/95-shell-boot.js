@@ -185,7 +185,7 @@ document.addEventListener('click',e=>{
   paintSaveState();
   ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW(); requestPersistence();
   if(isStandalone()) document.documentElement.classList.add('standalone');
-  $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===S.ui.diet));
+  if(history.state&&history.state.sheet){ try{ history.replaceState(null,''); }catch(e){} }   // a sheet step left over from before a reload
   // a rest timer that was running when the page closed picks up where it was
   const r=S.ui.rest;
   if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); }
