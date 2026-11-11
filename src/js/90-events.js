@@ -100,6 +100,25 @@ document.addEventListener('click',e=>{
     return;
   }
   if(T.closest('#btnLib')){ libSheet(); return; }
+  if(T.closest('[data-pickplan]')){ planSheet(); return; }
+  const sw=T.closest('[data-swap]');
+  if(sw){
+    // put another exercise in this slot (or the plan's own back); the card is redrawn in place and opened
+    const card=sw.closest('.ex'), sl=card?slotAt(card.dataset.slot):null;
+    if(sl){
+      const base=sl.it.base||sl.it.ex, want=sw.dataset.swap, key=slotKey(sl.si,sl.k);
+      if(want===base) delete S.swaps[key]; else if(EX[want]) S.swaps[key]=want;
+      save();
+      const it=slotAt(sl.ref).it, tmp=document.createElement('div');
+      tmp.innerHTML=exCard(it,sl.ref);
+      const fresh=tmp.firstChild;
+      card.parentNode.replaceChild(fresh,card);
+      $('#dayList').dataset.plan=planSig();
+      $('.ex-h',fresh).click();
+      fresh.scrollIntoView({block:'nearest'});
+    }
+    return;
+  }
   const lg=T.closest('#libSeg button');
   if(lg){
     $$('#libSeg button').forEach(b=>b.classList.toggle('on',b===lg));

@@ -16,11 +16,11 @@ function renderTrain(force){
   const info=infoForDate(TODAY);
   if(info&&info.idx>=0){ const blk=$('[data-dayblock="'+info.idx+'"]'); if(blk) blk.open=true; }
   $('#warmCard').innerHTML=
-    '<details><summary><span class="idx">00</span>Warm-up, mobility &amp; cool-down<span class="chev">'+ICO.chev+'</span></summary>'
-    +'<div class="dbody"><p style="font-size:13.5px;color:var(--text-dim)">Six to eight minutes. It is the cheapest injury insurance you will ever buy, and your top sets are measurably better for it.</p>'
+    '<details><summary><span class="idx">00</span>Warm-up and cool-down<span class="chev">'+ICO.chev+'</span></summary>'
+    +'<div class="dbody"><p style="font-size:13.5px;color:var(--text-dim)">About ten minutes. It protects your joints, and your first heavy sets go better for it.</p>'
     +'<div class="grid2" style="margin-top:12px">'
-    +'<div class="note"><b>Before</b><br>5 min easy bike or incline walk, then the drills inside each session, then two ramp-up sets at 50% and 75% of your first working weight.</div>'
-    +'<div class="note"><b>After</b><br>3 min easy walk, 20–30 s static stretches on what you trained, then four slow diaphragmatic breaths to switch into recovery.</div>'
+    +'<div class="note"><b>Before</b><br>5 minutes of easy bike or incline walking, then the drills listed inside each session, then two lighter sets of your first lift: about half of today\'s weight for 8 reps, then about three-quarters for 4.</div>'
+    +'<div class="note"><b>After</b><br>3 minutes of easy walking, then hold a gentle stretch for 20–30 seconds on each muscle you trained.</div>'
     +'</div></div></details>';
 }
 function renderPlanBar(){
@@ -29,7 +29,18 @@ function renderPlanBar(){
   seg.style.display=keys.length>1?'':'none';
   const bar=$('#planBar');
   if(bar) bar.innerHTML='<div class="planbar"><div class="pb-t"><span class="pb-k">Your plan</span><span class="pb-n">'+esc(p.name)+'</span>'
-    +'<span class="pb-l">'+esc(p.line)+'</span></div></div>';
+    +'<span class="pb-l">'+esc(p.line)+'</span></div><button class="btn sm" data-pickplan>Change</button></div>';
+}
+/* two lighter sets of the day's first lift, in kilos when the log knows the working weight */
+function rampLine(s){
+  const it=s.items[0], ex=it&&EX[it.ex];
+  if(!ex) return '';
+  const prev=prevSession(it.ex), w=prev?workWeight(judged(prev,it.sets)):0, st=+ex.step||2.5;
+  if(w>0&&ex.load!=='bw'&&ex.load!=='time'){
+    const each=ex.load==='db'?' each':'';
+    return 'Then two lighter sets of '+esc(ex.name)+': <b>'+kg(roundTo(w*0.5,st))+each+' × 8</b>, then <b>'+kg(roundTo(w*0.75,st))+each+' × 4</b>. (Last time you worked at '+kg(w)+each+'.)';
+  }
+  return 'Then two lighter sets of '+esc(ex.name)+': about half of today\'s weight for 8 reps, then about three-quarters for 4.';
 }
 function dayBlock(d,i,wd){
   const warm=WARMSETS[d.warm];
@@ -40,14 +51,15 @@ function dayBlock(d,i,wd){
   h+='<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:12px">'+esc(d.focus)+'</p>';
   if(warm){
     h+='<div class="warm"><div class="eyebrow" style="margin-bottom:6px">Warm-up first</div>'
-      +'<p style="font-size:13px;color:var(--text-dim)">'+warm.lines.map(esc).join(' · ')+'</p>'
+      +'<p style="font-size:13px;color:var(--text-dim)">5 minutes of easy bike or incline walking, then:</p>'
       +'<div class="drills">'+warm.drills.map(k=>{
           if(!WARM[k]) return '';
-          return '<div class="drill"><span class="dn">'+esc(WARM[k].name)+'</span>'
+          return '<div class="drill"><span class="dn">'+esc(WARM[k].name)+'<span class="dc">'+esc(WARM[k].cue)+'</span></span>'
             +'<span class="dr">'+esc(WARM[k].reps)+'</span>'
             +'<a class="lk v tiny" target="_blank" rel="noopener" aria-label="Video for '+esc(WARM[k].name)+'" '
             +'href="https://www.youtube.com/results?search_query='+encodeURIComponent(WARM[k].name)+'+proper+form+technique">▶</a></div>';
-        }).filter(Boolean).join('')+'</div></div>';
+        }).filter(Boolean).join('')+'</div>'
+      +'<p style="font-size:13px;color:var(--text-dim);margin-top:9px">'+rampLine(d)+'</p></div>';
   }
   h+=d.items.map((it,k)=>exCard(it,i+'.'+k)).join('');
   h+='</div></details>';
@@ -68,7 +80,8 @@ function mapsFor(e){
   if(all.some(k=>BACK_ZONES[k]))  h+=muscleMap('back',e.prim||[],e.sec||[]);
   h+='</div><div class="mtags">'
     +(e.prim||[]).map(k=>'<span class="pill hot">'+esc(ZN[k]||k)+'</span>').join('')
-    +(e.sec||[]).map(k=>'<span class="pill">'+esc(ZN[k]||k)+'</span>').join('')+'</div>';
+    +(e.sec||[]).map(k=>'<span class="pill">'+esc(ZN[k]||k)+'</span>').join('')
+    +'<span class="pill eq">'+esc(e.equip)+'</span></div>';
   return h;
 }
 /* The written guide. Content strings are authored (they may carry <b>); labels are plain text. */
@@ -78,33 +91,39 @@ function howTo(id){
     h+='<div class="how-sec"><div class="eyebrow">Set-up</div><ol class="steps">'+e.setup.map(s=>'<li>'+s+'</li>').join('')+'</ol></div>';
   if(e.rep&&e.rep.length)
     h+='<div class="how-sec"><div class="eyebrow">One rep, step by step</div><dl class="pos">'
-      +e.rep.map(r=>'<dt>'+esc(r[0])+'</dt><dd>'+r[1]+'</dd>').join('')+'</dl></div>';
-  if(e.nums&&e.nums.length)
-    h+='<div class="how-sec"><div class="eyebrow">The numbers</div><dl class="pos">'
-      +e.nums.map(n=>'<dt>'+esc(n[0])+'</dt><dd>'+n[1]+'</dd>').join('')+'</dl></div>';
-  if(e.check) h+='<div class="note how-note"><b>Quick check</b><br>'+e.check+'</div>';
+      +e.rep.map(r=>'<dt>'+esc(r[0])+'</dt><dd>'+r[1]+'</dd>').join('')
+      +(e.tempo?'<dt>Tempo</dt><dd>'+e.tempo+'</dd>':'')+'</dl></div>';
   if(e.feel) h+='<div class="note hot how-note"><b>Where you should feel it</b><br>'+e.feel+'</div>';
   if(e.fix&&e.fix.length)
     h+='<div class="how-sec"><div class="eyebrow">If it feels wrong</div><ul class="fixes">'
       +e.fix.map(f=>'<li><b>'+esc(f[0])+'</b><span>'+f[1]+'</span></li>').join('')+'</ul></div>';
-  const ms=e.machine&&MACH_SETUP[e.machine];
-  if(ms&&ms.length)
-    h+='<div class="how-sec"><div class="eyebrow">Machine set-up</div><ol class="steps">'
-      +ms.slice().sort((a,b)=>(+a[0])-(+b[0])).map(s=>'<li>'+s[1]+'</li>').join('')+'</ol></div>';
+  if(e.check) h+='<div class="note how-note"><b>Check yourself</b><br>'+e.check+'</div>';
+  if(e.weight) h+='<div class="note how-note"><b>Picking the weight</b><br>'+e.weight+'</div>';
+  if(e.safe) h+='<div class="avoid how-note"><span class="ic" aria-hidden="true">⚠</span><span><b>Safety:</b> '+e.safe+'</span></div>';
   return h;
 }
+/* another exercise for the same muscle, when the station is taken or the gym does not have it */
+function swapRow(id,ref){
+  const sl=ref?slotAt(ref):null; if(!sl) return '';
+  const base=sl.it.base||sl.it.ex;
+  const opts=[base].concat(EX[base].swap||[]).filter((x,i,a)=>EX[x]&&a.indexOf(x)===i&&x!==id);
+  if(!opts.length) return '';
+  return '<div class="how-sec"><div class="eyebrow">Station taken, or not in your gym?</div><div class="swaps">'
+    +opts.map(x=>'<button class="btn sm" data-swap="'+x+'">'+(x===base?'Back to ':'Use ')+esc(EX[x].name)+'</button>').join('')
+    +'</div><p class="swapnote">The sets, reps and rest stay the same. Each exercise keeps its own history.</p></div>';
+}
 function fillEx(box,id,ref){
-  // Muscle map only — no stick-figure poses. Form is what the photo and video
-  // buttons are for; a real demo beats a schematic every time.
+  // Order: what you need between sets first (the one-line cue, the demo links,
+  // the logbook), then the full guide. The guide starts open the first time you
+  // meet a lift and folded once it is in your log. No stick-figure poses: the
+  // muscle map and a real video or photo do that job better.
   const e=EX[id];
-  // the guide starts open the first time you meet a lift, and folded once it is in your log
   const known=(S.logs[id]||[]).some(x=>loggedSets(x).length>0);
-  box.innerHTML=mapsFor(e)
+  box.innerHTML='<p class="cue">'+e.cue+'</p>'
     +demoLinks(e.name)
-    +'<p class="cue">'+e.cue+'</p>'
+    +logger(id,ref)
     +'<details class="how"'+(known?'':' open')+'><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary>'
-    +'<div class="how-b">'+howTo(id)+'</div></details>'
-    +logger(id,ref);
+    +'<div class="how-b">'+mapsFor(e)+howTo(id)+swapRow(id,ref)+'</div></details>';
 }
 
 /* ---- demo links --------------------------------------------------

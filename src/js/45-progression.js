@@ -32,6 +32,7 @@ function roundTo(x,st){ st=st>0?st:2.5; return Math.max(st,Math.round(x/st)*st);
 function nextLoad(ex,w){
   const st=+ex.step||2.5;
   if(ex.load==='db') return 'the next dumbbells up ('+kg(w+st)+' each)';
+  if(ex.load==='db1') return 'the next dumbbell up ('+kg(w+st)+')';
   if(ex.load==='machine'||ex.load==='cable') return 'one plate heavier (about '+kg(w+st)+')';
   return kg(w+st);
 }

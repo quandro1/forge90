@@ -31,11 +31,3 @@ function muscleMap(side, prim, sec){
   return '<svg viewBox="0 0 120 205" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + SILHOUETTE + z + '</svg>';
 }
 const ZN={uchest:'Upper chest',chest:'Chest',fdelt:'Front delts',sdelt:'Side delts',biceps:'Biceps',forearm:'Forearms',abs:'Abs',obliques:'Obliques',quads:'Quads',fcalf:'Shins',traps:'Traps',rdelt:'Rear delts',lats:'Lats',midback:'Mid-back',lowerback:'Lower back',triceps:'Triceps',glutes:'Glutes',hams:'Hamstrings',bcalf:'Calves'};
-
-/* ===== MACHINE SET-UP STEPS ===== */
-const MACH_SETUP={
- cable:[['1','Set the pulley height the move needs &mdash; high, mid, or low.'],['2','Pick the handle; stand or sit so the cable is under tension at the start.']],
- plate:[['1','Adjust the seat so the handles/pads line up with the target muscle.'],['2','Back flat on the pad; full but controlled range.']],
- lat:[['1','Sit and lock your thighs under the knee pad so you do not lift off.'],['3','Set that pad snug.'],['2','Grab the wide bar just outside shoulder width.']],
- legpress:[['1','Back and hips flat against the pad.'],['2','Feet shoulder-width, mid-foot on the platform.']],
- legpad:[['1','Line the knee joint up with the machine pivot point.'],['2','Set the ankle roller just above your foot.']]};

@@ -43,7 +43,7 @@ function libSheet(){
   $('#libList').addEventListener('toggle',e=>{
     const d=e.target;
     if(d&&d.classList&&d.classList.contains('how')&&d.open&&!d.dataset.filled){
-      $('.how-b',d).innerHTML=howTo(d.dataset.how); d.dataset.filled='1';
+      $('.how-b',d).innerHTML=mapsFor(EX[d.dataset.how])+howTo(d.dataset.how); d.dataset.filled='1';
     }
   },true);
 }
@@ -63,8 +63,7 @@ function libRender(g,q){
       return '<div class="libitem"><div class="li-h"><span class="li-n">'+esc(e.name)+'</span>'
         +'<span class="li-t">'+esc(rxText(e.typ))+'</span></div>'
         +'<div class="mtags" style="margin-top:6px">'
-        +(e.prim||[]).map(z=>'<span class="pill hot">'+esc(ZN[z]||z)+'</span>').join('')
-        +'<span class="pill">'+esc(e.equip)+'</span></div>'
+        +(e.prim||[]).map(z=>'<span class="pill hot">'+esc(ZN[z]||z)+'</span>').join('')+'</div>'
         +'<p class="li-c">'+e.cue+'</p>'
         +demoLinks(e.name,true)
         +'<details class="how" data-how="'+id+'"><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary><div class="how-b"></div></details>'

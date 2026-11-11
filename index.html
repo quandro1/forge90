@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="55a204fe34">
+<meta name="forge-build" content="30517dc806">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -332,6 +332,9 @@ details.how>summary .how-t{flex:1}
 .planbar .pb-k{display:block; font-family:var(--font-d); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ember)}
 .planbar .pb-n{display:block; font-family:var(--font-d); font-size:20px; margin-top:2px}
 .planbar .pb-l{display:block; font-size:13px; color:var(--text-dim); margin-top:2px}
+.swaps{display:flex; flex-wrap:wrap; gap:8px}
+.swapnote{font-size:12px; color:var(--text-faint); margin-top:8px}
+.pill.eq{color:var(--text-faint)}
 .seg.wrap{flex-wrap:wrap}
 .seg.wrap button{flex:1 0 auto}
 .silo{fill:var(--silo-fill); stroke:var(--silo-line); stroke-width:1}
@@ -364,6 +367,7 @@ details.how>summary .how-t{flex:1}
 .drills{display:flex; flex-direction:column; gap:1px; margin-top:9px; background:var(--line-soft); border-radius:8px; overflow:hidden}
 .drill{display:flex; align-items:center; gap:9px; padding:8px 10px; background:var(--surface); font-size:13px}
 .drill .dn{flex:1; min-width:0}
+.drill .dc{display:block; font-size:12px; color:var(--text-faint); line-height:1.4; margin-top:2px}
 .drill .dr{font-family:var(--font-m); font-size:11px; color:var(--text-faint); white-space:nowrap}
 
 /* ============ EXERCISE LIBRARY ============ */
@@ -811,964 +815,1488 @@ function muscleMap(side, prim, sec){
   return '<svg viewBox="0 0 120 205" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + SILHOUETTE + z + '</svg>';
 }
 const ZN={uchest:'Upper chest',chest:'Chest',fdelt:'Front delts',sdelt:'Side delts',biceps:'Biceps',forearm:'Forearms',abs:'Abs',obliques:'Obliques',quads:'Quads',fcalf:'Shins',traps:'Traps',rdelt:'Rear delts',lats:'Lats',midback:'Mid-back',lowerback:'Lower back',triceps:'Triceps',glutes:'Glutes',hams:'Hamstrings',bcalf:'Calves'};
-
-/* ===== MACHINE SET-UP STEPS ===== */
-const MACH_SETUP={
- cable:[['1','Set the pulley height the move needs &mdash; high, mid, or low.'],['2','Pick the handle; stand or sit so the cable is under tension at the start.']],
- plate:[['1','Adjust the seat so the handles/pads line up with the target muscle.'],['2','Back flat on the pad; full but controlled range.']],
- lat:[['1','Sit and lock your thighs under the knee pad so you do not lift off.'],['3','Set that pad snug.'],['2','Grab the wide bar just outside shoulder width.']],
- legpress:[['1','Back and hips flat against the pad.'],['2','Feet shoulder-width, mid-foot on the platform.']],
- legpad:[['1','Line the knee joint up with the machine pivot point.'],['2','Set the ankle roller just above your foot.']]};
 /* ===================================================================
    EXERCISE LIBRARY
    One entry per movement. Ids are permanent: logs are keyed by them.
      prim   muscles that limit the lift (a set counts fully for these)
      sec    muscles clearly working but not limiting (a set counts half)
-     load   bb | db | machine | cable | bw | time   (how it is loaded)
+     load   bb barbell | db a pair of dumbbells | db1 one dumbbell |
+            machine | cable | bw bodyweight | time a timed hold
      step   smallest sensible jump in kg (per dumbbell for db)
      typ    a sensible prescription when the lift is used outside a plan
      cue    the one thing to think about
-     setup  where the body and the equipment go before rep one
-     rep    one rep from start to finish, with body landmarks
-     nums   the numbers worth checking (angles, widths, tempo)
-     check  one thing you can verify in the mirror or by feel
+     setup  where the body and the equipment go before rep one, in order
+     rep    one rep: Start, Move, Finish, with landmarks on the body
+     tempo  how fast
      feel   where you should feel it
-     fix    [what went wrong, what to change]
-     swap   ids that train the same primary muscle (when the station is taken)
-   Text may use <b>…</b> for the numbers that matter. No other markup.
+     fix    [what you notice, what to change]
+     check  one thing you can verify in the mirror or by feel
+     weight how to pick the first weight and when to add
+     safe   only where there is a real hazard
+     swap   ids that train the same muscle, for when the station is taken
+   Writing rules: short sentences, plain words, landmarks on the body
+   instead of angles (degrees only where the equipment shows them), no
+   comparisons to other objects. <b>…</b> marks the numbers that matter.
    =================================================================== */
 const EX = {};
+
+/* ---------------------------------------------------------------- CHEST */
 EX.inclineDB = {
-  name: "Incline Dumbbell Press", group: "Chest", tag: "Upper Chest",
+  name: "Incline Dumbbell Press", group: "Chest", tag: "Upper chest",
   prim: ["uchest"], sec: ["chest", "fdelt", "triceps"],
   equip: "Dumbbells, adjustable bench", kind: "compound", load: "db", step: 2,
-  typ: { sets: 4, reps: [8, 12], rest: 90 },
-  draft: true,
-  cue: "Bench at <b>30°</b>. Press the dumbbells up and slightly together; feel the stretch across the upper chest at the bottom. Shoulder blades pinned back and down the whole set.",
+  typ: { sets: 4, reps: [8, 12], rest: 120 },
+  cue: "Press up and slightly in; lower until the dumbbells are level with your chest.",
   setup: [
-    "Bench at <b>30°</b> (one or two notches up from flat — 45° turns it into a shoulder press). Feet flat and wide, glutes and upper back on the pad, slight arch under the lower back. Kick the dumbbells up off your knees one at a time.",
-    "Palms forward, turned in <b>10–15°</b>. Wrists stacked straight over the elbows, knuckles to the ceiling.",
+    "Set the bench to <b>30°</b>: one or two notches up from flat. Steeper turns it into a shoulder press.",
+    "Sit with a dumbbell on each thigh, lie back and kick them up to your shoulders one at a time.",
+    "Feet flat, hips and upper back on the bench, shoulder blades squeezed together and down.",
   ],
   rep: [
-    ["Range", "Bottom: dumbbells level with the upper chest, elbows just below the bench. Top: arms straight over the upper chest, dumbbells <b>2–3 cm</b> apart — don't clank them."],
-    ["Angles", "Elbows tucked to <b>45°</b> from the torso, never flared to 90°. Forearms vertical at the bottom of every rep."],
+    ["Start", "Arms straight, dumbbells above your upper chest, palms facing your feet."],
+    ["Move", "Lower for 3 seconds. Your elbows travel halfway between your ribs and straight out to the sides."],
+    ["Finish", "Dumbbells level with your chest, forearms straight up and down. Then press up and slightly in until your arms are straight."],
   ],
-  nums: [
-    ["Tempo", "<b>3 s</b> down, brief pause, <b>1 s</b> up. Breathe in on the way down, out through the press."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>3 s</b> down, <b>1 s</b> up.",
+  feel: "The top of the chest, just under the collarbones.",
   fix: [
-    ["Avoid", "Flat bench / hips arched off — hits front delts, not upper chest."],
+    ["You feel the front of the shoulder more than the chest", "Lower the bench one notch and keep the shoulder blades squeezed back."],
+    ["The dumbbells wobble or drift toward your face", "Go lighter. At the bottom each dumbbell should be straight above its elbow."],
+    ["Your hips lift off the bench", "It has become a flat press. Keep the hips down and use less weight."],
   ],
-  swap: [],
+  check: "At the bottom, look at one forearm: it points straight at the ceiling, not leaning in or out.",
+  weight: "Start with a pair you could press 14 times. When every set reaches the top of the range, take the next pair up.",
+  swap: ["inclineBB", "benchDB"],
 };
 EX.inclineBB = {
-  name: "Incline Barbell Press", group: "Chest", tag: "Upper Chest",
+  name: "Incline Barbell Press", group: "Chest", tag: "Upper chest",
   prim: ["uchest"], sec: ["chest", "fdelt", "triceps"],
   equip: "Barbell, incline bench", kind: "compound", load: "bb", step: 2.5,
-  typ: { sets: 4, reps: [6, 10], rest: 120 },
-  draft: true,
-  cue: "Lower the bar to your <b>upper chest / collarbone line</b>, elbows ~45°. Drive up and back over the shoulders. Keep a slight arch and feet planted.",
+  typ: { sets: 4, reps: [6, 10], rest: 150 },
+  cue: "Bar down to the top of your chest, then press it back up over your shoulders.",
   setup: [
-    "Bench at <b>30°</b>. Eyes under the bar for the unrack. Feet planted, shoulder blades pulled back and down into the pad, a hand's width of arch under the lower back.",
-    "About <b>1.5×</b> shoulder width — forearms should be vertical when the bar touches the chest. Thumbs wrapped, wrists straight.",
+    "Bench at <b>30°</b>. Lie back with your eyes under the bar.",
+    "Grip with each hand about one hand-width outside your shoulders, thumbs wrapped around the bar.",
+    "Feet flat, shoulder blades squeezed together and down. Lift the bar out and bring it over your shoulders.",
   ],
   rep: [
-    ["Range", "Touch the upper chest lightly (no bounce) to a full lockout at the top."],
-    ["Angles", "Elbows <b>45–60°</b> from the torso. Bar path is a slight arc: touches the collarbone line, finishes above the shoulders."],
+    ["Start", "Arms straight, bar above your shoulders."],
+    ["Move", "Lower for 2–3 seconds. Your elbows travel about halfway between your ribs and straight out to the sides."],
+    ["Finish", "Bar touches the top of the chest, two or three finger-widths below the collarbones, with no bounce. Press up and slightly back until it is over the shoulders again."],
   ],
-  nums: [
-    ["Tempo", "<b>2–3 s</b> down, drive up. Big breath and brace before every rep, exhale past the sticking point."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>2–3 s</b> down, then press up without bouncing.",
+  feel: "The top of the chest. The front of the shoulders and the triceps help.",
   fix: [
-    ["Avoid", "Bench too steep — that turns it into a shoulder press — or flaring the elbows to 90°, which stresses the shoulder joint."],
+    ["Your shoulders ache at the bottom", "Bring your grip in a little and stop the elbows flaring straight out to the sides."],
+    ["You feel mostly shoulders", "The bench is too steep. Lower it one notch."],
+    ["The bar drifts toward your stomach", "Aim to finish above the shoulders, not above the chest."],
   ],
-  swap: [],
+  check: "When the bar touches your chest, your forearms are straight up and down. If they lean in, widen your grip; if they lean out, narrow it.",
+  weight: "Start with the empty bar to learn the path. Add 2.5 kg when every set reaches the top of the range.",
+  safe: "Set the safety bars just below chest height or ask for a spotter. Always wrap your thumbs around the bar.",
+  swap: ["inclineDB", "benchBB"],
+};
+EX.benchBB = {
+  name: "Barbell Bench Press", group: "Chest", tag: "Chest",
+  prim: ["chest"], sec: ["uchest", "fdelt", "triceps"],
+  equip: "Barbell, flat bench with a rack", kind: "compound", load: "bb", step: 2.5,
+  typ: { sets: 4, reps: [6, 10], rest: 150 },
+  cue: "Lower the bar to the middle of your chest, then press it back up over your shoulders.",
+  setup: [
+    "Lie with your eyes under the bar, feet flat on the floor.",
+    "Grip with each hand about one hand-width outside your shoulders, thumbs wrapped around the bar.",
+    "Squeeze the shoulder blades together and down and keep them there. A small arch under the lower back is normal; the hips stay on the bench.",
+    "Lift the bar out and bring it over your shoulders.",
+  ],
+  rep: [
+    ["Start", "Arms straight, bar over the shoulders."],
+    ["Move", "Lower for 2–3 seconds. Your elbows travel about halfway between your ribs and straight out to the sides."],
+    ["Finish", "Bar touches the middle of the chest lightly. Press up and slightly back toward the rack until the arms are straight."],
+  ],
+  tempo: "<b>2–3 s</b> down, then press up. Take a breath at the top before each rep.",
+  feel: "The whole chest. The triceps and the front of the shoulders help.",
+  fix: [
+    ["The front of the shoulder hurts", "Bring the elbows a little closer to your ribs and keep the shoulder blades pinned back."],
+    ["The bar bounces off your chest", "It is too heavy or too fast. Pause for a moment on the chest."],
+    ["Your hips lift off the bench", "Lower the weight. Push your feet into the floor, not your hips up."],
+  ],
+  check: "At the bottom, your forearms are straight up and down, seen from the front and from the side.",
+  weight: "Start with the empty bar (20 kg). Add 2.5 kg when every set reaches the top of the range.",
+  safe: "Use the safety bars or a spotter every time, and always wrap your thumbs around the bar.",
+  swap: ["benchDB", "inclineBB"],
+};
+EX.benchDB = {
+  name: "Dumbbell Bench Press", group: "Chest", tag: "Chest",
+  prim: ["chest"], sec: ["uchest", "fdelt", "triceps"],
+  equip: "Dumbbells, flat bench", kind: "compound", load: "db", step: 2,
+  typ: { sets: 3, reps: [8, 12], rest: 120 },
+  cue: "Press the dumbbells up over your chest; lower until they are level with it.",
+  setup: [
+    "Flat bench. Sit with a dumbbell on each thigh, lie back and bring them to your chest.",
+    "Feet flat, shoulder blades squeezed together and down.",
+    "Palms facing your feet, wrists straight.",
+  ],
+  rep: [
+    ["Start", "Arms straight, dumbbells above the middle of your chest."],
+    ["Move", "Lower for 3 seconds. Your elbows travel halfway between your ribs and straight out to the sides."],
+    ["Finish", "Dumbbells level with your chest, a stretch across it. Press up and slightly in until the arms are straight."],
+  ],
+  tempo: "<b>3 s</b> down, <b>1 s</b> up.",
+  feel: "The whole chest.",
+  fix: [
+    ["Your shoulders take over", "Keep the shoulder blades squeezed back and do not let the elbows go straight out to the sides."],
+    ["One arm is slower", "Let the weaker arm set the pace. Do not twist to help it."],
+  ],
+  check: "At the bottom, each dumbbell is straight above its elbow.",
+  weight: "Start with a pair you could press 14 times. Take the next pair when every set reaches the top of the range.",
+  swap: ["benchBB", "pushup"],
 };
 EX.pecdeck = {
   name: "Pec Deck Fly", group: "Chest", tag: "Chest",
-  prim: ["chest"], sec: ["uchest", "fdelt"],
+  prim: ["chest"], sec: ["uchest"],
   equip: "Pec deck machine", kind: "isolation", load: "machine", step: 5,
-  typ: { sets: 3, reps: [12, 15], rest: 60 },
-  machine: "plate",
-  draft: true,
-  cue: "Soft bend in the elbows, squeeze the pads together in front of your chest, slow on the way back. Think <b>hugging a tree</b>.",
+  typ: { sets: 3, reps: [12, 15], rest: 75 },
+  cue: "Bring the handles together in front of your chest with your arms slightly bent, then open slowly.",
   setup: [
-    "Seat height so the handles sit at <b>mid-chest</b> and the elbows are level with the shoulders. Head and back on the pad, feet flat.",
-    "Hands on the handles, palms facing each other; forearms on the pads if the machine has them.",
+    "Set the seat so the handles are level with the middle of your chest.",
+    "Sit tall with your back and head against the pad, feet flat.",
+    "Hold the handles with a small bend in the elbows and keep that bend for the whole set.",
   ],
   rep: [
-    ["Range", "Open only until the arms are in line with the torso — no further back. Squeeze until the handles are <b>almost touching</b>."],
-    ["Angles", "Elbows bent <b>10–15°</b> and locked there. Upper arms parallel to the floor for the whole rep."],
+    ["Start", "Arms open until you feel a stretch across the chest, with no pain in the shoulder."],
+    ["Move", "Bring the handles together in a wide arc. Only the shoulders move; the bend in the elbows stays the same."],
+    ["Finish", "Handles almost touching in front of your chest. Squeeze for 1 second, then open for 3 seconds."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> together, <b>1 s</b> squeeze, <b>3 s</b> out."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> together, <b>1 s</b> squeeze, <b>3 s</b> open.",
+  feel: "The middle of the chest, most of all when the handles meet.",
   fix: [
-    ["Avoid", "Going so wide at the back that you feel it in the front of the shoulder instead of the chest. Stop the stretch where the chest still owns it."],
+    ["You feel the front of the shoulder", "Do not open as far, and keep your chest lifted."],
+    ["Your arms bend and straighten as you go", "Lock a small bend in the elbows. Lower the weight if you cannot."],
   ],
-  swap: [],
+  check: "Your back never leaves the pad. If you have to lean forward to finish, it is too heavy.",
+  weight: "Start with a weight you could do 18 times. Go one plate up when every set reaches the top of the range.",
+  swap: ["benchDB", "inclineDB"],
 };
+EX.pushup = {
+  name: "Push-Up", group: "Chest", tag: "Chest",
+  prim: ["chest"], sec: ["uchest", "fdelt", "triceps"],
+  equip: "Floor (a bench makes it easier or harder)", kind: "compound", load: "bw", step: 2.5,
+  typ: { sets: 3, reps: [8, 15], rest: 120 },
+  cue: "Body in one straight line; chest to the floor, then push away.",
+  setup: [
+    "Hands on the floor a little wider than your shoulders, fingers forward.",
+    "Legs straight, feet together, weight on your hands and toes.",
+    "Squeeze your glutes and stomach so the body is one straight line from head to heels.",
+  ],
+  rep: [
+    ["Start", "Arms straight, shoulders above the hands."],
+    ["Move", "Lower for 2–3 seconds. Your elbows point back, about halfway between your ribs and straight out."],
+    ["Finish", "Chest a fist-width from the floor. Push up until the arms are straight."],
+  ],
+  tempo: "<b>2–3 s</b> down, <b>1 s</b> up.",
+  feel: "Chest, triceps and the front of the shoulders. The stomach works to keep you straight.",
+  fix: [
+    ["Your hips sag", "Squeeze the glutes harder. If you cannot hold the line, put your hands on a bench."],
+    ["You cannot reach the lowest number of reps", "Raise your hands on a bench or a bar. The higher the hands, the easier it is."],
+    ["It is too easy", "Put your feet on a bench, or wear a backpack with a plate in it."],
+  ],
+  check: "A stick laid along your back would touch your head, upper back and hips the whole time.",
+  weight: "Put your hands on a bench if 8 reps are too hard. When every set reaches the top of the range, lower the hands or raise the feet.",
+  swap: ["benchDB", "benchBB"],
+};
+
+/* ------------------------------------------------------------ SHOULDERS */
 EX.machPress = {
   name: "Machine Shoulder Press", group: "Shoulders", tag: "Shoulders",
   prim: ["fdelt"], sec: ["sdelt", "triceps"],
   equip: "Shoulder press machine", kind: "compound", load: "machine", step: 5,
-  typ: { sets: 4, reps: [8, 12], rest: 90 },
-  machine: "plate",
-  draft: true,
-  cue: "Seat set so handles start at shoulder height. Press straight up without locking hard; control back down to ear level.",
+  typ: { sets: 3, reps: [8, 12], rest: 120 },
+  cue: "Press the handles straight up; lower them to ear height.",
   setup: [
-    "Seat set so the handles start at <b>ear height</b>. Upper back flat on the pad, feet flat, ribs down.",
-    "Neutral handles if there are two options; wrists straight, not bent back.",
+    "Set the seat so the handles start level with your ears.",
+    "Sit with your whole back on the pad, feet flat.",
+    "Grip the handles with straight wrists and your elbows under your hands.",
   ],
   rep: [
-    ["Range", "Lower until the upper arms are parallel to the floor; press to just short of lockout."],
-    ["Angles", "Elbows directly under the wrists and about <b>30°</b> in front of the shoulder line — not straight out to the sides."],
+    ["Start", "Handles at ear height, elbows slightly in front of your body."],
+    ["Move", "Press up without shrugging your shoulders toward your ears."],
+    ["Finish", "Arms almost straight. Lower for 2–3 seconds back to ear height."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>2–3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> up, <b>2–3 s</b> down.",
+  feel: "The front and the side of the shoulders.",
   fix: [
-    ["Avoid", "Starting the handles too low and bouncing out of the bottom."],
+    ["Your lower back arches off the pad", "Lower the weight and press your ribs down."],
+    ["Your neck tightens", "You are shrugging. Keep the shoulders down as you press."],
   ],
-  swap: [],
+  check: "Every rep starts and ends at the same height: the handles next to your ears.",
+  weight: "Start with a weight you could press 14 times. One plate up when every set reaches the top of the range.",
+  swap: ["dbPress", "ohp"],
 };
 EX.dbPress = {
   name: "Seated Dumbbell Shoulder Press", group: "Shoulders", tag: "Shoulders",
   prim: ["fdelt"], sec: ["sdelt", "triceps"],
-  equip: "Dumbbells, upright bench", kind: "compound", load: "db", step: 2,
-  typ: { sets: 4, reps: [8, 12], rest: 90 },
-  draft: true,
-  cue: "Sit upright with back support. Press dumbbells up over the shoulders; lower until elbows are just below shoulder line.",
+  equip: "Dumbbells, bench with a back", kind: "compound", load: "db", step: 2,
+  typ: { sets: 3, reps: [8, 12], rest: 120 },
+  cue: "Press the dumbbells from ear height to straight arms, without arching your back.",
   setup: [
-    "Bench back at <b>80–90°</b>. Sit deep so the whole back is on the pad, feet flat and wide. Kick the dumbbells up from the knees.",
-    "Palms forward or turned in slightly; wrists stacked over the elbows.",
+    "Set the bench back one notch short of upright.",
+    "Sit with your whole back on the pad and feet flat. Kick the dumbbells up from your thighs to your shoulders.",
+    "Palms forward, elbows slightly in front of your body, forearms straight up and down.",
   ],
   rep: [
-    ["Range", "Start with the dumbbells at ear level; press until the arms are nearly straight and the dumbbells come close together. Lower until the elbows are just below the shoulder line."],
-    ["Angles", "Elbows <b>20–30°</b> in front of the body (the scapular plane), forearms vertical. Never straight out to the sides."],
+    ["Start", "Dumbbells level with your ears."],
+    ["Move", "Press up and slightly in. Each dumbbell stays above its elbow."],
+    ["Finish", "Arms almost straight, dumbbells close together above your head. Lower for 2–3 seconds to ear height."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>2–3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> up, <b>2–3 s</b> down.",
+  feel: "The front and the side of the shoulders.",
   fix: [
-    ["Avoid", "Over-arching the lower back to heave the weight up. Brace the abs and keep the ribs down."],
+    ["Your lower back arches", "Press your ribs down and use less weight."],
+    ["Your elbows go straight out to the sides", "Bring them a little forward, so you can just see them at the edge of your view."],
   ],
-  swap: [],
+  check: "At the bottom, the dumbbells are next to your ears and straight above your elbows.",
+  weight: "Start with a pair you could press 14 times. Take the next pair when every set reaches the top of the range.",
+  swap: ["machPress", "ohp"],
+};
+EX.ohp = {
+  name: "Standing Barbell Press", group: "Shoulders", tag: "Shoulders",
+  prim: ["fdelt"], sec: ["sdelt", "triceps"],
+  equip: "Barbell, rack", kind: "compound", load: "bb", step: 2.5,
+  typ: { sets: 4, reps: [3, 5], rest: 180 },
+  cue: "Press the bar from your collarbones to straight above your head.",
+  setup: [
+    "Take the bar from a rack at chest height, hands just outside your shoulders.",
+    "The bar rests on the top of your chest, elbows slightly in front of the bar.",
+    "Feet under your hips. Squeeze your glutes and stomach so your back cannot arch.",
+  ],
+  rep: [
+    ["Start", "Bar on the top of the chest, forearms straight up and down."],
+    ["Move", "Press straight up. Move your head back a little to let the bar pass, then bring it forward under the bar."],
+    ["Finish", "Arms straight, bar above the middle of your feet. Lower under control to the collarbones."],
+  ],
+  tempo: "Press up, <b>2 s</b> down.",
+  feel: "Shoulders and triceps. The stomach and glutes hold you still.",
+  fix: [
+    ["You lean back to finish the rep", "It is too heavy. Squeeze the glutes and take 10% off."],
+    ["The bar goes forward, away from your face", "Keep it close: it should almost touch your nose on the way up."],
+  ],
+  check: "From the side, the bar finishes straight above your ears, shoulders, hips and ankles.",
+  weight: "Start with the empty bar. Add 2.5 kg when every set reaches the top of the range; smaller plates help on this lift.",
+  safe: "Do not turn the last rep into a backbend. If the bar stalls, lower it to your chest and put it back in the rack.",
+  swap: ["dbPress", "machPress"],
 };
 EX.latRaise = {
-  name: "Dumbbell Lateral Raise", group: "Shoulders", tag: "Side Delts",
+  name: "Dumbbell Lateral Raise", group: "Shoulders", tag: "Side delts",
   prim: ["sdelt"], sec: [],
   equip: "Dumbbells", kind: "isolation", load: "db", step: 1,
-  typ: { sets: 4, reps: [12, 20], rest: 45 },
-  draft: true,
-  cue: "Lead with the <b>elbows</b>, raise out to the sides to shoulder height, pinkies slightly up. Light weight, no swinging — this is your width-builder.",
+  typ: { sets: 4, reps: [12, 20], rest: 60 },
+  cue: "Lift your arms out to the sides until your hands are level with your shoulders.",
   setup: [
-    "Feet hip-width, soft knees, <b>10°</b> lean forward from the hips. Dumbbells at your sides, slightly in front of the thighs.",
-    "Neutral, pinkies a touch higher than the thumbs — like pouring a jug.",
+    "Stand with feet under your hips, a dumbbell in each hand beside your thighs.",
+    "Lean your chest forward a little and keep a small bend in the elbows.",
+    "Knuckles point up; thumb and little finger stay level.",
   ],
   rep: [
-    ["Range", "Thigh to shoulder height and no higher; going past shoulder height hands the work to the traps."],
-    ["Angles", "Elbows bent <b>10–15°</b> and fixed. Raise in a plane <b>20–30°</b> in front of the body, not directly sideways. Stop at shoulder height — arms parallel to the floor."],
+    ["Start", "Dumbbells just outside your thighs."],
+    ["Move", "Raise the arms out to the sides and slightly in front of you. Push your hands away from your body rather than lifting them up."],
+    ["Finish", "Hands and elbows level with your shoulders. Hold for a moment, then lower for 2–3 seconds."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, pause, <b>2–3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> up, a short hold, <b>2–3 s</b> down.",
+  feel: "The outside of the shoulder.",
   fix: [
-    ["Avoid", "Swinging above shoulders and shrugging — load shifts to traps."],
+    ["You feel your neck or the top of the shoulders", "Use 1–2 kg less and stop a little lower. Keep the shoulders down."],
+    ["You swing your body to lift", "It is too heavy. Stand with your back against a wall, or sit down."],
+    ["The top of the shoulder pinches", "Turn your thumbs slightly up."],
   ],
-  swap: [],
+  check: "You can pause for one full second at the top. If you cannot, the dumbbells are too heavy.",
+  weight: "Light: a pair you can raise 20 times without swinging. Reach the top of the range on every set before taking the next pair.",
+  swap: ["cableLat"],
 };
 EX.cableLat = {
-  name: "Cable Lateral Raise", group: "Shoulders", tag: "Side Delts",
+  name: "Cable Lateral Raise", group: "Shoulders", tag: "Side delts",
   prim: ["sdelt"], sec: [],
-  equip: "Cable machine, low pulley", kind: "isolation", load: "cable", step: 2.5,
-  typ: { sets: 3, reps: [12, 15], rest: 45 },
-  machine: "cable",
-  draft: true,
-  cue: "Low pulley, cable across the body. Constant tension the whole way — raise to shoulder height, resist on the way down.",
+  equip: "Cable machine, low pulley, single handle", kind: "isolation", load: "cable", step: 2.5,
+  typ: { sets: 3, reps: [12, 15], each: true, rest: 60 },
+  cue: "One arm at a time: pull the handle out to the side until your hand is level with your shoulder.",
   setup: [
-    "Pulley at the <b>lowest</b> setting. Stand side-on, handle in the far hand, cable crossing in front of your shins. Half a step away so there is tension at the bottom. Free hand on the frame.",
-    "Neutral, wrist straight.",
+    "Set the pulley at the lowest position and attach a single handle.",
+    "Stand side-on to the machine and hold the handle with the arm farther from it, so the cable crosses in front of your body.",
+    "Hold the machine with the free hand. Keep a small bend in the working elbow.",
   ],
   rep: [
-    ["Range", "Hand starts in front of the opposite hip and finishes at shoulder height, <b>20°</b> in front of the body."],
-    ["Angles", "Elbow bent <b>10–15°</b> and fixed. Torso upright — no leaning away from the stack."],
+    ["Start", "Hand in front of the opposite thigh, cable tight."],
+    ["Move", "Raise the arm out to the side and slightly forward, elbow leading."],
+    ["Finish", "Hand level with the shoulder. Lower for 3 seconds without letting the plates touch down."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>2–3 s</b> down. Constant tension — never let the stack rest."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> up, <b>3 s</b> down.",
+  feel: "The outside of the shoulder, from the very start of the lift.",
   fix: [
-    ["Avoid", "Swinging for momentum or shrugging the traps. Slow, torso still, elbow leads."],
+    ["Your body leans away to help", "Lighter weight; stay upright."],
+    ["You feel your neck", "Stop at shoulder height and keep the shoulder down."],
   ],
-  swap: [],
+  check: "The plates never touch the stack between reps.",
+  weight: "Start with the lightest one or two plates. One plate up when every set reaches the top of the range.",
+  swap: ["latRaise"],
 };
+EX.reardelt = {
+  name: "Reverse Pec Deck", group: "Shoulders", tag: "Rear delts",
+  prim: ["rdelt"], sec: ["midback", "traps"],
+  equip: "Reverse pec deck machine", kind: "isolation", load: "machine", step: 5,
+  typ: { sets: 3, reps: [15, 20], rest: 60 },
+  cue: "Open your arms out and back until they are in line with your shoulders.",
+  setup: [
+    "Sit facing the pad with your chest against it.",
+    "Set the seat so your arms are level with your shoulders when you hold the handles.",
+    "Hold the handles with palms facing each other or facing down, arms almost straight.",
+  ],
+  rep: [
+    ["Start", "Arms straight in front of you, shoulders relaxed forward."],
+    ["Move", "Sweep the arms out to the sides. They stay almost straight."],
+    ["Finish", "Arms in line with your shoulders. Return for 2–3 seconds."],
+  ],
+  tempo: "<b>1 s</b> back, <b>2–3 s</b> forward.",
+  feel: "The back of the shoulders.",
+  fix: [
+    ["You feel the middle of the back more", "Lighter weight, and stop when the arms are in line with the shoulders."],
+    ["Your chest leaves the pad", "It is too heavy."],
+  ],
+  check: "Your chest stays on the pad for every rep.",
+  weight: "Light. Start with a weight you could do 22 times; one plate up when every set reaches the top of the range.",
+  swap: ["facepull"],
+};
+EX.facepull = {
+  name: "Face Pull", group: "Shoulders", tag: "Rear delts",
+  prim: ["rdelt"], sec: ["midback", "traps"],
+  equip: "Cable machine, rope", kind: "isolation", load: "cable", step: 2.5,
+  typ: { sets: 3, reps: [15, 20], rest: 60 },
+  cue: "Pull the rope toward your eyes and spread your hands apart.",
+  setup: [
+    "Set the pulley at the height of your forehead and attach a rope.",
+    "Hold the rope with your thumbs pointing back at you and step back until your arms are straight.",
+    "Stand tall, one foot slightly in front of the other.",
+  ],
+  rep: [
+    ["Start", "Arms straight in front of your face, cable tight."],
+    ["Move", "Pull the rope toward your eyes, elbows high and out to the sides."],
+    ["Finish", "Hands beside your ears, rope ends apart. Hold 1 second, return for 2–3 seconds."],
+  ],
+  tempo: "<b>1 s</b> pull, <b>1 s</b> hold, <b>2–3 s</b> back.",
+  feel: "The back of the shoulders and between the shoulder blades.",
+  fix: [
+    ["Your elbows drop below your hands", "It has become a row. Lighter weight, elbows up."],
+    ["You lean back to pull", "It is too heavy. Stand tall."],
+  ],
+  check: "At the finish, your hands are beside your ears and your elbows are as high as your shoulders.",
+  weight: "Light. One plate up when every set reaches the top of the range.",
+  swap: ["reardelt"],
+};
+
+/* ----------------------------------------------------------------- ARMS */
 EX.pushdown = {
   name: "Triceps Pushdown", group: "Arms", tag: "Triceps",
   prim: ["triceps"], sec: [],
-  equip: "Cable machine, high pulley", kind: "isolation", load: "cable", step: 2.5,
-  typ: { sets: 3, reps: [10, 15], rest: 60 },
-  machine: "cable",
-  draft: true,
-  cue: "Elbows pinned to your sides. Extend fully and squeeze the triceps at the bottom; only the forearms move.",
+  equip: "Cable machine, high pulley, bar or rope", kind: "isolation", load: "cable", step: 2.5,
+  typ: { sets: 3, reps: [10, 15], rest: 75 },
+  cue: "Elbows stay at your sides; push the bar down until your arms are straight.",
   setup: [
-    "Pulley at the <b>top</b>. Half a step back, feet hip-width or staggered, <b>10–15°</b> hinge forward, chest up.",
-    "Straight bar or rope, hands shoulder width, wrists straight.",
+    "Set the pulley at the top and attach a short bar or a rope.",
+    "Stand close, lean forward a little, and tuck your elbows against your ribs.",
+    "Start with your hands at chest height.",
   ],
   rep: [
-    ["Range", "Start with the forearms just above parallel (bar at mid-chest), finish at full lockout with the bar at the thighs."],
-    ["Angles", "Elbows pinned to the ribs, a fraction in front of the torso. The upper arm does not move; only the elbow angle changes."],
+    ["Start", "Hands at chest height, elbows at your sides."],
+    ["Move", "Push down. Only the forearms move."],
+    ["Finish", "Arms fully straight, hands beside your thighs. Squeeze 1 second, then let the bar rise for 2–3 seconds to chest height."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> down, <b>1 s</b> squeeze, <b>2–3 s</b> up."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> down, <b>1 s</b> squeeze, <b>2–3 s</b> up.",
+  feel: "The back of the upper arm.",
   fix: [
-    ["Avoid", "Letting the elbows drift forward, which turns it into a chest and shoulder push."],
+    ["Your elbows move forward as the bar rises", "Pin them to your ribs. Lower the weight."],
+    ["Your shoulders roll forward to push", "Stand tall and use less weight."],
   ],
-  swap: [],
+  check: "Seen from the side, your elbow stays in one place for the whole set.",
+  weight: "One plate up when every set reaches the top of the range.",
+  swap: ["ohext"],
 };
 EX.ohext = {
   name: "Overhead Dumbbell Triceps Extension", group: "Arms", tag: "Triceps",
   prim: ["triceps"], sec: [],
-  equip: "One dumbbell", kind: "isolation", load: "db", step: 2,
-  typ: { sets: 3, reps: [10, 12], rest: 60 },
-  draft: true,
-  cue: "One dumbbell held overhead with both hands. Lower behind the head for a deep stretch, then extend. Keep elbows pointing forward.",
+  equip: "One dumbbell", kind: "isolation", load: "db1", step: 2,
+  typ: { sets: 3, reps: [10, 12], rest: 75 },
+  cue: "Lower the dumbbell behind your head, then straighten your arms.",
   setup: [
-    "Seated with back support (or standing, feet hip-width). One dumbbell, ribs down, no arch.",
-    "Both palms cupped under the top plate — the \"diamond\" grip.",
+    "Sit on a bench with a back support, or stand.",
+    "Hold one dumbbell with both hands under its top plate and lift it above your head.",
+    "Upper arms beside your ears, elbows pointing forward and up.",
   ],
   rep: [
-    ["Range", "Lower until the forearms drop below parallel behind the head, extend to just short of a hard lockout."],
-    ["Angles", "Upper arms vertical, elbows pointing <b>forward</b> and about ear width apart. Elbow bends to <b>90°</b> or a little past."],
+    ["Start", "Arms straight, dumbbell above your head."],
+    ["Move", "Bend only at the elbows and lower the dumbbell behind your head for 3 seconds."],
+    ["Finish", "Forearms touch your biceps and you feel a stretch at the back of the arms. Then straighten the arms fully."],
   ],
-  nums: [
-    ["Tempo", "<b>2–3 s</b> down, <b>1 s</b> up."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>3 s</b> down, <b>1 s</b> up.",
+  feel: "The back of the upper arms, with a deep stretch at the bottom.",
   fix: [
-    ["Avoid", "Flaring the elbows wide or letting the upper arms drop. Keep them fixed and high."],
+    ["Your elbows spread wide", "Squeeze them in toward your ears. Go lighter if you need to."],
+    ["Your lower back arches", "Sit against a back support and press your ribs down."],
   ],
-  swap: [],
-};
-EX.pulldown = {
-  name: "Lat Pulldown", group: "Back", tag: "Lats / Width",
-  prim: ["lats"], sec: ["biceps", "midback", "rdelt"],
-  equip: "Lat pulldown machine", kind: "compound", load: "machine", step: 5,
-  typ: { sets: 4, reps: [10, 12], rest: 90 },
-  machine: "lat",
-  draft: true,
-  cue: "Grip just outside shoulder width. Pull the bar to your <b>upper chest</b> by driving elbows down; squeeze the lats. Don’t lean back to cheat.",
-  setup: [
-    "Thigh pad set so the thighs are locked in. Sit tall, chest up, lean back <b>10–15°</b> and hold that angle.",
-    "Overhand, about <b>1.5×</b> shoulder width — hands just outside the bar's bend.",
-  ],
-  rep: [
-    ["Range", "Full stretch at the top (arms straight, shoulders lifted toward the ears), bar to the <b>upper chest</b>."],
-    ["Angles", "Torso stays fixed at <b>10–15°</b> back. Elbows drive down and slightly back, finishing at your sides."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> down, <b>1 s</b> squeeze, <b>2–3 s</b> up."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Big backward swing — momentum, not lats, moving the weight."],
-  ],
-  swap: [],
-};
-EX.pullup = {
-  name: "Pull-Ups (or Assisted)", group: "Back", tag: "Lats / Width",
-  prim: ["lats"], sec: ["biceps", "midback", "rdelt"],
-  equip: "Pull-up bar or assisted machine", kind: "compound", load: "bw", step: 2.5,
-  typ: { sets: 3, reps: "amrap", rest: 120 },
-  draft: true,
-  cue: "Hands just outside shoulders. Pull your chest to the bar, lead with the elbows. Use the assist machine or a band if needed to hit the reps.",
-  setup: [
-    "Dead hang, legs straight or crossed behind you, core braced, shoulders pulled slightly down.",
-    "Overhand, hands <b>1.2–1.5×</b> shoulder width.",
-  ],
-  rep: [
-    ["Range", "Chin clearly over the bar at the top, arms fully straight at the bottom."],
-    ["Angles", "Elbows drive down and back; chest lifts toward the bar with a small lean back at the top."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>2–3 s</b> down. On the assist machine, set the counterweight so you fail inside the rep range."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Half reps and kipping. Full range under control beats sloppy volume — use a band or the assist machine if you need it."],
-  ],
-  swap: [],
-};
-EX.cableRow = {
-  name: "Seated Cable Row", group: "Back", tag: "Back Thickness",
-  prim: ["midback", "lats"], sec: ["biceps", "rdelt", "traps"],
-  equip: "Seated cable row station", kind: "compound", load: "cable", step: 5,
-  typ: { sets: 4, reps: [10, 12], rest: 90 },
-  machine: "cable",
-  draft: true,
-  cue: "Tall chest, pull the handle to your <b>belly button</b>, squeeze the shoulder blades together, then control the stretch forward. Minimal torso swing.",
-  setup: [
-    "Feet on the platform, knees bent <b>10–20°</b>, torso upright at <b>90°</b> to the floor. Sit tall.",
-    "V-handle (neutral) for thickness; wide bar for the upper back.",
-  ],
-  rep: [
-    ["Range", "Full stretch forward — shoulders rolled ahead, elbows straight — then pull to the abdomen with the shoulder blades squeezed."],
-    ["Angles", "Elbows tucked, pulled toward the belly button. The torso may drift <b>±10°</b>, no more."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> pull, <b>1 s</b> squeeze, <b>2–3 s</b> return."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Rounded back and shrugging forward — risks the lower back."],
-  ],
-  swap: [],
-};
-EX.csRow = {
-  name: "Chest-Supported Row", group: "Back", tag: "Back Thickness",
-  prim: ["midback", "lats"], sec: ["biceps", "rdelt", "traps"],
-  equip: "Chest-supported row machine", kind: "compound", load: "machine", step: 5,
-  typ: { sets: 4, reps: [10, 12], rest: 90 },
-  machine: "plate",
-  draft: true,
-  cue: "Chest on the pad takes momentum out. Row to your ribs, elbows back and down, big squeeze. Strict and controlled.",
-  setup: [
-    "Chest on the pad, seat height so the pad sits at the <b>sternum</b>. Feet planted, neck neutral.",
-    "Neutral for thickness, wide overhand for the upper back.",
-  ],
-  rep: [
-    ["Range", "Full stretch with the shoulders forward; row until the elbows are behind the torso."],
-    ["Angles", "Elbows at <b>45°</b> from the torso, driving back and down toward the ribs."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> pull, <b>1 s</b> squeeze, <b>2–3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Yanking with the lower back or shrugging upward. The chest pad is there so you row instead of heave."],
-  ],
-  swap: [],
-};
-EX.dbRow = {
-  name: "Single-Arm Dumbbell Row", group: "Back", tag: "Lats / Thickness",
-  prim: ["lats"], sec: ["midback", "biceps", "rdelt"],
-  equip: "One dumbbell, flat bench", kind: "compound", load: "db", step: 2,
-  typ: { sets: 3, reps: [10, 12], each: true, rest: 60 },
-  draft: true,
-  cue: "One hand and knee on the bench, flat back. Row the dumbbell to your hip, lead with the elbow, full stretch at the bottom.",
-  setup: [
-    "One hand and the same-side knee on the bench, other foot on the floor slightly back. Back flat and <b>parallel</b> to the floor, neck neutral.",
-    "Neutral, palm facing the bench.",
-  ],
-  rep: [
-    ["Range", "Full stretch at the bottom (shoulder drops toward the floor), dumbbell to the hip crease."],
-    ["Angles", "Elbow at <b>45°</b> from the torso, driving up and back toward the hip. Shoulders stay square — no twisting to lift."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>1 s</b> squeeze, <b>2–3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Rounded/twisting back — keep the spine long and still."],
-  ],
-  swap: [],
-};
-EX.straightArm = {
-  name: "Straight-Arm Pulldown", group: "Back", tag: "Lats",
-  prim: ["lats"], sec: [],
-  equip: "Cable machine, high pulley", kind: "isolation", load: "cable", step: 2.5,
-  typ: { sets: 3, reps: [12, 15], rest: 60 },
-  machine: "cable",
-  draft: true,
-  cue: "High pulley, arms almost straight. Sweep the bar down to your thighs using the lats; feel them stretch at the top. Isolation, light weight.",
-  setup: [
-    "Pulley at the <b>top</b>. One step back, hinge <b>20–30°</b> at the hips, soft knees, chest up.",
-    "Overhand, shoulder width on a straight bar (or rope).",
-  ],
-  rep: [
-    ["Range", "From arms overhead (bar at eye level, lats stretched) down to the thighs."],
-    ["Angles", "Elbows bent <b>10–15°</b> and locked there — the arm sweeps in an arc from the shoulder."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> down, <b>1 s</b> squeeze, <b>2–3 s</b> up."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Bending the elbows, which makes it a triceps movement. Arms stay long, slight hinge at the hip."],
-  ],
-  swap: [],
-};
-EX.reardelt = {
-  name: "Reverse Pec Deck", group: "Shoulders", tag: "Rear Delts",
-  prim: ["rdelt"], sec: ["midback", "traps"],
-  equip: "Reverse pec deck machine", kind: "isolation", load: "machine", step: 5,
-  typ: { sets: 4, reps: [15, 20], rest: 45 },
-  machine: "plate",
-  draft: true,
-  cue: "Face the pad, arms out wide and back, lead with the pinkies/elbows. High reps, smooth tempo — builds the rear delts for that 3D shoulder.",
-  setup: [
-    "Face the pad, seat height so the handles are at <b>shoulder</b> height, chest against the pad, feet flat.",
-    "Neutral (palms facing in).",
-  ],
-  rep: [
-    ["Range", "Handles from in front of you to <b>in line</b> with the shoulders. Past that it stops being rear delt."],
-    ["Angles", "Elbows slightly bent, upper arms parallel to the floor — move in a flat horizontal arc."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> back, pause, <b>2 s</b> in."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Too much weight, so the mid-traps and momentum take over. Light and controlled."],
-  ],
-  swap: [],
-};
-EX.facepull = {
-  name: "Face Pull", group: "Shoulders", tag: "Rear Delts / Health",
-  prim: ["rdelt"], sec: ["midback", "traps"],
-  equip: "Cable machine, rope", kind: "isolation", load: "cable", step: 2.5,
-  typ: { sets: 3, reps: [15, 20], rest: 45 },
-  machine: "cable",
-  draft: true,
-  cue: "Rope at face height. Pull toward your forehead with <b>elbows high</b>, splitting the rope apart. Great for posture and healthy shoulders.",
-  setup: [
-    "Rope at <b>upper-face</b> height. Step back until the arms are straight with tension; staggered stance or a slight lean back.",
-    "Thumbs behind the rope ends, overhand-neutral.",
-  ],
-  rep: [
-    ["Range", "Arms fully extended to hands beside the ears with the rope pulled apart."],
-    ["Angles", "Elbows high — level with the ears — upper arms parallel to the floor. Pull to the forehead, hands finishing beside the ears."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> pull, <b>1 s</b> squeeze, <b>2 s</b> out."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Elbows dropped — it turns into a row and misses the rear delts."],
-  ],
-  swap: [],
+  check: "Your upper arms do not move: they stay beside your ears from start to finish.",
+  weight: "Start with a dumbbell you could do 14 times. Take the next one when every set reaches the top of the range.",
+  swap: ["pushdown"],
 };
 EX.bbCurl = {
   name: "Barbell Curl", group: "Arms", tag: "Biceps",
   prim: ["biceps"], sec: ["forearm"],
   equip: "Barbell or EZ bar", kind: "isolation", load: "bb", step: 2.5,
-  typ: { sets: 3, reps: [8, 12], rest: 60 },
-  draft: true,
-  cue: "Elbows fixed at your sides, curl the bar up without swinging, squeeze, lower slowly. Keep the wrists neutral.",
+  typ: { sets: 3, reps: [8, 12], rest: 75 },
+  cue: "Elbows at your sides; curl the bar to your shoulders and lower it slowly.",
   setup: [
-    "Feet hip-width, knees soft, chest up, elbows at the ribs. Stand with your back a hand's width off a wall if you tend to swing.",
-    "Underhand, shoulder width (or EZ bar on the inner grips).",
+    "Stand with feet under your hips, holding the bar palms up, hands shoulder-width apart.",
+    "Elbows beside your ribs, shoulders back.",
+    "Squeeze your glutes so your body cannot swing.",
   ],
   rep: [
-    ["Range", "From full extension (no bounce) to the forearm just past vertical."],
-    ["Angles", "Upper arms fixed at your sides and a fraction in front. Wrists straight — don't curl them."],
+    ["Start", "Arms straight, bar on your thighs."],
+    ["Move", "Curl the bar up. The elbows stay beside your ribs."],
+    ["Finish", "Bar at the top of your chest. Lower for 3 seconds until the arms are straight."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>1 s</b> squeeze, <b>2–3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> up, <b>3 s</b> down.",
+  feel: "The front of the upper arm.",
   fix: [
-    ["Avoid", "Swinging the torso for momentum. Upper arms still, strict movement."],
+    ["You lean back or swing", "Lighter, or stand with your back against a wall."],
+    ["Your wrists hurt", "Use an EZ bar (the one with bends in it)."],
   ],
-  swap: [],
+  check: "Your elbows stay beside your ribs: they do not travel forward.",
+  weight: "Add 2.5 kg when every set reaches the top of the range.",
+  swap: ["dbCurl"],
 };
 EX.dbCurl = {
   name: "Dumbbell Curl", group: "Arms", tag: "Biceps",
   prim: ["biceps"], sec: ["forearm"],
   equip: "Dumbbells", kind: "isolation", load: "db", step: 1,
-  typ: { sets: 3, reps: [10, 12], each: true, rest: 60 },
-  draft: true,
-  cue: "Curl one or both dumbbells, rotate the pinky up at the top for a peak squeeze. No body english.",
+  typ: { sets: 3, reps: [10, 12], each: true, rest: 75 },
+  cue: "Curl one dumbbell at a time and turn your palm up as it rises.",
   setup: [
-    "Standing, or seated with back support to kill the swing. Elbows pinned to the ribs.",
-    "Start with the palms facing in (hammer), rotate to palm-up by halfway.",
+    "Stand or sit with a dumbbell in each hand, arms straight, palms facing your thighs.",
+    "Elbows beside your ribs.",
+    "Work one arm, then the other.",
   ],
   rep: [
-    ["Range", "Full extension at the bottom to a full squeeze at the top."],
-    ["Angles", "Upper arm fixed; rotate the pinky up at the top so the palm faces the shoulder."],
+    ["Start", "Arm straight."],
+    ["Move", "Curl up and turn the palm to face your shoulder. The elbow stays beside your ribs."],
+    ["Finish", "Dumbbell in front of the shoulder. Lower for 3 seconds to a straight arm."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>1 s</b> squeeze, <b>3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> up, <b>3 s</b> down.",
+  feel: "The front of the upper arm.",
   fix: [
-    ["Avoid", "Letting the elbows drift forward to cheat the stretch. Keep them back behind the torso."],
+    ["You swing", "Sit down, or use a lighter pair."],
+    ["The arm does not straighten at the bottom", "Lower all the way: the bottom half of the curl matters most."],
   ],
-  swap: [],
+  check: "At the bottom of every rep the arm is fully straight.",
+  weight: "Take the next pair when every set reaches the top of the range.",
+  swap: ["bbCurl"],
 };
+
+/* ----------------------------------------------------------------- BACK */
+EX.pulldown = {
+  name: "Lat Pulldown", group: "Back", tag: "Lats",
+  prim: ["lats"], sec: ["biceps", "midback", "rdelt"],
+  equip: "Lat pulldown machine", kind: "compound", load: "machine", step: 5,
+  typ: { sets: 4, reps: [10, 12], rest: 120 },
+  cue: "Pull the bar to the top of your chest by driving your elbows down.",
+  setup: [
+    "Set the thigh pad so your legs cannot lift.",
+    "Stand up, grip the bar with palms facing away, each hand one hand-width outside your shoulders.",
+    "Sit down with straight arms, lean back a little and keep that lean.",
+  ],
+  rep: [
+    ["Start", "Arms straight, shoulders lifted toward your ears."],
+    ["Move", "Pull the shoulders down first, then the elbows down toward your ribs. Your body does not rock."],
+    ["Finish", "Bar touches the top of the chest, just below the collarbones. Hold 1 second, then let it rise for 2–3 seconds until the arms are straight."],
+  ],
+  tempo: "<b>1 s</b> down, <b>1 s</b> hold, <b>2–3 s</b> up.",
+  feel: "Under the armpits and down the sides of the back.",
+  fix: [
+    ["You feel your forearms or biceps most", "Loosen your grip so the fingers only hold the bar, and think about pulling with the elbows."],
+    ["You rock back to pull", "Go one plate lighter."],
+    ["The bar stops at your chin", "It is too heavy: every rep should reach the chest."],
+  ],
+  check: "The first rep and the last rep touch the same spot on your chest with the same lean.",
+  weight: "Start with a weight you could pull 15 times. One plate up when every set reaches the top of the range.",
+  safe: "Never pull the bar down behind your neck.",
+  swap: ["pullup", "dbRow"],
+};
+EX.pullup = {
+  name: "Pull-Up", group: "Back", tag: "Lats",
+  prim: ["lats"], sec: ["biceps", "midback", "rdelt"],
+  equip: "Pull-up bar, or the assisted pull-up machine", kind: "compound", load: "bw", step: 2.5,
+  typ: { sets: 3, reps: [5, 10], rest: 150 },
+  cue: "Hang with straight arms; pull until your chin is over the bar.",
+  setup: [
+    "Grip the bar with palms facing away, hands just outside your shoulders.",
+    "Hang with arms straight and legs still. Cross your ankles if it helps.",
+    "On the assisted machine or with a band: choose enough help to reach the low end of the rep range.",
+  ],
+  rep: [
+    ["Start", "Arms fully straight."],
+    ["Move", "Pull the shoulders down, then drive the elbows toward your ribs."],
+    ["Finish", "Chin clearly over the bar. Lower for 2–3 seconds to straight arms."],
+  ],
+  tempo: "Pull up, <b>2–3 s</b> down.",
+  feel: "Under the armpits and down the sides of the back. The biceps help.",
+  fix: [
+    ["You swing or kick", "Start each rep from a still hang."],
+    ["You cannot do 5", "Use the assisted machine or a band. Or jump to the top and lower yourself for 5 seconds."],
+    ["You do half reps", "Do fewer reps with the full range: straight arms at the bottom, chin over the bar at the top."],
+  ],
+  check: "Every rep starts from straight arms.",
+  weight: "Bodyweight first. When every set reaches the top of the range, hold a dumbbell between your feet or use a belt. Chest to the bar is the harder version.",
+  swap: ["pulldown"],
+};
+EX.cableRow = {
+  name: "Seated Cable Row", group: "Back", tag: "Mid-back",
+  prim: ["midback"], sec: ["lats", "biceps", "rdelt"],
+  equip: "Seated cable row station", kind: "compound", load: "cable", step: 5,
+  typ: { sets: 4, reps: [10, 12], rest: 120 },
+  cue: "Sit tall and pull the handle to your stomach; let it stretch you forward under control.",
+  setup: [
+    "Sit with your feet on the plates and knees slightly bent.",
+    "Take the handle and sit tall, chest up, arms straight.",
+    "Lean back only until your body is upright.",
+  ],
+  rep: [
+    ["Start", "Arms straight, shoulders reaching forward, back still straight."],
+    ["Move", "Pull the shoulder blades back, then the elbows back along your ribs. Your body stays almost still."],
+    ["Finish", "Handle touches your stomach above the navel, elbows behind your body. Hold 1 second, return for 2–3 seconds."],
+  ],
+  tempo: "<b>1 s</b> pull, <b>1 s</b> hold, <b>2–3 s</b> back.",
+  feel: "Between the shoulder blades and down the sides of the back.",
+  fix: [
+    ["Your lower back rounds when you reach forward", "Reach with the shoulders only and keep the chest up."],
+    ["You swing back to move the weight", "Lighter. The body stays upright."],
+    ["You feel only your biceps", "Start each rep by pulling the shoulder blades back."],
+  ],
+  check: "Your body moves less than a hand-width forward and back during the set.",
+  weight: "One plate up when every set reaches the top of the range.",
+  swap: ["csRow", "dbRow"],
+};
+EX.csRow = {
+  name: "Chest-Supported Row", group: "Back", tag: "Mid-back",
+  prim: ["midback"], sec: ["lats", "biceps", "rdelt"],
+  equip: "Chest-supported row machine", kind: "compound", load: "machine", step: 5,
+  typ: { sets: 4, reps: [10, 12], rest: 120 },
+  cue: "Chest on the pad; pull your elbows back until your hands reach your ribs.",
+  setup: [
+    "Set the seat or foot plate so the top of the pad is at the middle of your chest.",
+    "Press your chest against the pad.",
+    "Hold the handles with arms straight.",
+  ],
+  rep: [
+    ["Start", "Arms straight, shoulder blades spread apart."],
+    ["Move", "Pull the shoulder blades together, then drive the elbows back past your body."],
+    ["Finish", "Hands beside your lower ribs. Hold 1 second, lower for 2–3 seconds."],
+  ],
+  tempo: "<b>1 s</b> pull, <b>1 s</b> hold, <b>2–3 s</b> down.",
+  feel: "Between the shoulder blades and the back of the shoulders.",
+  fix: [
+    ["Your chest lifts off the pad", "It is too heavy."],
+    ["You shrug toward your ears", "Keep the shoulders down and pull the elbows back, not up."],
+  ],
+  check: "Your chest stays on the pad on every rep.",
+  weight: "One plate up, or 5 kg, when every set reaches the top of the range.",
+  swap: ["cableRow", "dbRow"],
+};
+EX.dbRow = {
+  name: "Single-Arm Dumbbell Row", group: "Back", tag: "Lats",
+  prim: ["lats"], sec: ["midback", "biceps", "rdelt"],
+  equip: "One dumbbell, flat bench", kind: "compound", load: "db1", step: 2,
+  typ: { sets: 3, reps: [10, 12], each: true, rest: 90 },
+  cue: "Flat back; pull the dumbbell toward your hip.",
+  setup: [
+    "Put one knee and the hand on the same side on a flat bench.",
+    "The other foot is on the floor, out to the side. Your back is flat and level.",
+    "Hold the dumbbell with the arm hanging straight down.",
+  ],
+  rep: [
+    ["Start", "Arm straight, shoulder reaching toward the floor."],
+    ["Move", "Pull the elbow up and back, close to your body. Do not twist your chest open."],
+    ["Finish", "Dumbbell beside your hip, elbow above your back. Lower for 2–3 seconds to a full stretch."],
+  ],
+  tempo: "<b>1 s</b> up, <b>2–3 s</b> down.",
+  feel: "The side of the back, under the armpit.",
+  fix: [
+    ["Your body twists to lift", "Lighter. Keep both shoulders level with the floor."],
+    ["You feel the top of the shoulder", "Pull toward the hip, not toward the chest."],
+  ],
+  check: "Both shoulders stay the same height from the floor for the whole rep: the chest does not turn open.",
+  weight: "Start with a dumbbell you could row 14 times. Take the next one when every set reaches the top of the range.",
+  swap: ["cableRow", "csRow"],
+};
+EX.straightArm = {
+  name: "Straight-Arm Pulldown", group: "Back", tag: "Lats",
+  prim: ["lats"], sec: [],
+  equip: "Cable machine, high pulley, bar or rope", kind: "isolation", load: "cable", step: 2.5,
+  typ: { sets: 3, reps: [12, 15], rest: 60 },
+  cue: "Arms almost straight; sweep the bar down to your thighs.",
+  setup: [
+    "Set the pulley at the top with a straight bar or a rope.",
+    "Hold it with hands shoulder-width apart and take one step back.",
+    "Lean forward a little from the hips, arms almost straight, hands at eye height.",
+  ],
+  rep: [
+    ["Start", "Hands at eye height, a stretch under the armpits."],
+    ["Move", "Sweep the bar down in an arc. The elbows keep the same small bend."],
+    ["Finish", "Bar touches your thighs. Squeeze 1 second, return for 3 seconds."],
+  ],
+  tempo: "<b>1 s</b> down, <b>1 s</b> squeeze, <b>3 s</b> up.",
+  feel: "Under the armpits and down the sides of the back. The arms only hold on.",
+  fix: [
+    ["Your elbows bend and it turns into a pushdown", "Lighter. Lock the small bend in the elbows."],
+    ["You feel the back of the arms", "Lean forward a little more and think about pulling from the armpits."],
+  ],
+  check: "The bend in your elbows is the same at the top and at the bottom.",
+  weight: "Light. One plate up when every set reaches the top of the range.",
+  swap: ["pulldown"],
+};
+EX.deadlift = {
+  name: "Deadlift", group: "Back", tag: "Hamstrings and back",
+  prim: ["hams", "lowerback"], sec: ["glutes", "midback", "traps"],
+  equip: "Barbell, full-size plates", kind: "compound", load: "bb", step: 5,
+  typ: { sets: 3, reps: [3, 5], rest: 240 },
+  cue: "Bar over the middle of your feet; push the floor away and stand up with a flat back.",
+  setup: [
+    "Stand with the bar over the middle of your feet, feet hip-width apart.",
+    "Bend down and grip the bar just outside your legs. Your shins touch the bar.",
+    "Lift your chest until your back is flat. Shoulders slightly in front of the bar.",
+    "Take a big breath and tighten your stomach.",
+  ],
+  rep: [
+    ["Start", "Bar on the floor, back flat, arms straight."],
+    ["Move", "Push the floor away with your legs. The bar slides up your shins and thighs. Hips and chest rise together."],
+    ["Finish", "Standing tall with hips and knees straight; do not lean back. Lower by pushing the hips back first, then bending the knees."],
+  ],
+  tempo: "Lift strongly, lower under control. Let the bar rest on the floor for a moment between reps.",
+  feel: "The whole back of the body: hamstrings, glutes and the muscles along the spine.",
+  fix: [
+    ["Your back rounds", "It is too heavy, or the bar is too far from you. Lower the weight."],
+    ["Your hips shoot up first", "Start with the hips a little higher and push with the legs."],
+    ["The bar swings away from your legs", "Keep it touching you all the way up and down."],
+  ],
+  check: "Film one set from the side: the bar travels in a straight line, straight up and down.",
+  weight: "Start with 40 kg or less, on full-size plates so the bar sits at the right height. Add 5 kg when every set reaches the top of the range.",
+  safe: "Never lift with a rounded back. If a rep slows to a stop, put the bar down.",
+  swap: ["rdl"],
+};
+
+/* ----------------------------------------------------------------- LEGS */
 EX.squat = {
-  name: "Back Squat", group: "Legs", tag: "Athletic Legs",
+  name: "Back Squat", group: "Legs", tag: "Quads",
   prim: ["quads"], sec: ["glutes", "lowerback"],
   equip: "Barbell, squat rack", kind: "compound", load: "bb", step: 5,
-  typ: { sets: 4, reps: [6, 10], rest: 150 },
-  draft: true,
-  cue: "Bar on upper traps, brace hard. Sit down between your hips to <b>at least parallel</b>, knees tracking over the toes, drive through mid-foot.",
+  typ: { sets: 4, reps: [6, 10], rest: 180 },
+  cue: "Sit down between your heels until your thighs are level, then stand up.",
   setup: [
-    "Bar on the upper traps (high bar). Feet shoulder width, toes out <b>15–30°</b>. Big breath into the belly, brace, then unrack.",
-    "Hands as close as the shoulders allow, elbows down, pull the bar into the back.",
+    "Set the bar in the rack at chest height and the safety bars just below the lowest point of your squat.",
+    "Step under the bar so it rests on the muscle at the top of your back, not on your neck. Hands just outside your shoulders.",
+    "Stand up with it and take two steps back. Feet shoulder-width apart, toes turned out slightly.",
+    "Take a big breath and tighten your stomach before each rep.",
   ],
   rep: [
-    ["Range", "Depth to standing tall, hips fully open at the top."],
-    ["Angles", "Knees track over the toes. Torso leans up to <b>45°</b> at the bottom on a high-bar squat — chest stays up. Depth: hip crease <b>at or below</b> the knee."],
+    ["Start", "Standing tall, weight on the whole foot."],
+    ["Move", "Bend your hips and knees together. The knees travel forward and out, in line with your toes. Chest stays up."],
+    ["Finish", "Thighs level with the floor or a little lower, heels still down. Then push the floor away and stand up."],
   ],
-  nums: [
-    ["Tempo", "<b>2–3 s</b> down, drive up. Re-breathe and re-brace at the top of every rep."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>2–3 s</b> down, then stand up strongly.",
+  feel: "The front of the thighs and the glutes.",
   fix: [
-    ["Avoid", "Hips shoot up and torso folds — turns into a back-loaded good-morning."],
+    ["Your heels lift", "Stand a little wider, or put small plates under your heels."],
+    ["Your knees fall inward", "Push them out toward your little toes. Lower the weight."],
+    ["Your hips rise first and your chest drops", "It is too heavy. Chest and hips rise together."],
   ],
-  swap: [],
-};
-EX.rdl = {
-  name: "Romanian Deadlift", group: "Legs", tag: "Hamstrings / Glutes",
-  prim: ["hams"], sec: ["glutes", "lowerback"],
-  equip: "Barbell", kind: "compound", load: "bb", step: 5,
-  typ: { sets: 3, reps: [8, 12], rest: 120 },
-  draft: true,
-  cue: "Soft knees, push the <b>hips back</b> and slide the bar down your legs until you feel a hamstring stretch. Flat back the whole time, then drive hips forward.",
-  setup: [
-    "Feet hip-width, toes forward, bar touching the thighs, shoulders over the bar.",
-    "Overhand, hands just outside the thighs. Straps are fine once grip limits you.",
-  ],
-  rep: [
-    ["Range", "Bar slides down the legs to <b>mid-shin</b> — stop where the hamstring stretch peaks, not at the floor. Back up to standing with the glutes squeezed, no leaning back."],
-    ["Angles", "Knees bent <b>15–20°</b> and fixed. Hips push back; back flat. Torso finishes between <b>45°</b> and nearly parallel to the floor."],
-  ],
-  nums: [
-    ["Tempo", "<b>3 s</b> down, <b>1 s</b> up."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Rounded lower back — the single fastest way to hurt it."],
-  ],
-  swap: [],
+  check: "At the bottom, the crease of your hip is level with the top of your knee. Film one set from the side to see it.",
+  weight: "Start with the empty bar. Add 5 kg when every set reaches the top of the range; switch to 2.5 kg jumps when 5 feels too big.",
+  safe: "Always squat inside a rack with the safety bars set. If you cannot stand up, sit down and let the bars take the weight.",
+  swap: ["legpress", "gobletSquat"],
 };
 EX.legpress = {
-  name: "Leg Press", group: "Legs", tag: "Quads / Glutes",
+  name: "Leg Press", group: "Legs", tag: "Quads",
   prim: ["quads"], sec: ["glutes"],
   equip: "Leg press machine", kind: "compound", load: "machine", step: 10,
-  typ: { sets: 4, reps: [10, 15], rest: 90 },
-  machine: "legpress",
-  draft: true,
-  cue: "Feet shoulder-width on the platform. Lower until knees reach ~90°, then press without locking out hard. Don’t let your lower back round off the seat.",
+  typ: { sets: 3, reps: [10, 15], rest: 120 },
+  cue: "Lower the platform as far as your hips stay on the seat, then press it away.",
   setup: [
-    "Back and hips flat on the pad. Feet mid-platform, shoulder width, toes out <b>10°</b>. Feet higher = more glute, lower = more quad.",
-    "Hands on the handles, pulling yourself into the seat.",
+    "Sit with your hips and your whole back against the pad.",
+    "Feet in the middle of the platform, shoulder-width apart, toes turned out slightly.",
+    "Press the platform up, release the safety handles, and hold the handles beside the seat.",
   ],
   rep: [
-    ["Range", "From 90° knees to just short of lockout — never snap the knees straight."],
-    ["Angles", "Knees bend to <b>90°</b> or a little more, tracking over the toes. The hips never lift off the pad."],
+    ["Start", "Legs almost straight, knees not locked."],
+    ["Move", "Lower for 3 seconds. The knees travel toward your shoulders, in line with your toes."],
+    ["Finish", "As deep as you can go with your hips still flat on the seat. Then press through the whole foot until the legs are almost straight."],
   ],
-  nums: [
-    ["Tempo", "<b>2–3 s</b> down, <b>1 s</b> up."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>3 s</b> down, <b>1–2 s</b> up.",
+  feel: "The front of the thighs and the glutes.",
   fix: [
-    ["Avoid", "Letting the lower back round off the pad at the bottom by going too deep, or snapping the knees straight at the top."],
+    ["Your hips roll up off the seat at the bottom", "That is too deep for now. Stop just before it happens."],
+    ["Your knees fall inward", "Push them out in line with your toes."],
+    ["Your heels lift", "Move your feet a little higher on the platform."],
   ],
-  swap: [],
+  check: "Your lower back stays pressed into the pad for the whole rep.",
+  weight: "Start light to find your depth. Add 10 kg when every set reaches the top of the range.",
+  safe: "Never snap the knees straight at the top, and put the safety handles back before you take your feet off.",
+  swap: ["squat", "gobletSquat"],
+};
+EX.gobletSquat = {
+  name: "Goblet Squat", group: "Legs", tag: "Quads",
+  prim: ["quads"], sec: ["glutes"],
+  equip: "One dumbbell or kettlebell", kind: "compound", load: "db1", step: 2,
+  typ: { sets: 3, reps: [8, 12], rest: 120 },
+  cue: "Hold one dumbbell at your chest and squat down between your knees.",
+  setup: [
+    "Hold one dumbbell upright against your chest, both hands under its top plate.",
+    "Feet shoulder-width apart, toes turned out slightly.",
+    "Elbows point down, chest up.",
+  ],
+  rep: [
+    ["Start", "Standing tall."],
+    ["Move", "Sit down between your heels for 3 seconds. The knees travel out, in line with your toes."],
+    ["Finish", "Thighs level with the floor or lower, elbows inside your knees, heels down. Stand up."],
+  ],
+  tempo: "<b>3 s</b> down, <b>1 s</b> up.",
+  feel: "The front of the thighs and the glutes.",
+  fix: [
+    ["Your heels lift", "Put small plates under your heels."],
+    ["You tip forward", "Keep the dumbbell touching your chest and your elbows pointing down."],
+  ],
+  check: "At the bottom, your elbows touch the inside of your knees.",
+  weight: "Start with 8–12 kg. Take the next dumbbell when every set reaches the top of the range. When it gets hard to hold, move to the leg press or the squat.",
+  swap: ["legpress", "squat"],
 };
 EX.lunge = {
-  name: "Walking Lunge", group: "Legs", tag: "Athletic Legs",
-  prim: ["quads", "glutes"], sec: ["hams"],
-  equip: "Dumbbells", kind: "compound", load: "db", step: 2,
+  name: "Walking Lunge", group: "Legs", tag: "Quads and glutes",
+  prim: ["quads"], sec: ["glutes"],
+  equip: "Dumbbells, a clear path", kind: "compound", load: "db", step: 2,
   typ: { sets: 3, reps: [10, 12], each: true, rest: 90 },
-  draft: true,
-  cue: "Long step, drop the back knee toward the floor, torso tall. Drive through the front heel to stand and step through. Add dumbbells when easy.",
+  cue: "Take a long step and lower your back knee toward the floor.",
   setup: [
-    "Stand tall, dumbbells at your sides. Step length about <b>two shoe lengths</b>.",
-    "Neutral, arms hanging still — they don't help.",
+    "Stand tall with a dumbbell in each hand, arms straight at your sides.",
+    "Find a clear path of about 10 steps.",
+    "Look ahead, chest up.",
   ],
   rep: [
-    ["Range", "Back knee to <b>2–5 cm</b> above the floor, then drive through the front heel to stand."],
-    ["Angles", "Front shin vertical or a fraction forward, front knee <b>90°</b>, back knee <b>90°</b> hovering just off the floor. Torso upright, a slight lean forward is fine."],
+    ["Start", "Standing tall."],
+    ["Move", "Step forward far enough that both knees can bend to a right angle. Lower straight down."],
+    ["Finish", "Back knee a hand-width above the floor, front foot flat. Push through the front foot and step straight into the next rep."],
   ],
-  nums: [
-    ["Tempo", "<b>2 s</b> down, <b>1 s</b> up."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "Controlled: about <b>2 s</b> down on each step.",
+  feel: "The thigh and the glute of the front leg.",
   fix: [
-    ["Avoid", "Short, choppy steps that put all of it on the knee. Step out far enough that the hip does the work."],
+    ["You wobble", "Step slightly out to the side, so your feet stay hip-width apart instead of in one line."],
+    ["Your front heel lifts", "Take a longer step."],
+    ["Your front knee hurts", "Step backward into each lunge instead of forward."],
   ],
-  swap: [],
+  check: "At the bottom of each step, both knees are at a right angle.",
+  weight: "Start with bodyweight. Add dumbbells when 12 steps on each leg are easy.",
+  swap: ["bulgarian", "legpress"],
 };
 EX.bulgarian = {
-  name: "Bulgarian Split Squat", group: "Legs", tag: "Athletic Legs",
-  prim: ["quads", "glutes"], sec: ["hams"],
+  name: "Bulgarian Split Squat", group: "Legs", tag: "Quads and glutes",
+  prim: ["quads"], sec: ["glutes"],
   equip: "Dumbbells, flat bench", kind: "compound", load: "db", step: 2,
   typ: { sets: 3, reps: [8, 12], each: true, rest: 90 },
-  draft: true,
-  cue: "Back foot on a bench, most weight on the front leg. Drop straight down, knee tracking forward, drive up through the front heel. Brutal but builds athletic single-leg strength.",
+  cue: "Back foot on a bench; lower straight down on the front leg.",
   setup: [
-    "Bench behind you, laces of the rear foot on it. Front foot far enough forward that the front shin is <b>vertical</b> at the bottom — about two shoe lengths from the bench.",
-    "Dumbbells at the sides (or one held at the chest to start).",
+    "Stand one long step in front of a bench, a dumbbell in each hand.",
+    "Put the top of your back foot on the bench.",
+    "Most of your weight is on the front foot, and the front foot is flat.",
   ],
   rep: [
-    ["Range", "Rear knee to just above the floor, then up through the front heel."],
-    ["Angles", "Front knee to <b>90°</b>. Torso <b>10–20°</b> forward for more glute, upright for more quad."],
+    ["Start", "Standing on the front leg, body upright or leaning forward a little."],
+    ["Move", "Lower straight down for 3 seconds. The front knee may travel over the toes; it stays in line with the second toe."],
+    ["Finish", "Back knee just above the floor, front thigh level. Push up through the whole front foot."],
   ],
-  nums: [
-    ["Tempo", "<b>2 s</b> down, <b>1 s</b> up."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>3 s</b> down, <b>1 s</b> up.",
+  feel: "The thigh and the glute of the front leg.",
   fix: [
-    ["Avoid", "Stance too short, so the knee shoots past the toes — or wobbling. Find your foot position and stay stable."],
+    ["You lose balance", "Hold one dumbbell and keep the other hand on a support."],
+    ["You want more glute", "Take a longer step and lean your chest forward a little."],
+    ["You want more thigh", "Take a shorter step and stay upright."],
   ],
-  swap: [],
-};
-EX.legcurl = {
-  name: "Lying Leg Curl", group: "Legs", tag: "Hamstrings",
-  prim: ["hams"], sec: [],
-  equip: "Lying leg curl machine", kind: "isolation", load: "machine", step: 5,
-  typ: { sets: 3, reps: [12, 15], rest: 60 },
-  machine: "legpad",
-  draft: true,
-  cue: "Curl the pad toward your glutes with control, squeeze the hamstrings hard at the top, slow on the way down. Keep hips on the pad.",
-  setup: [
-    "Lying face down, knee joint lined up with the machine's pivot, ankle pad just above the heel. Hips pressed into the pad, hands on the handles.",
-    "Hold the handles and pull yourself into the bench.",
-  ],
-  rep: [
-    ["Range", "Full stretch to full curl every rep."],
-    ["Angles", "Start with the knees almost straight (<b>10°</b> bend); curl until the pad is near the glutes. Toes pointed keeps it on the hamstrings."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>1 s</b> squeeze, <b>3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Jerking the weight up and letting the hips pop off the bench."],
-  ],
-  swap: [],
+  check: "The back leg only balances: at the top you could lift its toes off the bench for a moment.",
+  weight: "Start with bodyweight to learn the balance. Take the next dumbbells when every set reaches the top of the range.",
+  swap: ["lunge", "legpress"],
 };
 EX.legext = {
   name: "Leg Extension", group: "Legs", tag: "Quads",
   prim: ["quads"], sec: [],
   equip: "Leg extension machine", kind: "isolation", load: "machine", step: 5,
-  typ: { sets: 3, reps: [12, 15], rest: 60 },
-  machine: "legpad",
-  draft: true,
-  cue: "Extend the knees fully and squeeze the quads at the top; lower slowly. A great low-stress way to add quad volume and detail.",
+  typ: { sets: 3, reps: [12, 15], rest: 75 },
+  cue: "Straighten your knees fully, squeeze, and lower slowly.",
   setup: [
-    "Seat back so the knee lines up with the pivot; ankle pad just above the foot. Back flat, hold the handles.",
-    "Handles, pulling the hips into the seat.",
+    "Set the back pad so your knees line up with the machine's pivot.",
+    "Set the ankle pad on the lower shin, just above your feet.",
+    "If the seat reclines, lean it back one or two notches. Hold the handles.",
   ],
   rep: [
-    ["Range", "Full lockout at the top with a squeeze; back to 90°, not further."],
-    ["Angles", "Start at <b>90°</b>, extend to fully straight. Toes pointing up."],
+    ["Start", "Knees bent as far as the machine allows."],
+    ["Move", "Straighten the knees without lifting your hips."],
+    ["Finish", "Legs fully straight. Squeeze 1 second, lower for 3 seconds to the deepest bend."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>1–2 s</b> squeeze, <b>3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> up, <b>1 s</b> squeeze, <b>3 s</b> down.",
+  feel: "The front of the thighs.",
   fix: [
-    ["Avoid", "Swinging up with momentum and dropping the weight fast on the way down."],
+    ["Your hips lift off the seat", "Hold the handles and pull yourself down. Lighter weight."],
+    ["You kick the weight up", "Slow down. If you cannot pause at the top, it is too heavy."],
   ],
-  swap: [],
+  check: "You can hold the top for one full second with straight legs.",
+  weight: "One plate up when every set reaches the top of the range.",
+  swap: ["legpress", "gobletSquat"],
+};
+EX.rdl = {
+  name: "Romanian Deadlift", group: "Legs", tag: "Hamstrings",
+  prim: ["hams"], sec: ["glutes", "lowerback"],
+  equip: "Barbell (or two dumbbells)", kind: "compound", load: "bb", step: 5,
+  typ: { sets: 3, reps: [8, 12], rest: 150 },
+  cue: "Push your hips back and slide the bar down your legs; keep your back flat.",
+  setup: [
+    "Take the bar from a rack at mid-thigh height, hands just outside your thighs.",
+    "Feet under your hips. Take one step back.",
+    "Bend the knees a little and keep that bend.",
+  ],
+  rep: [
+    ["Start", "Standing tall, bar against your thighs."],
+    ["Move", "Push the hips straight back for 3 seconds. The bar slides down the legs and never leaves them."],
+    ["Finish", "Where your hips cannot go further back with a flat back: usually the bar is between the knee and the middle of the shin. Stand up by pushing the hips forward."],
+  ],
+  tempo: "<b>3 s</b> down, <b>1 s</b> up.",
+  feel: "A strong stretch at the back of the thighs. The glutes work on the way up.",
+  fix: [
+    ["You feel your lower back", "The bar drifted away from your legs, or you went too low. Keep it touching and stop sooner."],
+    ["Your knees keep bending", "It is becoming a squat. Fix the knees and move only the hips."],
+    ["Your grip gives up first", "Use lifting straps or chalk."],
+  ],
+  check: "Practise without weight: stand a foot-length in front of a wall and push your hips back until they touch it.",
+  weight: "Start with the empty bar or two dumbbells. Add 5 kg when every set reaches the top of the range.",
+  safe: "Stop the set if your back starts to round.",
+  swap: ["backExt", "seatedLegCurl"],
+};
+EX.legcurl = {
+  name: "Lying Leg Curl", group: "Legs", tag: "Hamstrings",
+  prim: ["hams"], sec: [],
+  equip: "Lying leg curl machine", kind: "isolation", load: "machine", step: 5,
+  typ: { sets: 3, reps: [12, 15], rest: 75 },
+  cue: "Curl your heels toward your glutes; hips stay on the pad.",
+  setup: [
+    "Lie face down with your knees just off the end of the pad, in line with the pivot.",
+    "Set the ankle pad just above your heels.",
+    "Hold the handles and press your hips into the pad.",
+  ],
+  rep: [
+    ["Start", "Legs straight."],
+    ["Move", "Curl the heels up. The hips stay down."],
+    ["Finish", "Pad as close to your glutes as it will go. Squeeze 1 second, lower for 3 seconds to straight legs."],
+  ],
+  tempo: "<b>1 s</b> up, <b>1 s</b> squeeze, <b>3 s</b> down.",
+  feel: "The back of the thighs.",
+  fix: [
+    ["Your hips lift", "Lighter. Press the hips down."],
+    ["Your calves cramp", "Pull your toes toward your shins."],
+  ],
+  check: "Your hips stay on the pad on every rep.",
+  weight: "One plate up when every set reaches the top of the range.",
+  swap: ["seatedLegCurl", "rdl"],
+};
+EX.seatedLegCurl = {
+  name: "Seated Leg Curl", group: "Legs", tag: "Hamstrings",
+  prim: ["hams"], sec: [],
+  equip: "Seated leg curl machine", kind: "isolation", load: "machine", step: 5,
+  typ: { sets: 3, reps: [10, 15], rest: 75 },
+  cue: "Pull your heels under the seat, then let the legs straighten slowly.",
+  setup: [
+    "Set the back pad so your knees line up with the pivot.",
+    "Lower the thigh pad firmly onto your thighs, just above the knees.",
+    "Ankle pad just above your heels. Sit tall, or lean forward a little.",
+  ],
+  rep: [
+    ["Start", "Legs straight out in front of you."],
+    ["Move", "Pull the heels down and back under the seat."],
+    ["Finish", "Knees bent as far as the machine allows. Squeeze 1 second, return for 3 seconds until the legs are straight."],
+  ],
+  tempo: "<b>1 s</b> curl, <b>1 s</b> squeeze, <b>3 s</b> back.",
+  feel: "The back of the thighs, with a stretch when the legs are straight.",
+  fix: [
+    ["Your thighs lift", "Tighten the thigh pad."],
+    ["You cut the range short", "Let the legs go fully straight on every rep."],
+  ],
+  check: "Your legs go fully straight at the start of every rep.",
+  weight: "One plate up when every set reaches the top of the range.",
+  swap: ["legcurl", "rdl"],
 };
 EX.calf = {
   name: "Standing Calf Raise", group: "Legs", tag: "Calves",
   prim: ["bcalf"], sec: [],
-  equip: "Calf raise machine or a step", kind: "isolation", load: "machine", step: 5,
-  typ: { sets: 4, reps: [12, 20], rest: 45 },
-  draft: true,
-  cue: "Rise all the way onto your <b>toes</b>, pause and squeeze at the top, then lower for a full stretch. Slow tempo beats heavy bouncing.",
+  equip: "Calf raise machine, or a step and a dumbbell", kind: "isolation", load: "machine", step: 5,
+  typ: { sets: 4, reps: [12, 20], rest: 60 },
+  cue: "Rise as high as you can on the balls of your feet; lower until your heels are below the step.",
   setup: [
-    "Balls of the feet on the edge, heels hanging free, feet hip-width and straight ahead.",
-    "Hands on the frame or shoulders under the pads; stand tall.",
+    "Stand with the balls of your feet on the edge of the step, heels hanging off.",
+    "Shoulders under the pads. Without a machine, hold a dumbbell in one hand and a support with the other.",
+    "Legs straight, knees not locked.",
   ],
   rep: [
-    ["Range", "Heel <b>below</b> the step at the bottom for a full stretch, up onto the very tips of the toes at the top."],
-    ["Angles", "Knees straight (soft, not locked hard) the whole set — bending them hands the work to the soleus."],
+    ["Start", "Heels below the step, a stretch in the calves. Pause here for 1–2 seconds."],
+    ["Move", "Rise straight up. Do not bounce."],
+    ["Finish", "As high as you can on the balls of your feet. Hold 1 second, lower for 2–3 seconds."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>2 s</b> squeeze, <b>3 s</b> down."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1–2 s</b> pause at the bottom, <b>1 s</b> up, <b>1 s</b> hold, <b>2–3 s</b> down.",
+  feel: "The back of the lower leg.",
   fix: [
-    ["Avoid", "Bouncing through tiny partial reps. Slow down — full stretch at the bottom, full squeeze at the top."],
+    ["You bounce", "Pause at the bottom of every rep."],
+    ["Your knees bend to help", "Keep the legs straight."],
   ],
+  check: "You pause at the bottom of every rep, with the heels below the step.",
+  weight: "One plate up, or 5 kg, when every set reaches the top of the range.",
   swap: [],
 };
+
+/* --------------------------------------------------------------- GLUTES */
+EX.hipthrust = {
+  name: "Barbell Hip Thrust", group: "Glutes", tag: "Glutes",
+  prim: ["glutes"], sec: ["hams"],
+  equip: "Barbell, flat bench, bar pad", kind: "compound", load: "bb", step: 5,
+  typ: { sets: 4, reps: [8, 12], rest: 120 },
+  cue: "Shoulders on the bench; push your hips up until your body is level.",
+  setup: [
+    "Sit on the floor with your upper back against the long side of a bench. Roll the bar over your legs into the crease of your hips, with a pad under it.",
+    "Feet flat and shoulder-width apart, close enough that your shins are upright at the top.",
+    "The bench sits under the bottom of your shoulder blades. Chin tucked, ribs down.",
+  ],
+  rep: [
+    ["Start", "Hips low, bar in the crease of the hips."],
+    ["Move", "Push through your heels and lift the hips. The chin stays tucked and the ribs stay down."],
+    ["Finish", "Hips level with your shoulders and knees, shins upright. Squeeze the glutes for 1 full second, lower for 2 seconds."],
+  ],
+  tempo: "<b>1 s</b> up, <b>1 s</b> squeeze, <b>2 s</b> down.",
+  feel: "The glutes.",
+  fix: [
+    ["You feel your lower back", "You are arching. Tuck the chin, keep the ribs down, and stop when the body is level."],
+    ["You feel the back of the thighs", "Bring your feet closer to you."],
+    ["You feel the front of the thighs", "Move your feet a little farther away."],
+  ],
+  check: "At the top, your shins are straight up and down and you can hold for a full second.",
+  weight: "Start with the empty bar. Add 5 kg when every set reaches the top of the range.",
+  swap: ["backExt", "rdl"],
+};
+EX.backExt = {
+  name: "45° Back Extension", group: "Glutes", tag: "Glutes",
+  prim: ["glutes"], sec: ["hams", "lowerback"],
+  equip: "45° back extension bench", kind: "isolation", load: "bw", step: 5,
+  typ: { sets: 3, reps: [10, 15], rest: 90 },
+  cue: "Bend at the hips over the pad, then lift until your body is straight.",
+  setup: [
+    "Set the pad just below your hip bones, so you can bend freely at the hips.",
+    "Feet on the plate, turned out slightly. Cross your arms on your chest.",
+    "Round your upper back a little and tuck your chin: this keeps the work in the glutes.",
+  ],
+  rep: [
+    ["Start", "Body straight."],
+    ["Move", "Bend at the hips and lower your chest for 2–3 seconds."],
+    ["Finish", "Down until you feel a stretch at the back of the thighs. Then squeeze the glutes and lift until the body is straight. Do not arch past straight."],
+  ],
+  tempo: "<b>2–3 s</b> down, <b>1 s</b> up, a short squeeze.",
+  feel: "The glutes and the back of the thighs.",
+  fix: [
+    ["You feel mostly your lower back", "Keep the upper back slightly rounded and stop at a straight line."],
+    ["It is too easy", "Hold a plate against your chest."],
+  ],
+  check: "At the top your body is one straight line from head to heels, not bent backward.",
+  weight: "Bodyweight first. Hold a 5 kg plate when every set reaches the top of the range.",
+  swap: ["hipthrust", "rdl"],
+};
+EX.abduction = {
+  name: "Hip Abduction Machine", group: "Glutes", tag: "Side glutes",
+  prim: ["glutes"], sec: [],
+  equip: "Hip abduction machine", kind: "isolation", load: "machine", step: 5,
+  typ: { sets: 3, reps: [15, 20], rest: 60 },
+  cue: "Push your knees apart as far as they go, then close slowly.",
+  setup: [
+    "Sit with your back against the pad and the pads on the outside of your knees.",
+    "Lean your chest forward a little and hold the handles.",
+    "Feet on the footrests.",
+  ],
+  rep: [
+    ["Start", "Knees together."],
+    ["Move", "Push the knees out against the pads."],
+    ["Finish", "Legs as wide as the machine allows. Hold 1 second, close for 3 seconds without letting the plates touch."],
+  ],
+  tempo: "<b>1 s</b> out, <b>1 s</b> hold, <b>3 s</b> in.",
+  feel: "The side and the upper part of the glutes.",
+  fix: [
+    ["You rock your body", "Lighter."],
+    ["You feel the outside of the thigh more", "Lean forward a little more."],
+  ],
+  check: "You can hold the widest position for one full second.",
+  weight: "One plate up when every set reaches the top of the range.",
+  swap: ["hipthrust"],
+};
+
+/* ----------------------------------------------------------------- CORE */
 EX.hangraise = {
-  name: "Hanging Leg Raise", group: "Core", tag: "Lower Abs",
+  name: "Hanging Leg Raise", group: "Core", tag: "Abs",
   prim: ["abs"], sec: ["obliques"],
   equip: "Pull-up bar", kind: "core", load: "bw", step: 0,
   typ: { sets: 3, reps: [10, 15], rest: 60 },
-  draft: true,
-  cue: "Hang from the bar, <b>curl the pelvis up</b> as you raise the knees/legs — this targets the lower abs (your problem area). No swinging.",
+  cue: "Hang from the bar and curl your hips up as you lift your knees.",
   setup: [
-    "Hang overhand at shoulder width, shoulders pulled down away from the ears, slight hollow through the body.",
-    "Overhand; straps or the ab slings if grip goes before the abs.",
+    "Hang from a pull-up bar, hands shoulder-width apart.",
+    "Legs together, body still.",
+    "Tighten your stomach before you move.",
   ],
   rep: [
-    ["Range", "The rep is the pelvic curl at the top, not the knee lift — lower back to a dead hang, stop every swing before the next rep."],
-    ["Angles", "Knees bent to start; raise until the thighs pass parallel and the <b>pelvis curls</b> up. Straight-leg version: legs to <b>90°</b> and beyond."],
+    ["Start", "Hanging still, legs down."],
+    ["Move", "Lift the knees and tilt your hips up toward your ribs."],
+    ["Finish", "Knees above hip height, lower back rounded slightly. Lower for 2–3 seconds without swinging."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>2 s</b> down."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> up, <b>2–3 s</b> down.",
+  feel: "The stomach muscles.",
   fix: [
-    ["Avoid", "Swinging the whole body for momentum — abs barely work."],
+    ["You swing", "Stop for a moment at the bottom of each rep."],
+    ["Your grip gives up", "Use the padded arm supports if your gym has them."],
+    ["You feel the front of your hips", "Curl the hips up; do not only lift the legs."],
   ],
-  swap: [],
+  check: "Your knees finish higher than your hips.",
+  weight: "Bent knees first. When every set reaches the top of the range, straighten the legs.",
+  swap: ["cablecrunch"],
 };
 EX.cablecrunch = {
   name: "Cable Crunch", group: "Core", tag: "Abs",
   prim: ["abs"], sec: [],
-  equip: "Cable machine, rope", kind: "core", load: "cable", step: 2.5,
+  equip: "Cable machine, high pulley, rope", kind: "core", load: "cable", step: 2.5,
   typ: { sets: 3, reps: [12, 15], rest: 60 },
-  machine: "cable",
-  draft: true,
-  cue: "Kneel under a high rope, hands by your head. Crunch your <b>ribcage toward your pelvis</b> by rounding the spine — hips stay put. Squeeze the abs, don’t just bend at the hips.",
+  cue: "Kneel and curl your ribs down toward your hips.",
   setup: [
-    "Kneel about <b>60 cm</b> from the machine, hips high — not sitting on the heels. Rope held at the temples.",
-    "Rope ends at the sides of the head, elbows in.",
+    "Set the pulley at the top with a rope.",
+    "Kneel one step from the machine and hold the rope beside your head.",
+    "Your hips stay above your knees for the whole set.",
   ],
   rep: [
-    ["Range", "From a tall, slightly extended spine (abs stretched) to the elbows near the thighs."],
-    ["Angles", "Hips stay at one angle; only the spine rounds. Elbows travel toward the mid-thigh."],
+    ["Start", "Back straight, a stretch in the stomach."],
+    ["Move", "Curl your spine: bring your ribs toward your hips. The hips do not move back."],
+    ["Finish", "Elbows near your knees, back rounded. Squeeze 1 second, return for 2–3 seconds."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> down, <b>1 s</b> squeeze, <b>2 s</b> up."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>1 s</b> down, <b>1 s</b> squeeze, <b>2–3 s</b> up.",
+  feel: "The stomach muscles.",
   fix: [
-    ["Avoid", "Hinging at the hips and just bowing, instead of flexing the spine. Round the upper back down."],
+    ["Your hips move back toward your heels", "Fix the hips in place. Lighter weight."],
+    ["You pull with your arms", "Keep the hands fixed beside your head."],
   ],
-  swap: [],
+  check: "Your hips stay above your knees the whole time.",
+  weight: "One plate up when every set reaches the top of the range.",
+  swap: ["hangraise"],
 };
 EX.pallof = {
-  name: "Pallof Press", group: "Core", tag: "Core / Waist",
+  name: "Pallof Press", group: "Core", tag: "Core",
   prim: ["obliques"], sec: ["abs"],
-  equip: "Cable machine", kind: "core", load: "cable", step: 2.5,
-  typ: { sets: 3, reps: [10, 12], each: true, rest: 45 },
-  machine: "cable",
-  draft: true,
-  cue: "Stand side-on to a cable, press the handle straight out and resist the pull twisting you. <b>Anti-rotation</b> core work — builds a tight, strong midsection.",
+  equip: "Cable machine, single handle", kind: "core", load: "cable", step: 2.5,
+  typ: { sets: 3, reps: [10, 12], each: true, rest: 60 },
+  cue: "Press the handle straight out and do not let the cable turn you.",
   setup: [
-    "Cable at <b>chest</b> height. Stand side-on, feet shoulder width, knees soft, one arm's length from the stack so it pulls hard.",
-    "Both hands on the handle at the sternum.",
+    "Set the pulley at chest height with a single handle.",
+    "Stand side-on to the machine, one step away, feet shoulder-width apart.",
+    "Hold the handle with both hands against your chest.",
   ],
   rep: [
-    ["Range", "Sternum to full extension and back — the resistance is in holding still."],
-    ["Angles", "Hips and shoulders stay square to the front. Press until the elbows lock straight in front of the chest."],
+    ["Start", "Hands on the chest, body square."],
+    ["Move", "Press the hands straight out in front of you."],
+    ["Finish", "Arms straight for 2 seconds while the cable tries to turn you. Bring the hands back to the chest."],
   ],
-  nums: [
-    ["Tempo", "<b>1 s</b> out, <b>2 s</b> hold, <b>1 s</b> in."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "<b>2 s</b> out, <b>2 s</b> hold, <b>2 s</b> back.",
+  feel: "The side of the stomach nearer the machine.",
   fix: [
-    ["Avoid", "Letting the torso twist toward the machine. The entire point is to not rotate."],
+    ["Your body turns toward the machine", "Lighter, or stand closer."],
+    ["Your hips sway", "Squeeze the glutes and soften the knees."],
   ],
-  swap: [],
+  check: "Your chest and belt buckle point straight ahead for the whole set.",
+  weight: "One plate up when every set reaches the top of the range.",
+  swap: ["plank"],
 };
 EX.plank = {
-  name: "Plank", group: "Core", tag: "Core Stability",
-  prim: ["abs"], sec: ["obliques", "lowerback"],
+  name: "Plank", group: "Core", tag: "Core",
+  prim: ["abs"], sec: ["obliques"],
   equip: "Floor", kind: "core", load: "time", step: 0,
-  typ: { sets: 3, hold: [30, 60], rest: 45 },
-  draft: true,
-  cue: "Forearms down, body in <b>one straight line</b> from head to heels. Squeeze glutes and abs, don’t let the hips sag. Brace, breathe, hold.",
+  typ: { sets: 3, hold: [30, 60], rest: 60 },
+  cue: "Hold one straight line from head to heels.",
   setup: [
-    "Elbows directly under the shoulders, forearms parallel, feet together or hip-width.",
-    "Fists or flat palms — flat palms spread the load.",
+    "Forearms on the floor, elbows under your shoulders.",
+    "Legs straight, feet together, weight on your forearms and toes.",
+    "Squeeze your glutes and pull your stomach in.",
   ],
   rep: [
-    ["Range", "No movement — the moment the hips sag or rise, the set is over."],
-    ["Angles", "One straight line: ear, shoulder, hip, knee, ankle. Tuck the pelvis slightly so the lower back doesn't dip. Eyes on the floor."],
+    ["Start", "Body in one straight line."],
+    ["Move", "Hold still. Breathe slowly."],
+    ["Finish", "Stop when your hips start to drop or rise."],
   ],
-  nums: [
-    ["Tempo", "Slow, steady breathing for <b>30–60 s</b>; squeeze the glutes and abs the whole time."],
-  ],
-  check: "",
-  feel: "",
+  tempo: "Hold for the time shown.",
+  feel: "The stomach muscles, all the way round.",
   fix: [
-    ["Avoid", "Hips sagging — loads the lower back instead of the core."],
+    ["Your hips sag", "Squeeze the glutes. End the set when you cannot hold the line."],
+    ["Your lower back hurts", "Tuck your hips under slightly, or rest on your knees."],
   ],
-  swap: [],
+  check: "Your hips are level with your shoulders: not higher, not lower.",
+  weight: "When you can hold 60 seconds on every set, make it harder: lift one foot, or put a plate on your back.",
+  swap: ["pallof"],
 };
-EX.hipthrust = {
-  name: "Barbell Hip Thrust", group: "Glutes", tag: "Glutes",
-  prim: ["glutes"], sec: ["hams", "quads"],
-  equip: "Barbell, flat bench", kind: "compound", load: "bb", step: 5,
-  typ: { sets: 4, reps: [8, 12], rest: 90 },
-  draft: true,
-  cue: "Shoulder blades on the bench, chin tucked, <b>ribs down</b>. Drive through the heels and squeeze the glutes hard for a full second at the top — the lockout is the exercise, not the depth.",
-  setup: [
-    "Upper back on the edge of the bench (just below the shoulder blades), bar padded across the hips, feet flat at shoulder width.",
-    "Hands on the bar to keep it over the hips.",
-  ],
-  rep: [
-    ["Range", "Hips from near the floor to full extension, level with the knees and shoulders."],
-    ["Angles", "At the top the shins are <b>vertical</b> (knee at 90°) and the torso is horizontal, chin tucked. If the heels push away, the feet were too far out."],
-  ],
-  nums: [
-    ["Tempo", "<b>1 s</b> up, <b>1–2 s</b> squeeze, <b>2 s</b> down."],
-  ],
-  check: "",
-  feel: "",
-  fix: [
-    ["Avoid", "Arching the lower back to fake a higher lockout, or pushing through the toes. Ribs stay down, heels stay planted."],
-  ],
-  swap: [],
-};
-/* ===== WARM-UP DRILLS ===== */
+/* ===== WARM-UP =====
+   One rule for every session: five easy minutes, the drills for that day,
+   then two lighter sets of the first lift (worked out from your log).
+   Each drill carries a one-line instruction, shown under its name, so it
+   can be followed with no signal. */
 const WARM = {
-  armCircle: { name: "Arm Circles", reps: "20 fwd / 20 back", cue: "Big slow circles, warm the shoulders" },
-  bandPull: { name: "Band Pull-Apart", reps: "2 × 15", cue: "Pull a band apart at chest height, squeeze shoulder blades" },
-  catcow: { name: "Cat-Cow", reps: "10 reps", cue: "On all fours, round then arch the spine slowly" },
-  legswing: { name: "Leg Swings", reps: "12 each leg", cue: "Hold support, swing one leg front to back" },
-  worldsgreat: { name: "World's Greatest Stretch", reps: "5 each side", cue: "Deep lunge, reach the top arm up and rotate open" },
-  glutebridge: { name: "Glute Bridge", reps: "2 × 12", cue: "On your back, drive hips up, squeeze glutes" },
-  deadhang: { name: "Dead Hang", reps: "2 × 20s", cue: "Hang from the bar, decompress and warm the lats/grip" },
+  armCircle:   { name: "Arm Circles", reps: "20 forward, 20 back", cue: "Arms straight out to the sides. Draw big, slow circles from the shoulder." },
+  bandPull:    { name: "Band Pull-Apart", reps: "2 × 15", cue: "Hold a light band at chest height with straight arms and pull your hands apart until it touches your chest. No band: do 15 slow reverse flies with empty hands." },
+  catcow:      { name: "Cat-Cow", reps: "10 slow reps", cue: "On hands and knees. Round your back up toward the ceiling, then let it sink and lift your chest." },
+  legswing:    { name: "Leg Swings", reps: "12 each leg", cue: "Hold a support. Swing one straight leg forward and back, a little higher each time." },
+  worldsgreat: { name: "Lunge with a Reach", reps: "5 each side", cue: "Step into a deep lunge, put both hands on the floor inside the front foot, then reach the inside arm up to the ceiling and look at it." },
+  glutebridge: { name: "Glute Bridge", reps: "2 × 12", cue: "Lie on your back with knees bent and feet flat. Lift your hips until your body is straight from shoulders to knees; squeeze for 1 second." },
+  deadhang:    { name: "Dead Hang", reps: "2 × 20 s", cue: "Hang from a pull-up bar with straight arms and relaxed shoulders." },
+  bwsquat:     { name: "Bodyweight Squat", reps: "10 slow reps", cue: "Feet shoulder-width apart. Sit down between your heels as low as is comfortable and stand up." },
 };
 const WARMSETS = {
-  push: { drills: ["armCircle", "bandPull"], lines: ["5 min easy bike or treadmill to raise the temperature", "2 light \"feeder\" sets of your first pressing exercise"] },
-  pull: { drills: ["bandPull", "deadhang", "catcow"], lines: ["5 min easy cardio", "1 light set of your first pulling exercise before you load up"] },
-  legs: { drills: ["legswing", "worldsgreat", "glutebridge"], lines: ["5 min easy bike", "10 slow bodyweight squats to groove the pattern"] },
+  push:  { drills: ["armCircle", "bandPull"] },
+  pull:  { drills: ["bandPull", "deadhang", "catcow"] },
+  legs:  { drills: ["legswing", "worldsgreat", "bwsquat"] },
+  hinge: { drills: ["legswing", "catcow", "glutebridge"] },
+  full:  { drills: ["armCircle", "legswing", "bwsquat"] },
 };
 /* ===================================================================
    PROGRAMS
    A program is a training target. Each has one variant per days-a-week
    it is offered at; a variant lists its sessions in week order, and each
    session lists its items: the exercise and exactly how it is prescribed
-   here (sets, reps or hold seconds, rest in seconds).
+   there (sets, reps or hold seconds, rest in seconds).
      def    the days-a-week variant offered first
+     level  1 suits a beginner · 2 needs a few months of lifting behind you
+     focus  the muscles the plan gives the most work
+     check  what tools/validate.mjs holds the plan to
      days   default training weekdays (0 = Sunday … 6 = Saturday)
-     reps   [low, high] | a fixed number | "amrap"     hold: [low, high] seconds
-     each   true when the reps are per side
+     reps   [low, high]     hold: [low, high] seconds     each: per side
+   An exercise that appears twice in one week is prescribed the same way
+   both times, so its history always compares like with like.
    =================================================================== */
 const PROGRAMS = {};
+const PROGRAM_ORDER = ["build", "vtaper", "glutes", "lean", "strength", "foundation"];
+
 PROGRAMS.vtaper = {
   name: "V-Taper",
   line: "Wider shoulders and back, a tighter waist.",
-  who: "For anyone past the first few months of lifting who wants the classic athletic shape.",
+  who: "For anyone past the first months of lifting who wants the classic athletic shape.",
   focus: ["sdelt", "lats", "uchest"],
-  level: 2,
-  def: 5,
+  level: 2, def: 5,
+  check: { profile: "build", emphasis: ["sdelt", "lats"], maxMin: 76 },
   about: [
-    "Side delts, lats and upper chest get the most work; legs and core are trained fully so the shape is balanced.",
+    "Side delts, lats and upper chest get the most work. Legs and core are trained in full, so the shape stays balanced.",
     "Every muscle is trained twice a week.",
   ],
   variants: {
     5: { days: [1, 2, 3, 4, 5], sessions: [
-      { name: "Chest & Shoulders", tag: "Push", focus: "Heavy incline first, then width", warm: "push", items: [
-        { ex: "inclineBB", sets: 4, reps: [6, 10], rest: 120 },
-        { ex: "pecdeck", sets: 3, reps: [12, 15], rest: 60 },
-        { ex: "machPress", sets: 4, reps: [8, 12], rest: 90 },
-        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 45 },
-        { ex: "pushdown", sets: 3, reps: [10, 15], rest: 60 },
+      { name: "Chest & Shoulders", tag: "Push", focus: "Heavy incline press first, then shoulder width.", warm: "push", items: [
+        { ex: "inclineBB", sets: 4, reps: [6, 10], rest: 150 },
+        { ex: "machPress", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "pecdeck", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "pushdown", sets: 3, reps: [10, 15], rest: 75 },
+        { ex: "calf", sets: 4, reps: [12, 20], rest: 60 },
       ] },
-      { name: "Back Width & Biceps", tag: "Pull", focus: "Vertical pulling for the taper, arms last", warm: "pull", items: [
-        { ex: "pullup", sets: 3, reps: "amrap", rest: 120 },
-        { ex: "pulldown", sets: 4, reps: [10, 12], rest: 90 },
-        { ex: "cableRow", sets: 4, reps: [10, 12], rest: 90 },
+      { name: "Back Width & Biceps", tag: "Pull", focus: "Pulling down for width, then rows and arms.", warm: "pull", items: [
+        { ex: "pullup", sets: 3, reps: [5, 10], rest: 150 },
+        { ex: "pulldown", sets: 4, reps: [10, 12], rest: 120 },
+        { ex: "cableRow", sets: 3, reps: [10, 12], rest: 120 },
         { ex: "straightArm", sets: 3, reps: [12, 15], rest: 60 },
-        { ex: "reardelt", sets: 4, reps: [15, 20], rest: 45 },
-        { ex: "bbCurl", sets: 3, reps: [8, 12], rest: 60 },
+        { ex: "reardelt", sets: 3, reps: [15, 20], rest: 60 },
+        { ex: "bbCurl", sets: 3, reps: [8, 12], rest: 75 },
+        { ex: "pallof", sets: 3, reps: [10, 12], each: true, rest: 60 },
       ] },
-      { name: "Quads & Core", tag: "Legs", focus: "Squat, press, and a braced midsection", warm: "legs", items: [
-        { ex: "squat", sets: 4, reps: [6, 10], rest: 150 },
-        { ex: "legpress", sets: 4, reps: [10, 15], rest: 90 },
-        { ex: "legext", sets: 3, reps: [12, 15], rest: 60 },
-        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 60 },
-        { ex: "calf", sets: 4, reps: [12, 20], rest: 45 },
+      { name: "Quads & Core", tag: "Legs", focus: "Squat first, then the machines and the abs.", warm: "legs", items: [
+        { ex: "squat", sets: 4, reps: [6, 10], rest: 180 },
+        { ex: "legpress", sets: 3, reps: [10, 15], rest: 120 },
+        { ex: "legext", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "calf", sets: 4, reps: [12, 20], rest: 60 },
         { ex: "hangraise", sets: 3, reps: [10, 15], rest: 60 },
-        { ex: "cablecrunch", sets: 3, reps: [12, 15], rest: 60 },
       ] },
-      { name: "The V-Taper Day", tag: "Delts + Arms", focus: "Second dose of delts and upper chest — this is the shape day", warm: "push", items: [
-        { ex: "dbPress", sets: 4, reps: [8, 12], rest: 90 },
-        { ex: "inclineDB", sets: 4, reps: [8, 12], rest: 90 },
-        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 45 },
-        { ex: "cableLat", sets: 3, reps: [12, 15], rest: 45 },
-        { ex: "facepull", sets: 3, reps: [15, 20], rest: 45 },
-        { ex: "dbCurl", sets: 3, reps: [10, 12], each: true, rest: 60 },
-        { ex: "ohext", sets: 3, reps: [10, 12], rest: 60 },
+      { name: "Shoulders & Arms", tag: "Delts + Arms", focus: "A second round for the shoulders and upper chest. This is the day that builds the shape.", warm: "push", items: [
+        { ex: "dbPress", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "inclineDB", sets: 4, reps: [8, 12], rest: 120 },
+        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "cableLat", sets: 3, reps: [12, 15], each: true, rest: 60 },
+        { ex: "facepull", sets: 3, reps: [15, 20], rest: 60 },
+        { ex: "dbCurl", sets: 3, reps: [10, 12], each: true, rest: 75 },
+        { ex: "ohext", sets: 3, reps: [10, 12], rest: 75 },
       ] },
-      { name: "Glutes, Hams & Thickness", tag: "Posterior", focus: "The hinge day — plus horizontal rowing for back depth", warm: "legs", items: [
-        { ex: "hipthrust", sets: 4, reps: [8, 12], rest: 90 },
-        { ex: "rdl", sets: 3, reps: [8, 12], rest: 120 },
+      { name: "Glutes, Hamstrings & Back", tag: "Posterior", focus: "Hip-hinge work first, then rowing for a thicker back.", warm: "hinge", items: [
+        { ex: "hipthrust", sets: 4, reps: [8, 12], rest: 120 },
+        { ex: "rdl", sets: 3, reps: [8, 12], rest: 150 },
         { ex: "bulgarian", sets: 3, reps: [8, 12], each: true, rest: 90 },
-        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 60 },
-        { ex: "csRow", sets: 4, reps: [10, 12], rest: 90 },
-        { ex: "dbRow", sets: 3, reps: [10, 12], each: true, rest: 60 },
-        { ex: "pallof", sets: 3, reps: [10, 12], each: true, rest: 45 },
+        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "csRow", sets: 4, reps: [10, 12], rest: 120 },
+        { ex: "dbRow", sets: 3, reps: [10, 12], each: true, rest: 90 },
       ] },
     ] },
     4: { days: [1, 2, 4, 5], sessions: [
-      { name: "Push Emphasis", tag: "Upper A", focus: "Incline press, shoulders, a row to keep it balanced", warm: "push", items: [
-        { ex: "inclineBB", sets: 4, reps: [6, 10], rest: 120 },
-        { ex: "machPress", sets: 4, reps: [8, 12], rest: 90 },
-        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 45 },
-        { ex: "cableRow", sets: 4, reps: [10, 12], rest: 90 },
-        { ex: "facepull", sets: 3, reps: [15, 20], rest: 45 },
-        { ex: "bbCurl", sets: 3, reps: [8, 12], rest: 60 },
+      { name: "Upper A", tag: "Upper A", focus: "Incline press and pulldown first, then the shoulders.", warm: "push", items: [
+        { ex: "inclineBB", sets: 4, reps: [6, 10], rest: 150 },
+        { ex: "pulldown", sets: 4, reps: [10, 12], rest: 120 },
+        { ex: "machPress", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "facepull", sets: 3, reps: [15, 20], rest: 60 },
+        { ex: "ohext", sets: 3, reps: [10, 12], rest: 75 },
       ] },
-      { name: "Quads & Core", tag: "Lower A", focus: "Squat-led, core to finish", warm: "legs", items: [
-        { ex: "squat", sets: 4, reps: [6, 10], rest: 150 },
-        { ex: "legpress", sets: 4, reps: [10, 15], rest: 90 },
-        { ex: "legext", sets: 3, reps: [12, 15], rest: 60 },
-        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 60 },
-        { ex: "calf", sets: 4, reps: [12, 20], rest: 45 },
+      { name: "Quads & Core", tag: "Lower A", focus: "Squat first, core to finish.", warm: "legs", items: [
+        { ex: "squat", sets: 4, reps: [6, 10], rest: 180 },
+        { ex: "legpress", sets: 3, reps: [10, 15], rest: 120 },
+        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "legext", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "calf", sets: 3, reps: [12, 20], rest: 60 },
         { ex: "hangraise", sets: 3, reps: [10, 15], rest: 60 },
       ] },
-      { name: "Pull Emphasis", tag: "Upper B", focus: "Back width and thickness, upper chest, delts", warm: "pull", items: [
-        { ex: "pulldown", sets: 4, reps: [10, 12], rest: 90 },
-        { ex: "csRow", sets: 4, reps: [10, 12], rest: 90 },
-        { ex: "inclineDB", sets: 4, reps: [8, 12], rest: 90 },
-        { ex: "dbPress", sets: 4, reps: [8, 12], rest: 90 },
-        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 45 },
-        { ex: "reardelt", sets: 4, reps: [15, 20], rest: 45 },
-        { ex: "pushdown", sets: 3, reps: [10, 15], rest: 60 },
+      { name: "Upper B", tag: "Upper B", focus: "Pull-ups and rows first, then upper chest and shoulders.", warm: "pull", items: [
+        { ex: "pullup", sets: 3, reps: [5, 10], rest: 150 },
+        { ex: "csRow", sets: 4, reps: [10, 12], rest: 120 },
+        { ex: "inclineDB", sets: 4, reps: [8, 12], rest: 120 },
+        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "straightArm", sets: 3, reps: [12, 15], rest: 60 },
+        { ex: "reardelt", sets: 3, reps: [15, 20], rest: 60 },
+        { ex: "bbCurl", sets: 3, reps: [8, 12], rest: 75 },
       ] },
-      { name: "Glutes & Hamstrings", tag: "Lower B", focus: "The hinge day, plus anti-rotation core", warm: "legs", items: [
-        { ex: "hipthrust", sets: 4, reps: [8, 12], rest: 90 },
-        { ex: "rdl", sets: 3, reps: [8, 12], rest: 120 },
+      { name: "Glutes & Hamstrings", tag: "Lower B", focus: "Hip-hinge work, plus side delts and core.", warm: "hinge", items: [
+        { ex: "hipthrust", sets: 4, reps: [8, 12], rest: 120 },
+        { ex: "rdl", sets: 3, reps: [8, 12], rest: 150 },
         { ex: "bulgarian", sets: 3, reps: [8, 12], each: true, rest: 90 },
-        { ex: "calf", sets: 4, reps: [12, 20], rest: 45 },
-        { ex: "pallof", sets: 3, reps: [10, 12], each: true, rest: 45 },
+        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "calf", sets: 3, reps: [12, 20], rest: 60 },
+        { ex: "cableLat", sets: 3, reps: [12, 15], each: true, rest: 60 },
+        { ex: "pallof", sets: 3, reps: [10, 12], each: true, rest: 60 },
+      ] },
+    ] },
+  },
+};
+
+PROGRAMS.build = {
+  name: "Balanced Muscle",
+  line: "Even muscle gain from head to toe.",
+  who: "For anyone who wants to build muscle everywhere, with no weak spots.",
+  focus: ["chest", "lats", "quads", "hams"],
+  level: 2, def: 4,
+  check: { profile: "build", emphasis: [], maxMin: 76 },
+  about: [
+    "Two upper-body days and two lower-body days. Every muscle gets a full dose twice a week.",
+    "Big lifts first, smaller muscles after.",
+  ],
+  variants: {
+    4: { days: [1, 2, 4, 5], sessions: [
+      { name: "Upper 1", tag: "Upper 1", focus: "Bench press and rows, then shoulders and arms.", warm: "push", items: [
+        { ex: "benchBB", sets: 4, reps: [6, 10], rest: 150 },
+        { ex: "cableRow", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "dbPress", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "pulldown", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "pecdeck", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "bbCurl", sets: 3, reps: [8, 12], rest: 75 },
+      ] },
+      { name: "Lower 1", tag: "Lower 1", focus: "Squat first, then the machines.", warm: "legs", items: [
+        { ex: "squat", sets: 4, reps: [6, 10], rest: 180 },
+        { ex: "legpress", sets: 3, reps: [10, 15], rest: 120 },
+        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "legext", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "calf", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "hangraise", sets: 3, reps: [10, 15], rest: 60 },
+      ] },
+      { name: "Upper 2", tag: "Upper 2", focus: "Incline press and pull-ups, then the smaller muscles.", warm: "pull", items: [
+        { ex: "inclineDB", sets: 4, reps: [8, 12], rest: 120 },
+        { ex: "pullup", sets: 3, reps: [5, 10], rest: 150 },
+        { ex: "csRow", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "latRaise", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "reardelt", sets: 3, reps: [15, 20], rest: 60 },
+        { ex: "straightArm", sets: 3, reps: [12, 15], rest: 60 },
+        { ex: "ohext", sets: 3, reps: [10, 12], rest: 75 },
+      ] },
+      { name: "Lower 2", tag: "Lower 2", focus: "Hamstrings and glutes first.", warm: "hinge", items: [
+        { ex: "rdl", sets: 4, reps: [8, 12], rest: 150 },
+        { ex: "bulgarian", sets: 3, reps: [8, 12], each: true, rest: 90 },
+        { ex: "hipthrust", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "seatedLegCurl", sets: 3, reps: [10, 15], rest: 75 },
+        { ex: "calf", sets: 4, reps: [12, 20], rest: 60 },
         { ex: "cablecrunch", sets: 3, reps: [12, 15], rest: 60 },
+      ] },
+    ] },
+  },
+};
+
+PROGRAMS.glutes = {
+  name: "Glutes & Legs",
+  line: "Stronger, rounder glutes and legs, with the upper body kept in shape.",
+  who: "For anyone whose first goal is the lower body.",
+  focus: ["glutes", "quads", "hams"],
+  level: 2, def: 4,
+  check: { profile: "build", emphasis: ["glutes", "quads", "hams"], lower: ["chest", "lats", "midback", "sdelt", "fdelt", "rdelt", "biceps", "triceps"], maxMin: 76 },
+  about: [
+    "Three lower-body days built around the hip thrust, the squat and single-leg work.",
+    "One upper-body day, plus a little on the last day, keeps the rest of you strong.",
+  ],
+  variants: {
+    4: { days: [1, 2, 4, 5], sessions: [
+      { name: "Glutes & Hamstrings", tag: "Lower 1", focus: "Hip thrust and hip-hinge first.", warm: "hinge", items: [
+        { ex: "hipthrust", sets: 3, reps: [8, 12], rest: 150 },
+        { ex: "rdl", sets: 3, reps: [8, 12], rest: 150 },
+        { ex: "bulgarian", sets: 3, reps: [8, 12], each: true, rest: 90 },
+        { ex: "seatedLegCurl", sets: 3, reps: [10, 15], rest: 75 },
+        { ex: "legext", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "cablecrunch", sets: 3, reps: [12, 15], rest: 60 },
+      ] },
+      { name: "Upper Body", tag: "Upper", focus: "One round for every upper-body muscle.", warm: "push", items: [
+        { ex: "inclineDB", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "pulldown", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "machPress", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "cableRow", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "latRaise", sets: 3, reps: [12, 20], rest: 60 },
+        { ex: "facepull", sets: 3, reps: [15, 20], rest: 60 },
+      ] },
+      { name: "Quads & Glutes", tag: "Lower 2", focus: "Squat first, then single-leg work.", warm: "legs", items: [
+        { ex: "squat", sets: 4, reps: [6, 10], rest: 180 },
+        { ex: "legpress", sets: 3, reps: [10, 15], rest: 120 },
+        { ex: "lunge", sets: 3, reps: [10, 12], each: true, rest: 90 },
+        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "calf", sets: 4, reps: [12, 20], rest: 60 },
+        { ex: "pallof", sets: 3, reps: [10, 12], each: true, rest: 60 },
+      ] },
+      { name: "Glutes & Upper", tag: "Lower 3", focus: "A second glute day, with a little upper-body work.", warm: "hinge", items: [
+        { ex: "hipthrust", sets: 3, reps: [8, 12], rest: 150 },
+        { ex: "backExt", sets: 3, reps: [10, 15], rest: 90 },
+        { ex: "abduction", sets: 3, reps: [15, 20], rest: 60 },
+        { ex: "csRow", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "benchDB", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "latRaise", sets: 3, reps: [12, 20], rest: 60 },
+        { ex: "calf", sets: 4, reps: [12, 20], rest: 60 },
+      ] },
+    ] },
+  },
+};
+
+PROGRAMS.lean = {
+  name: "Lean & Defined",
+  line: "Keep your muscle while the fat comes off.",
+  who: "For anyone losing fat who wants shorter sessions and room for cardio.",
+  focus: ["quads", "lats", "uchest", "sdelt"],
+  level: 1, def: 3,
+  check: { profile: "maintain", emphasis: [], maxMin: 66 },
+  about: [
+    "Three full-body days. Each one has a leg lift, a press, a pull and a little for the shoulders or core.",
+    "The aim is to hold your strength while you eat less. Holding it is the win.",
+  ],
+  variants: {
+    3: { days: [1, 3, 5], sessions: [
+      { name: "Full Body A", tag: "A", focus: "Squat, press, row and curl.", warm: "full", items: [
+        { ex: "squat", sets: 3, reps: [6, 10], rest: 180 },
+        { ex: "inclineDB", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "cableRow", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "legcurl", sets: 3, reps: [12, 15], rest: 75 },
+        { ex: "latRaise", sets: 3, reps: [12, 20], rest: 60 },
+        { ex: "bbCurl", sets: 3, reps: [8, 12], rest: 75 },
+      ] },
+      { name: "Full Body B", tag: "B", focus: "Hip-hinge, shoulder press and pulldown.", warm: "full", items: [
+        { ex: "rdl", sets: 3, reps: [8, 12], rest: 150 },
+        { ex: "machPress", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "pulldown", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "bulgarian", sets: 3, reps: [8, 12], each: true, rest: 90 },
+        { ex: "ohext", sets: 3, reps: [10, 12], rest: 75 },
+        { ex: "calf", sets: 3, reps: [12, 20], rest: 60 },
+      ] },
+      { name: "Full Body C", tag: "C", focus: "Leg press, incline press, rows and abs.", warm: "full", items: [
+        { ex: "legpress", sets: 3, reps: [10, 15], rest: 120 },
+        { ex: "inclineBB", sets: 3, reps: [6, 10], rest: 150 },
+        { ex: "dbRow", sets: 3, reps: [10, 12], each: true, rest: 90 },
+        { ex: "hipthrust", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "latRaise", sets: 3, reps: [12, 20], rest: 60 },
+        { ex: "hangraise", sets: 3, reps: [10, 15], rest: 60 },
+      ] },
+    ] },
+  },
+};
+
+PROGRAMS.strength = {
+  name: "Strength",
+  line: "A bigger squat, bench press, deadlift and overhead press.",
+  who: "For lifters who already move well with a barbell and want to get stronger.",
+  focus: ["quads", "chest", "hams", "fdelt"],
+  level: 2, def: 3,
+  check: { profile: "strength", emphasis: [], optional: ["calves", "sdelt", "abs"], mains: ["squat", "benchBB", "deadlift", "ohp"], maxMin: 80 },
+  about: [
+    "Three full-body days built on four barbell lifts, done heavy for 3 to 5 reps with long rests.",
+    "When every set reaches 5 reps, the bar gets heavier next time.",
+  ],
+  variants: {
+    3: { days: [1, 3, 5], sessions: [
+      { name: "Squat & Bench", tag: "A", focus: "Heavy squat and bench press, then back and hamstrings.", warm: "legs", items: [
+        { ex: "squat", sets: 4, reps: [3, 5], rest: 210 },
+        { ex: "benchBB", sets: 4, reps: [3, 5], rest: 180 },
+        { ex: "csRow", sets: 4, reps: [6, 10], rest: 120 },
+        { ex: "seatedLegCurl", sets: 3, reps: [8, 12], rest: 75 },
+        { ex: "facepull", sets: 3, reps: [12, 15], rest: 60 },
+      ] },
+      { name: "Deadlift & Press", tag: "B", focus: "Heavy deadlift and overhead press, then pull-ups.", warm: "hinge", items: [
+        { ex: "deadlift", sets: 3, reps: [3, 5], rest: 240 },
+        { ex: "ohp", sets: 4, reps: [3, 5], rest: 180 },
+        { ex: "pullup", sets: 4, reps: [5, 8], rest: 150 },
+        { ex: "bulgarian", sets: 3, reps: [6, 10], each: true, rest: 90 },
+        { ex: "ohext", sets: 3, reps: [8, 12], rest: 75 },
+      ] },
+      { name: "Squat & Bench 2", tag: "C", focus: "The second squat and bench day, then pulldowns and core.", warm: "legs", items: [
+        { ex: "squat", sets: 4, reps: [3, 5], rest: 210 },
+        { ex: "benchBB", sets: 4, reps: [3, 5], rest: 180 },
+        { ex: "pulldown", sets: 4, reps: [8, 10], rest: 120 },
+        { ex: "rdl", sets: 3, reps: [6, 8], rest: 150 },
+        { ex: "hangraise", sets: 3, reps: [10, 15], rest: 60 },
+      ] },
+    ] },
+  },
+};
+
+PROGRAMS.foundation = {
+  name: "Foundation",
+  line: "Your first three months: learn the lifts, build the habit.",
+  who: "For beginners, and for anyone coming back after a long break.",
+  focus: ["quads", "chest", "lats", "glutes"],
+  level: 1, def: 3,
+  check: { profile: "maintain", emphasis: [], maxMin: 61 },
+  about: [
+    "Three short full-body days on machines, dumbbells and your own bodyweight.",
+    "Keep two or three reps in hand on every set for the first two weeks. Clean reps come before heavy ones.",
+  ],
+  variants: {
+    3: { days: [1, 3, 5], sessions: [
+      { name: "Full Body A", tag: "A", focus: "Squat, press and row, with light weights and clean reps.", warm: "full", items: [
+        { ex: "gobletSquat", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "inclineDB", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "cableRow", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "legcurl", sets: 2, reps: [12, 15], rest: 75 },
+        { ex: "latRaise", sets: 2, reps: [12, 20], rest: 60 },
+        { ex: "plank", sets: 2, hold: [30, 60], rest: 60 },
+      ] },
+      { name: "Full Body B", tag: "B", focus: "Leg press, pulldown and shoulder press.", warm: "full", items: [
+        { ex: "legpress", sets: 3, reps: [10, 15], rest: 120 },
+        { ex: "pulldown", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "machPress", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "rdl", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "pushdown", sets: 2, reps: [10, 15], rest: 75 },
+        { ex: "dbCurl", sets: 2, reps: [10, 12], each: true, rest: 75 },
+      ] },
+      { name: "Full Body C", tag: "C", focus: "Squat again, push-ups, rows and hip thrusts.", warm: "full", items: [
+        { ex: "gobletSquat", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "pushup", sets: 3, reps: [8, 15], rest: 120 },
+        { ex: "csRow", sets: 3, reps: [10, 12], rest: 120 },
+        { ex: "hipthrust", sets: 3, reps: [8, 12], rest: 120 },
+        { ex: "calf", sets: 3, reps: [12, 20], rest: 60 },
+        { ex: "cablecrunch", sets: 2, reps: [12, 15], rest: 60 },
       ] },
     ] },
   },
@@ -2573,6 +3101,7 @@ function roundTo(x,st){ st=st>0?st:2.5; return Math.max(st,Math.round(x/st)*st);
 function nextLoad(ex,w){
   const st=+ex.step||2.5;
   if(ex.load==='db') return 'the next dumbbells up ('+kg(w+st)+' each)';
+  if(ex.load==='db1') return 'the next dumbbell up ('+kg(w+st)+')';
   if(ex.load==='machine'||ex.load==='cable') return 'one plate heavier (about '+kg(w+st)+')';
   return kg(w+st);
 }
@@ -2903,11 +3432,11 @@ function renderTrain(force){
   const info=infoForDate(TODAY);
   if(info&&info.idx>=0){ const blk=$('[data-dayblock="'+info.idx+'"]'); if(blk) blk.open=true; }
   $('#warmCard').innerHTML=
-    '<details><summary><span class="idx">00</span>Warm-up, mobility &amp; cool-down<span class="chev">'+ICO.chev+'</span></summary>'
-    +'<div class="dbody"><p style="font-size:13.5px;color:var(--text-dim)">Six to eight minutes. It is the cheapest injury insurance you will ever buy, and your top sets are measurably better for it.</p>'
+    '<details><summary><span class="idx">00</span>Warm-up and cool-down<span class="chev">'+ICO.chev+'</span></summary>'
+    +'<div class="dbody"><p style="font-size:13.5px;color:var(--text-dim)">About ten minutes. It protects your joints, and your first heavy sets go better for it.</p>'
     +'<div class="grid2" style="margin-top:12px">'
-    +'<div class="note"><b>Before</b><br>5 min easy bike or incline walk, then the drills inside each session, then two ramp-up sets at 50% and 75% of your first working weight.</div>'
-    +'<div class="note"><b>After</b><br>3 min easy walk, 20–30 s static stretches on what you trained, then four slow diaphragmatic breaths to switch into recovery.</div>'
+    +'<div class="note"><b>Before</b><br>5 minutes of easy bike or incline walking, then the drills listed inside each session, then two lighter sets of your first lift: about half of today\'s weight for 8 reps, then about three-quarters for 4.</div>'
+    +'<div class="note"><b>After</b><br>3 minutes of easy walking, then hold a gentle stretch for 20–30 seconds on each muscle you trained.</div>'
     +'</div></div></details>';
 }
 function renderPlanBar(){
@@ -2916,7 +3445,18 @@ function renderPlanBar(){
   seg.style.display=keys.length>1?'':'none';
   const bar=$('#planBar');
   if(bar) bar.innerHTML='<div class="planbar"><div class="pb-t"><span class="pb-k">Your plan</span><span class="pb-n">'+esc(p.name)+'</span>'
-    +'<span class="pb-l">'+esc(p.line)+'</span></div></div>';
+    +'<span class="pb-l">'+esc(p.line)+'</span></div><button class="btn sm" data-pickplan>Change</button></div>';
+}
+/* two lighter sets of the day's first lift, in kilos when the log knows the working weight */
+function rampLine(s){
+  const it=s.items[0], ex=it&&EX[it.ex];
+  if(!ex) return '';
+  const prev=prevSession(it.ex), w=prev?workWeight(judged(prev,it.sets)):0, st=+ex.step||2.5;
+  if(w>0&&ex.load!=='bw'&&ex.load!=='time'){
+    const each=ex.load==='db'?' each':'';
+    return 'Then two lighter sets of '+esc(ex.name)+': <b>'+kg(roundTo(w*0.5,st))+each+' × 8</b>, then <b>'+kg(roundTo(w*0.75,st))+each+' × 4</b>. (Last time you worked at '+kg(w)+each+'.)';
+  }
+  return 'Then two lighter sets of '+esc(ex.name)+': about half of today\'s weight for 8 reps, then about three-quarters for 4.';
 }
 function dayBlock(d,i,wd){
   const warm=WARMSETS[d.warm];
@@ -2927,14 +3467,15 @@ function dayBlock(d,i,wd){
   h+='<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:12px">'+esc(d.focus)+'</p>';
   if(warm){
     h+='<div class="warm"><div class="eyebrow" style="margin-bottom:6px">Warm-up first</div>'
-      +'<p style="font-size:13px;color:var(--text-dim)">'+warm.lines.map(esc).join(' · ')+'</p>'
+      +'<p style="font-size:13px;color:var(--text-dim)">5 minutes of easy bike or incline walking, then:</p>'
       +'<div class="drills">'+warm.drills.map(k=>{
           if(!WARM[k]) return '';
-          return '<div class="drill"><span class="dn">'+esc(WARM[k].name)+'</span>'
+          return '<div class="drill"><span class="dn">'+esc(WARM[k].name)+'<span class="dc">'+esc(WARM[k].cue)+'</span></span>'
             +'<span class="dr">'+esc(WARM[k].reps)+'</span>'
             +'<a class="lk v tiny" target="_blank" rel="noopener" aria-label="Video for '+esc(WARM[k].name)+'" '
             +'href="https://www.youtube.com/results?search_query='+encodeURIComponent(WARM[k].name)+'+proper+form+technique">▶</a></div>';
-        }).filter(Boolean).join('')+'</div></div>';
+        }).filter(Boolean).join('')+'</div>'
+      +'<p style="font-size:13px;color:var(--text-dim);margin-top:9px">'+rampLine(d)+'</p></div>';
   }
   h+=d.items.map((it,k)=>exCard(it,i+'.'+k)).join('');
   h+='</div></details>';
@@ -2955,7 +3496,8 @@ function mapsFor(e){
   if(all.some(k=>BACK_ZONES[k]))  h+=muscleMap('back',e.prim||[],e.sec||[]);
   h+='</div><div class="mtags">'
     +(e.prim||[]).map(k=>'<span class="pill hot">'+esc(ZN[k]||k)+'</span>').join('')
-    +(e.sec||[]).map(k=>'<span class="pill">'+esc(ZN[k]||k)+'</span>').join('')+'</div>';
+    +(e.sec||[]).map(k=>'<span class="pill">'+esc(ZN[k]||k)+'</span>').join('')
+    +'<span class="pill eq">'+esc(e.equip)+'</span></div>';
   return h;
 }
 /* The written guide. Content strings are authored (they may carry <b>); labels are plain text. */
@@ -2965,33 +3507,39 @@ function howTo(id){
     h+='<div class="how-sec"><div class="eyebrow">Set-up</div><ol class="steps">'+e.setup.map(s=>'<li>'+s+'</li>').join('')+'</ol></div>';
   if(e.rep&&e.rep.length)
     h+='<div class="how-sec"><div class="eyebrow">One rep, step by step</div><dl class="pos">'
-      +e.rep.map(r=>'<dt>'+esc(r[0])+'</dt><dd>'+r[1]+'</dd>').join('')+'</dl></div>';
-  if(e.nums&&e.nums.length)
-    h+='<div class="how-sec"><div class="eyebrow">The numbers</div><dl class="pos">'
-      +e.nums.map(n=>'<dt>'+esc(n[0])+'</dt><dd>'+n[1]+'</dd>').join('')+'</dl></div>';
-  if(e.check) h+='<div class="note how-note"><b>Quick check</b><br>'+e.check+'</div>';
+      +e.rep.map(r=>'<dt>'+esc(r[0])+'</dt><dd>'+r[1]+'</dd>').join('')
+      +(e.tempo?'<dt>Tempo</dt><dd>'+e.tempo+'</dd>':'')+'</dl></div>';
   if(e.feel) h+='<div class="note hot how-note"><b>Where you should feel it</b><br>'+e.feel+'</div>';
   if(e.fix&&e.fix.length)
     h+='<div class="how-sec"><div class="eyebrow">If it feels wrong</div><ul class="fixes">'
       +e.fix.map(f=>'<li><b>'+esc(f[0])+'</b><span>'+f[1]+'</span></li>').join('')+'</ul></div>';
-  const ms=e.machine&&MACH_SETUP[e.machine];
-  if(ms&&ms.length)
-    h+='<div class="how-sec"><div class="eyebrow">Machine set-up</div><ol class="steps">'
-      +ms.slice().sort((a,b)=>(+a[0])-(+b[0])).map(s=>'<li>'+s[1]+'</li>').join('')+'</ol></div>';
+  if(e.check) h+='<div class="note how-note"><b>Check yourself</b><br>'+e.check+'</div>';
+  if(e.weight) h+='<div class="note how-note"><b>Picking the weight</b><br>'+e.weight+'</div>';
+  if(e.safe) h+='<div class="avoid how-note"><span class="ic" aria-hidden="true">⚠</span><span><b>Safety:</b> '+e.safe+'</span></div>';
   return h;
 }
+/* another exercise for the same muscle, when the station is taken or the gym does not have it */
+function swapRow(id,ref){
+  const sl=ref?slotAt(ref):null; if(!sl) return '';
+  const base=sl.it.base||sl.it.ex;
+  const opts=[base].concat(EX[base].swap||[]).filter((x,i,a)=>EX[x]&&a.indexOf(x)===i&&x!==id);
+  if(!opts.length) return '';
+  return '<div class="how-sec"><div class="eyebrow">Station taken, or not in your gym?</div><div class="swaps">'
+    +opts.map(x=>'<button class="btn sm" data-swap="'+x+'">'+(x===base?'Back to ':'Use ')+esc(EX[x].name)+'</button>').join('')
+    +'</div><p class="swapnote">The sets, reps and rest stay the same. Each exercise keeps its own history.</p></div>';
+}
 function fillEx(box,id,ref){
-  // Muscle map only — no stick-figure poses. Form is what the photo and video
-  // buttons are for; a real demo beats a schematic every time.
+  // Order: what you need between sets first (the one-line cue, the demo links,
+  // the logbook), then the full guide. The guide starts open the first time you
+  // meet a lift and folded once it is in your log. No stick-figure poses: the
+  // muscle map and a real video or photo do that job better.
   const e=EX[id];
-  // the guide starts open the first time you meet a lift, and folded once it is in your log
   const known=(S.logs[id]||[]).some(x=>loggedSets(x).length>0);
-  box.innerHTML=mapsFor(e)
+  box.innerHTML='<p class="cue">'+e.cue+'</p>'
     +demoLinks(e.name)
-    +'<p class="cue">'+e.cue+'</p>'
+    +logger(id,ref)
     +'<details class="how"'+(known?'':' open')+'><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary>'
-    +'<div class="how-b">'+howTo(id)+'</div></details>'
-    +logger(id,ref);
+    +'<div class="how-b">'+mapsFor(e)+howTo(id)+swapRow(id,ref)+'</div></details>';
 }
 
 /* ---- demo links --------------------------------------------------
@@ -3577,7 +4125,7 @@ function libSheet(){
   $('#libList').addEventListener('toggle',e=>{
     const d=e.target;
     if(d&&d.classList&&d.classList.contains('how')&&d.open&&!d.dataset.filled){
-      $('.how-b',d).innerHTML=howTo(d.dataset.how); d.dataset.filled='1';
+      $('.how-b',d).innerHTML=mapsFor(EX[d.dataset.how])+howTo(d.dataset.how); d.dataset.filled='1';
     }
   },true);
 }
@@ -3597,8 +4145,7 @@ function libRender(g,q){
       return '<div class="libitem"><div class="li-h"><span class="li-n">'+esc(e.name)+'</span>'
         +'<span class="li-t">'+esc(rxText(e.typ))+'</span></div>'
         +'<div class="mtags" style="margin-top:6px">'
-        +(e.prim||[]).map(z=>'<span class="pill hot">'+esc(ZN[z]||z)+'</span>').join('')
-        +'<span class="pill">'+esc(e.equip)+'</span></div>'
+        +(e.prim||[]).map(z=>'<span class="pill hot">'+esc(ZN[z]||z)+'</span>').join('')+'</div>'
         +'<p class="li-c">'+e.cue+'</p>'
         +demoLinks(e.name,true)
         +'<details class="how" data-how="'+id+'"><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary><div class="how-b"></div></details>'
@@ -3771,6 +4318,25 @@ document.addEventListener('click',e=>{
     return;
   }
   if(T.closest('#btnLib')){ libSheet(); return; }
+  if(T.closest('[data-pickplan]')){ planSheet(); return; }
+  const sw=T.closest('[data-swap]');
+  if(sw){
+    // put another exercise in this slot (or the plan's own back); the card is redrawn in place and opened
+    const card=sw.closest('.ex'), sl=card?slotAt(card.dataset.slot):null;
+    if(sl){
+      const base=sl.it.base||sl.it.ex, want=sw.dataset.swap, key=slotKey(sl.si,sl.k);
+      if(want===base) delete S.swaps[key]; else if(EX[want]) S.swaps[key]=want;
+      save();
+      const it=slotAt(sl.ref).it, tmp=document.createElement('div');
+      tmp.innerHTML=exCard(it,sl.ref);
+      const fresh=tmp.firstChild;
+      card.parentNode.replaceChild(fresh,card);
+      $('#dayList').dataset.plan=planSig();
+      $('.ex-h',fresh).click();
+      fresh.scrollIntoView({block:'nearest'});
+    }
+    return;
+  }
   const lg=T.closest('#libSeg button');
   if(lg){
     $$('#libSeg button').forEach(b=>b.classList.toggle('on',b===lg));

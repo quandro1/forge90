@@ -141,13 +141,16 @@ export default [
   {
     name: 'the session counts as done when most of its exercises have a logged set, without pressing anything',
     async run({ open }) {
-      const { page } = await open({ state: base(), hash: 'train' });   // Wed 11 Nov = day 3 of the week = Legs (7 exercises)
-      const ids = ['squat', 'legpress', 'legext', 'legcurl', 'calf'];
-      for (const id of ids) {
+      const { page } = await open({ state: base(), hash: 'train' });   // Wed 11 Nov = day 3 of the week = Legs
+      const ids = await page.evaluate(() => sessions()[2].items.map((it) => it.ex));
+      const need = Math.ceil(ids.length * 0.6);
+      assert.ok(ids.length >= 5 && need < ids.length);
+      for (let n = 1; n <= need; n++) {
+        const id = ids[n - 1];
         await page.locator('details[data-dayblock="2"] .ex[data-ex="' + id + '"] .ex-h').click();
         await tick(page, id, 0);
         const done = await page.evaluate(() => (S.checks[TODAY] || []).includes('session'));
-        assert.equal(done, id === 'calf', 'after ' + id + ': done=' + done);
+        assert.equal(done, n >= need, 'after ' + n + ' of ' + ids.length + ' exercises: done=' + done);
       }
     },
   },
