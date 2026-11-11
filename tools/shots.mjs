@@ -72,6 +72,8 @@ try {
     await closeSheet();
     await page.locator('#btnGuide').tap();
     await shot('guide');
+    await page.locator('#sheetBody details').nth(1).locator('summary').click();     // heavy, medium or light
+    await el('guide-howheavy', '#sheetBody details:nth-of-type(2)');
     await closeSheet();
     await tab('plan');
     await shot('map', true);
