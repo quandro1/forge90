@@ -122,7 +122,7 @@ function logger(id){
       +'<button class="ok" data-ok="'+i+'" aria-label="Set '+(i+1)+' done, start rest">✓</button>'
       +'<button class="del" data-del="'+i+'" aria-label="Clear set '+(i+1)+'">×</button></div>';
   }
-  const prev=prevSession(id), vd=verdict(id);
+  const prev=prevSession(id), vd=safeVerdict(id);
   return '<div class="logger" data-log="'+id+'">'
     +'<div class="lh"><b>Logbook</b><span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+prev.sets.filter(s=>s.r).map(s=>(s.w||0)+'×'+s.r).join('  '):'no history yet')+'</span></div>'
     +'<div class="sets">'+rows+'</div>'
@@ -272,7 +272,20 @@ function verdict(id){
   if(weak>=0)
     return {cls:'hold', ic:ICO.hold, txt:lead+'set '+(weak+1)+' fell to '+done[weak].r+'. Stay at '+w+' kg and earn '+rr[0]+' clean on every set before adding anything.'};
   const next=done.findIndex(s=>s.r<rr[1]);
+  if(next<0){
+    // every set logged so far is at the top of the range, but the session is short of its sets
+    const left=tgt-done.length;
+    return ref.d===TODAY
+      ? {cls:'up', ic:ICO.up, txt:'Top of the range so far. '+left+' more '+(left===1?'set':'sets')+' — hit '+rr[1]+' on '+(left===1?'it':'each')+' and the weight goes up next session.'}
+      : {cls:'hold', ic:ICO.hold, txt:lead+'you hit '+rr[1]+' last time but logged '+done.length+' of '+tgt+' sets. Same '+w+' kg, all '+tgt+' sets, then go up.'};
+  }
   return {cls:'up', ic:ICO.up, txt:lead+'same '+w+' kg — chase one more rep on set '+(next+1)+' ('+done[next].r+' → '+(done[next].r+1)+').'};
+}
+/* The hint is advice; the logbook is the tool. If the advice cannot be worked
+   out, the logbook must still draw and the rest must still start. */
+function safeVerdict(id){
+  try{ return verdict(id); }
+  catch(err){ return {cls:'none', ic:ICO.dot, txt:'Log this session and the next one gets a target.'}; }
 }
 
 /* ===================================================================

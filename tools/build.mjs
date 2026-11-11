@@ -45,7 +45,7 @@ html = html.replace(/__FORGE_BUILD__/g, build);
 const swPath = path.join(ROOT, 'sw.js');
 let sw = fs.existsSync(swPath) ? read(swPath) : null;
 let swOut = sw;
-if (sw && /__CACHE_AUTO__/.test(sw) === false && /const CACHE = 'forge90-auto-[0-9a-f]+';/.test(sw)) {
+if (sw && /const CACHE = 'forge90-auto-[0-9a-f]+';/.test(sw)) {
   const assets = ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'];
   const h = crypto.createHash('sha256').update(html);
   h.update(sw.replace(/const CACHE = 'forge90-auto-[0-9a-f]+';/, ''));

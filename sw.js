@@ -1,11 +1,12 @@
 /* FORGE 90 service worker — offline shell.
-   CACHE is stamped per build: bump it on every publish or an installed copy
-   keeps serving the old app. The document is network-FIRST so a republish
+   CACHE is written by tools/build.mjs from the content of the built files, so
+   every new build gets a new cache without anyone remembering to bump it.
+   The document is network-FIRST so a republish
    reaches the phone as soon as it has signal; assets are cache-first.
    Precaching is idempotent and never fatal: a repeated install must not
    throw "Entry already exists", and a failed warm-up must not block the
    worker — the fetch handler fills the cache on first use anyway. */
-const CACHE = 'forge90-2026-10-02-d';
+const CACHE = 'forge90-auto-690b8d75916c';
 const ASSETS = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png',
                 './icon-maskable-512.png', './apple-touch-icon.png'];
 

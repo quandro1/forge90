@@ -141,8 +141,10 @@ document.addEventListener('click',e=>{
     if(s.w==null&&prev&&prev.w!=null) s.w=prev.w;          // carry the bar weight forward
     s.done=1;
     if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
-    save(); refreshLogger(box,id);
+    save();
+    // The rest starts first: nothing that happens while redrawing the logbook may stop it.
     startRest(id,i);
+    try{ refreshLogger(box,id); }catch(err){ console.error(err); }
     return;
   }
   if(T.closest('[data-rest-start]')){

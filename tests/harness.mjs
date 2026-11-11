@@ -46,7 +46,8 @@ const MIME = {
   '.png': 'image/png', '.svg': 'image/svg+xml', '.txt': 'text/plain; charset=utf-8', '.ico': 'image/x-icon',
 };
 
-/** Static file server on a free loopback port. `down()` makes every request fail, to test offline. */
+/** Static file server on a free loopback port. `down()` makes every request fail, to test offline;
+ *  `setRoot(dir)` swaps the folder being served, to test a new deployment reaching an open app. */
 export function serve(root = ROOT) {
   return new Promise((resolve) => {
     let dead = false;
@@ -69,6 +70,7 @@ export function serve(root = ROOT) {
       url: 'http://localhost:' + srv.address().port + '/',
       down: () => { dead = true; },
       up: () => { dead = false; },
+      setRoot: (dir) => { root = path.resolve(dir); },
       close: () => new Promise((r) => { srv.closeAllConnections?.(); srv.close(r); }),
     }));
   });

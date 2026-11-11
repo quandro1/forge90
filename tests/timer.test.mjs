@@ -49,6 +49,34 @@ export default [
     },
   },
   {
+    name: 'the rest still starts when the progression hint cannot be computed',
+    async run({ open }) {
+      const { page } = await open({ state: v1State(), hash: 'train' });
+      await openCard(page, 0, 'inclineBB');
+      await page.evaluate(() => { verdict = () => { throw new Error('hint failed'); }; });
+      await typeSet(page, 'inclineBB', 0, 60, 8);
+      await tick(page, 'inclineBB', 0);
+      const rt = await timerState(page);
+      assert.ok(rt, 'no rest timer is running after the tick');
+      assert.equal(rt.id, 'inclineBB');
+      assert.ok(await page.locator('.logger[data-log="inclineBB"] .setrow.done').count() >= 1, 'the row is not shown as done');
+    },
+  },
+  {
+    name: 'the rest still starts when the logbook cannot be redrawn at all',
+    async run({ open }) {
+      const { page } = await open({ state: v1State(), hash: 'train' });
+      await openCard(page, 0, 'inclineBB');
+      await typeSet(page, 'inclineBB', 0, 60, 8);
+      await page.evaluate(() => { logger = () => { throw new Error('draw failed'); }; });
+      await tick(page, 'inclineBB', 0);
+      const rt = await timerState(page);
+      assert.ok(rt, 'no rest timer is running after the tick');
+      assert.equal(rt.id, 'inclineBB');
+      assert.equal(await page.evaluate(() => S.logs.inclineBB[0].sets[0].done), 1, 'the set was not saved as done');
+    },
+  },
+  {
     name: 'a card whose sets so far are all at the ceiling still opens after a reload',
     async run({ open }) {
       const st = v1State({ logs: { inclineBB: [{ d: '2026-11-11', sets: [{ w: 60, r: 10, done: 1 }, {}, {}, {}] }] } });

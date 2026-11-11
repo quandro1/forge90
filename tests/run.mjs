@@ -42,6 +42,7 @@ for (const f of files) {
     } finally {
       for (const o of opened) { try { await o.context.close(); } catch { /* already closed */ } }
       server.up();
+      server.setRoot(ROOT);
     }
   }
 }
