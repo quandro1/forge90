@@ -375,6 +375,8 @@ details.how>summary .how-t{flex:1}
 }
 .setrow input::placeholder{color:var(--text-faint); font-size:12px}
 .setrow .nw{text-align:center; color:var(--text-faint); font-family:var(--font-m)}
+.dlchip{font-family:var(--font-d); font-size:10px; letter-spacing:.14em; text-transform:uppercase; padding:4px 9px; border-radius:99px; border:1px solid var(--line); color:var(--text-faint)}
+.dlchip.on{border-color:color-mix(in srgb,var(--warn) 55%,transparent); color:var(--warn)}
 .setrow input:focus{border-color:var(--ember); outline:none}
 .setrow .del{color:var(--text-faint); font-size:17px; line-height:1; padding:4px}
 .setrow .del:hover{color:var(--bad)}

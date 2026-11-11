@@ -15,7 +15,7 @@ function todayEntry(id){ return (S.logs[id]||[]).find(x=>x.d===TODAY)||null; }
 function upsert(id,it){
   const arr=S.logs[id]||(S.logs[id]=[]);
   let e=arr.find(x=>x.d===TODAY);
-  if(!e){ e={d:TODAY,sets:[]}; arr.push(e); arr.sort((a,b)=>a.d<b.d?-1:1); }
+  if(!e){ e={d:TODAY,sets:[]}; if(isDeload()) e.dl=1; arr.push(e); arr.sort((a,b)=>a.d<b.d?-1:1); }
   // the rows the plan prescribes always exist in state, so "+ Set" adds a
   // real row instead of silently filling an invisible gap
   while(e.sets.length<setsWanted(it)) e.sets.push({});
@@ -24,7 +24,9 @@ function upsert(id,it){
 /* One definition of "last time", used by the header AND the button, so the
    two can never disagree: a session that actually has reps in it. */
 function prevSession(id){
-  return (S.logs[id]||[]).filter(x=>x.d!==TODAY&&loggedSets(x).length>0).pop()||null;
+  const past=(S.logs[id]||[]).filter(x=>x.d<TODAY&&loggedSets(x).length>0);
+  const normal=past.filter(x=>!x.dl);            // a deload session is not what you repeat or beat
+  return (normal.length?normal:past).pop()||null;
 }
 function logger(id,ref){
   const ex=EX[id], it=itemFor(id,ref), hold=!!it.hold, noW=ex.load==='time';
@@ -44,7 +46,7 @@ function logger(id,ref){
   }
   const prev=prevSession(id), vd=safeVerdict(id,it);
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
-    +'<div class="lh"><b>Logbook</b><span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
+    +'<div class="lh"><b>Logbook</b>'+((draft?draft.dl:isDeload())?'<button class="dlchip on" data-dl aria-pressed="true" title="A lighter session that is not used as your reference. Tap if you trained normally.">Deload</button>':(isDeload()?'<button class="dlchip" data-dl aria-pressed="false" title="Mark this as a deload session">Deload</button>':''))+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
     +'<div class="sets">'+rows+'</div>'
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'

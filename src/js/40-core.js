@@ -4,6 +4,11 @@
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>Array.prototype.slice.call((r||document).querySelectorAll(s));
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+/* digits and decimal marks from any keyboard -> 0-9 and a dot */
+const latinNumber=s=>String(s)
+  .replace(/[٠-٩]/g,d=>String(d.charCodeAt(0)-0x660))
+  .replace(/[۰-۹]/g,d=>String(d.charCodeAt(0)-0x6F0))
+  .replace(/[,٫،]/g,'.');
 const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const clone=v=>JSON.parse(JSON.stringify(v));
 

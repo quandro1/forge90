@@ -72,7 +72,11 @@ function cleanLogs(m){
     for(const e of m[id]){
       if(!isObj(e)||!isDate(e.d)||seen[e.d]) continue;
       seen[e.d]=1;
-      arr.push({d:e.d, sets:(Array.isArray(e.sets)?e.sets:[]).map(cleanSet)});
+      const o={d:e.d, sets:(Array.isArray(e.sets)?e.sets:[]).map(cleanSet)};
+      if(e.dl) o.dl=1;
+      // a row with reps but no weight takes the weight of the row above (it was shown there in grey, never stored)
+      if(!(EX[id]&&EX[id].load==='time')){ let lw=null; o.sets.forEach(s=>{ if(s.w!=null) lw=s.w; else if(s.r>0&&lw!=null) s.w=lw; }); }
+      arr.push(o);
     }
     arr.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
     if(arr.length) o[id]=arr;
@@ -129,7 +133,7 @@ function normalize(p){
    posed as "last time" forever. Past sessions with no numbers are not history. */
 function pruneLogs(logs){
   for(const id in logs){
-    logs[id]=logs[id].filter(x=>x.d===TODAY||x.sets.some(s=>s.r>0||s.w!=null));
+    logs[id]=logs[id].filter(x=>x.d>=TODAY||x.sets.some(s=>s.r>0||s.w!=null||s.done));
     if(!logs[id].length) delete logs[id];
   }
   return logs;

@@ -131,11 +131,20 @@ document.addEventListener('click',e=>{
       const prev=prevSession(id);
       if(prev){
         const en=upsert(id,it);
-        en.sets=prev.sets.map(s=>{ const o={}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; return o; });
-        while(en.sets.length<setsWanted(it)) en.sets.push({});
+        prev.sets.forEach((s,i)=>{
+          if(blankSet(s)) return;
+          while(en.sets.length<=i) en.sets.push({});
+          if(!blankSet(en.sets[i])) return;            // never touch a row that already holds something
+          const o={}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;
+        });
         save(); refreshLogger(id);
       }
       return;
+    }
+    if(T.closest('[data-dl]')){                 // deload session on/off
+      const en=upsert(id,it);
+      if(en.dl) delete en.dl; else en.dl=1;
+      save(); refreshLogger(id); return;
     }
     if(T.closest('[data-addset]')){
       upsert(id,it).sets.push({});
@@ -236,14 +245,22 @@ document.addEventListener('input',e=>{
     const en=upsert(id,itemFor(id,box.dataset.ref));
     while(en.sets.length<=i) en.sets.push({});
     // keep only digits (and one dot for weight), so junk never reaches state
-    let raw=String(T.value).replace(',', '.').replace(f==='w'?/[^0-9.]/g:/[^0-9]/g,'');
+    let raw=latinNumber(T.value).replace(f==='w'?/[^0-9.]/g:/[^0-9]/g,'');
     if(f==='w') raw=raw.replace(/(\..*)\./g,'$1');
     if(raw.length>7) raw=raw.slice(0,7);
-    if(raw!==T.value){ const at=T.selectionStart; T.value=raw; try{T.setSelectionRange(at-1,at-1);}catch(err){} }
+    if(raw!==T.value){
+      const at=(T.selectionStart==null?T.value.length:T.selectionStart)-(T.value.length-raw.length);
+      T.value=raw; try{ T.setSelectionRange(at,at); }catch(err){}
+    }
     if(raw===''){ delete en.sets[i][f]; }
     else{
       const v=parseFloat(raw);          // "7." parses to 7 and the field keeps "7."
       if(isFinite(v)) en.sets[i][f]=v; else return;
+    }
+    // reps on a row with no weight: the row takes the weight of the row above, in state and on screen
+    if(f==='r'&&en.sets[i].r!=null&&en.sets[i].w==null&&EX[id].load!=='time'){
+      for(let k=i-1;k>=0;k--){ if(en.sets[k]&&en.sets[k].w!=null){ en.sets[i].w=en.sets[k].w; break; } }
+      if(en.sets[i].w!=null) $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="w"]').forEach(el=>{ el.value=en.sets[i].w; });
     }
     // keep the other open copy of this exercise in step while typing
     $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="'+f+'"]')

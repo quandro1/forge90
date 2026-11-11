@@ -6,7 +6,7 @@
    Precaching is idempotent and never fatal: a repeated install must not
    throw "Entry already exists", and a failed warm-up must not block the
    worker — the fetch handler fills the cache on first use anyway. */
-const CACHE = 'forge90-auto-3971f1c057d1';
+const CACHE = 'forge90-auto-163cabbe0c8c';
 const ASSETS = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png',
                 './icon-maskable-512.png', './apple-touch-icon.png'];
 
