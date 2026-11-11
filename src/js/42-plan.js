@@ -41,12 +41,12 @@ function sessionsOf(prog,dpw){
   return list;
 }
 /* Another exercise in a slot keeps the slot's number of sets. It keeps the reps and rest too when it is
-   the same kind of lift; when it is not (seconds against reps, a small lift for a big one, a dumbbell
-   or machine lift in a 3-5 rep barbell slot) it takes its own, so nobody is told to plank for 12 reps
+   the same kind of lift; when it is not (seconds against reps, a small lift for a big one, a heavy lift
+   for a medium one, a dumbbell or machine lift in a 3-5 rep barbell slot) it takes its own, so nobody is told to plank for 12 reps
    or to goblet squat a 5-rep maximum. "Each side" always follows the exercise that is actually done. */
 function swapItem(it,sw){
   const o=Object.assign({},it,{ex:sw,base:it.ex}), a=EX[it.ex], b=EX[sw], t=b.typ;
-  const misfit=(!!it.hold!==!!t.hold)||a.kind!==b.kind||(Array.isArray(it.reps)&&it.reps[1]<=5&&b.load!=='bb');
+  const misfit=(!!it.hold!==!!t.hold)||a.kind!==b.kind||a.band!==b.band||(Array.isArray(it.reps)&&it.reps[1]<=5&&b.load!=='bb');
   if(misfit){ delete o.hold; delete o.reps; if(t.hold) o.hold=t.hold.slice(); else o.reps=t.reps.slice(); o.rest=t.rest; }
   if(t.each) o.each=true; else delete o.each;
   return o;

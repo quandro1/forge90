@@ -62,7 +62,7 @@ EX.inclineBB = {
   equip: "Barbell, incline bench", kind: "compound", load: "bb", step: 2.5,
   typ: { sets: 4, reps: [6, 10], rest: 150 },
   band: "heavy",
-  why: "A steady bar with both arms pushing together: this lift can take real weight. Choose a load that makes {reps} reps hard, and rest fully between sets.",
+  why: "A steady bar with both arms pushing together, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. Rest fully between sets.",
   cue: "Bar down to the top of your chest, then press it back up over your shoulders.",
   setup: [
     "Bench at <b>30°</b>. Lie back with your eyes under the bar.",
@@ -92,7 +92,7 @@ EX.benchBB = {
   equip: "Barbell, flat bench with a rack", kind: "compound", load: "bb", step: 2.5,
   typ: { sets: 4, reps: [6, 10], rest: 150 },
   band: "heavy",
-  why: "A steady bar and a big muscle group: this is one of the lifts to load. Choose a weight that makes {reps} reps hard, and rest fully between sets.",
+  why: "A steady bar and a big muscle group, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. Rest fully between sets.",
   cue: "Lower the bar to the middle of your chest, then press it back up over your shoulders.",
   setup: [
     "Lie with your eyes under the bar, feet flat on the floor.",
@@ -151,7 +151,7 @@ EX.pecdeck = {
   equip: "Pec deck machine", kind: "isolation", load: "machine", step: 5,
   typ: { sets: 3, reps: [12, 15], rest: 75 },
   band: "light",
-  why: "Only the shoulder joint moves and your arms are long, so a small weight already loads the chest. A heavy stack pulls the shoulders forward instead. Use a weight you can squeeze for 1 second with the hands together, {reps} times.",
+  why: "Your arms are held out almost straight, so a small weight is already hard for the chest. Too heavy and the shoulders roll forward. Use a weight you can squeeze for 1 second with the hands together, {reps} times.",
   cue: "Bring the handles together in front of your chest with your arms slightly bent, then open slowly.",
   setup: [
     "Set the arm pins so the handles start level with your shoulders or slightly behind them: a stretch across the chest, not a strain.",
@@ -180,7 +180,7 @@ EX.pushup = {
   equip: "Floor (a bench makes it easier or harder)", kind: "compound", load: "bw", step: 0,
   typ: { sets: 3, reps: [8, 15], rest: 120 },
   band: "body",
-  why: "Your own bodyweight is the load. Make it harder by changing the position (hands lower, then feet raised), not by rushing the reps.",
+  why: "Your own bodyweight is the load. Too hard: put your hands on a bench. Too easy: put your feet on a bench. Do not rush the reps.",
   next: "make it harder: hands from the bench to the floor, then feet on a bench, then a backpack with a plate in it",
   cue: "Body in one straight line; chest to the floor, then push away.",
   setup: [
@@ -212,7 +212,7 @@ EX.machPress = {
   equip: "Shoulder press machine", kind: "compound", load: "machine", step: 5,
   typ: { sets: 3, reps: [8, 12], rest: 120 },
   band: "medium",
-  why: "The machine guides the path, so you can push hard safely, but the shoulder joint does better with a middle weight than with the heaviest you can move. {reps} reps, the last two hard.",
+  why: "The machine guides the path, so you can push close to your limit safely. A middle weight keeps every rep coming all the way down to ear height. {reps} reps, the last two hard.",
   cue: "Press the handles straight up; lower them to ear height.",
   setup: [
     "Set the seat so the handles start level with your ears.",
@@ -266,9 +266,9 @@ EX.ohp = {
   name: "Standing Barbell Press", group: "Shoulders", tag: "Shoulders",
   prim: ["fdelt"], sec: ["sdelt", "triceps"],
   equip: "Barbell, rack", kind: "compound", load: "bb", step: 2.5,
-  typ: { sets: 4, reps: [3, 5], rest: 180 },
+  typ: { sets: 4, reps: [5, 8], rest: 180 },
   band: "heavy",
-  why: "A strength lift: the whole body holds a bar overhead. Few reps and long rests suit it. Sets of {reps}, every rep looking the same.",
+  why: "The whole body has to hold the bar steady overhead, so long rests suit it. Learn it with the empty bar first, then add weight until {reps} reps a set are hard. Every rep should look the same.",
   cue: "Press the bar from your collarbones to straight above your head.",
   setup: [
     "Take the bar from a rack at chest height, hands just outside your shoulders.",
@@ -297,7 +297,7 @@ EX.latRaise = {
   equip: "Dumbbells", kind: "isolation", load: "db", step: 1,
   typ: { sets: 4, reps: [12, 20], rest: 60 },
   band: "light",
-  why: "The weight sits at the end of a straight arm, so a few kilos are already heavy for the side of the shoulder. Go heavier and the neck muscles and a swing take over. Use a weight you can raise {reps} times and hold for a moment at the top.",
+  why: "The weight sits at the end of a straight arm, so a few kilos are already heavy for the shoulder. Use a weight you can raise {reps} times without swinging and hold for a moment at the top.",
   cue: "Lift your arms out to the sides until your hands are level with your shoulders.",
   setup: [
     "Stand with feet under your hips, a dumbbell in each hand beside your thighs.",
@@ -354,7 +354,7 @@ EX.reardelt = {
   equip: "Reverse pec deck machine", kind: "isolation", load: "machine", step: 5,
   typ: { sets: 3, reps: [15, 20], rest: 60 },
   band: "light",
-  why: "The muscle at the back of the shoulder is small. With a heavy stack the upper back and a swing do the work and that muscle gets almost nothing. Use a weight you can hold open for 1 second, {reps} times.",
+  why: "The muscle at the back of the shoulder is small. With a heavy weight the upper back and a swing take over, so that muscle gets less of the work. Use a weight you can hold open for 1 second, {reps} times.",
   cue: "Open your arms out and back until they are in line with your shoulders.",
   setup: [
     "On a machine that also does the chest fly, move both arm pins to the back position, so the handles start close together in front of the pad.",
@@ -365,9 +365,9 @@ EX.reardelt = {
   rep: [
     ["Start", "Arms straight in front of you, shoulders relaxed forward."],
     ["Move", "Sweep the arms out to the sides. They stay almost straight."],
-    ["Finish", "Arms in line with your shoulders. Return for 2–3 seconds."],
+    ["Finish", "Arms in line with your shoulders. Hold for 1 second, then return for 2–3 seconds."],
   ],
-  tempo: "<b>1 s</b> back, <b>2–3 s</b> forward.",
+  tempo: "<b>1 s</b> back, <b>1 s</b> hold, <b>2–3 s</b> forward.",
   feel: "The back of the shoulders.",
   fix: [
     ["You feel the middle of the back more", "Lighter weight, and stop when the arms are in line with the shoulders."],
@@ -413,7 +413,7 @@ EX.pushdown = {
   equip: "Cable machine, high pulley, bar or rope", kind: "isolation", load: "cable", step: 2.5,
   typ: { sets: 3, reps: [10, 15], rest: 75 },
   band: "light",
-  why: "Only the elbows move, so they carry everything. A heavy stack makes the shoulders roll forward and the elbows ache. Use a weight you can straighten fully and hold, for {reps} reps.",
+  why: "Only the elbows move, so they take all the weight. Too heavy and the shoulders roll forward and the elbows ache. Use a weight that lets you straighten your arms fully and hold for 1 second, {reps} times.",
   cue: "Elbows stay at your sides; push the bar down until your arms are straight.",
   setup: [
     "Set the pulley at the top and attach a short bar or a rope.",
@@ -440,8 +440,8 @@ EX.ohext = {
   prim: ["triceps"], sec: [],
   equip: "One dumbbell", kind: "isolation", load: "db1", step: 2,
   typ: { sets: 3, reps: [10, 12], rest: 75 },
-  band: "light",
-  why: "The elbow works from a deep stretch here, where it is weakest and most easily irritated. Go slowly with a light to middle weight for {reps} reps.",
+  band: "medium",
+  why: "The elbow works from a deep stretch here, where it is weakest and most easily irritated. Use a middle weight you can lower for 3 seconds, {reps} times. If the elbows ache, go lighter.",
   cue: "Lower the dumbbell behind your head, then straighten your arms.",
   setup: [
     "Sit on a bench with a back support, or stand.",
@@ -469,7 +469,7 @@ EX.bbCurl = {
   equip: "Barbell or EZ bar", kind: "isolation", load: "bb", step: 2.5,
   typ: { sets: 3, reps: [8, 12], rest: 75 },
   band: "medium",
-  why: "Two hands on one bar make this the curl that takes the most weight, but only up to the point where your hips start to swing. {reps} strict reps.",
+  why: "Two hands on one bar make this the curl that takes the most weight, but only up to the point where your hips start to swing. {reps} reps with no swing.",
   cue: "Elbows at your sides; curl the bar to your shoulders and lower it slowly.",
   setup: [
     "Stand with feet under your hips, holding the bar palms up, hands shoulder-width apart.",
@@ -496,8 +496,8 @@ EX.dbCurl = {
   prim: ["biceps"], sec: ["forearm"],
   equip: "Dumbbells", kind: "isolation", load: "db", step: 1,
   typ: { sets: 3, reps: [10, 12], each: true, rest: 75 },
-  band: "light",
-  why: "One arm at a time, with no help from the other side. If the elbow drifts forward or the body rocks, it is too heavy. {reps} strict reps on each arm.",
+  band: "medium",
+  why: "One arm at a time, with no help from the other side. If the elbow drifts forward or the body rocks, it is too heavy. {reps} reps on each arm with no swing.",
   cue: "Curl one dumbbell at a time and turn your palm up as it rises.",
   setup: [
     "Stand or sit with a dumbbell in each hand, arms straight, palms facing your thighs.",
@@ -556,9 +556,9 @@ EX.pullup = {
   prim: ["lats"], sec: ["biceps", "midback", "rdelt"],
   equip: "Pull-up bar, or the assisted pull-up machine", kind: "compound", load: "bw", step: 2.5,
   typ: { sets: 3, reps: [5, 10], rest: 150 },
-  band: "heavy",
-  why: "You are lifting your whole body with two arms, which is heavy by itself, so low reps are normal: {reps}. When the top of that is easy, add weight instead of more reps.",
-  next: "take one plate of help off if you use the assisted machine or a band; with no help, add 2.5 kg (a dumbbell between your feet, or a belt)",
+  band: "body",
+  why: "Your whole body is the weight, and that is heavy for two arms. {reps} reps a set, with help from the assisted machine or a band if you need it. When every set reaches the top number, take help off first; add weight only when no help is left.",
+  next: "take one plate of help off on the assisted machine, or use a thinner band; with no help, add 2.5 kg (a dumbbell between your feet, or a belt)",
   cue: "Hang with straight arms; pull until your chin is over the bar.",
   setup: [
     "Grip the bar with palms facing away, hands just outside your shoulders.",
@@ -616,7 +616,7 @@ EX.csRow = {
   equip: "Chest-supported row machine", kind: "compound", load: "machine", step: 5,
   typ: { sets: 4, reps: [10, 12], rest: 120 },
   band: "medium",
-  why: "Your chest rests on the pad, so the lower back is out of it and the back muscles can work hard. A solid middle weight for {reps} reps. Of all the rows, this is the one to load.",
+  why: "Your chest rests on the pad, so your lower back does not have to hold you up and the back muscles can work hard. A solid middle weight for {reps} reps. Of all the rows, this one can go heaviest.",
   cue: "Chest on the pad; pull your elbows back until your hands reach your ribs.",
   setup: [
     "Set the seat or foot plate so the top of the pad is at the middle of your chest.",
@@ -700,7 +700,7 @@ EX.deadlift = {
   equip: "Barbell, full-size plates", kind: "compound", load: "bb", step: 5,
   typ: { sets: 3, reps: [3, 5], rest: 240 },
   band: "heavy",
-  why: "The heaviest lift there is, and the one that suits the fewest reps. Each rep starts from a dead stop, and the position of your back fades as you tire, so sets stay at {reps}.",
+  why: "This lift takes the most weight of all and suits the fewest reps: a flat back gets harder to hold as you tire. Do {reps} reps a set. Start at 40 kg or less and add 5 kg at a time.",
   cue: "Bar over the middle of your feet; push the floor away and stand up with a flat back.",
   setup: [
     "Stand with the bar over the middle of your feet, feet hip-width apart.",
@@ -733,7 +733,7 @@ EX.squat = {
   equip: "Barbell, squat rack", kind: "compound", load: "bb", step: 5,
   typ: { sets: 4, reps: [6, 10], rest: 180 },
   band: "heavy",
-  why: "The biggest muscles of the body under a steady bar: this lift is built to be loaded. Choose a weight that makes {reps} reps hard. With many more reps your breathing gives out before your legs do.",
+  why: "The biggest muscles of the body under a steady bar, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. With many more reps your breathing gives out before your legs do.",
   cue: "Sit down between your heels until your thighs are level, then stand up.",
   setup: [
     "Set the bar in the rack at chest height. Set the safety bars one hole below where the barbell is at the bottom of your squat; test it with the empty bar.",
@@ -880,7 +880,7 @@ EX.legext = {
   equip: "Leg extension machine", kind: "isolation", load: "machine", step: 5,
   typ: { sets: 3, reps: [12, 15], rest: 75 },
   band: "light",
-  why: "The knee carries all of this lift with nothing else to help. A heavy weight strains the joint more than it trains the muscle. Use a weight you can hold at the top for 1 second, {reps} times.",
+  why: "Only the knee moves, and the pad pushes on your shin far from it, so the load on the knee climbs fast as the weight goes up. Higher reps train the front of the thigh just as well with less of that load. Use a weight you can hold at the top for 1 second, {reps} times.",
   cue: "Straighten your knees fully, squeeze, and lower slowly.",
   setup: [
     "Set the back pad so your knees line up with the machine's pivot.",
@@ -938,7 +938,7 @@ EX.legcurl = {
   equip: "Lying leg curl machine", kind: "isolation", load: "machine", step: 5,
   typ: { sets: 3, reps: [12, 15], rest: 75 },
   band: "light",
-  why: "Only the knee moves. If your hips lift off the pad, the weight is too heavy and the lower back is doing it. {reps} reps with a slow return.",
+  why: "Only the knee moves. If your hips lift off the pad, the weight is too heavy and the hips are helping it up. {reps} reps with a slow return.",
   cue: "Curl your heels toward your glutes; hips stay on the pad.",
   setup: [
     "Lie face down with your knees just off the end of the pad, in line with the pivot.",
@@ -1024,7 +1024,7 @@ EX.hipthrust = {
   equip: "Barbell, flat bench, bar pad", kind: "compound", load: "bb", step: 5,
   typ: { sets: 4, reps: [8, 12], rest: 120 },
   band: "medium",
-  why: "The bar gets heavy on this lift because the movement is short, and that is fine as long as you can hold the top for 1 second. If you cannot pause there, it is too heavy. {reps} reps.",
+  why: "The number on the bar grows fast on this lift because the movement is short. That is fine as long as you can hold the top for 1 second on each of {reps} reps. If you cannot pause there, it is too heavy.",
   cue: "Shoulders on the bench; push your hips up until your body is level.",
   setup: [
     "Sit on the floor with your upper back against the long side of a bench. With big plates, roll the bar over your legs into the crease of your hips; with an empty bar or small plates, lift it onto your hips. Put a pad under it.",
@@ -1054,7 +1054,7 @@ EX.backExt = {
   equip: "45° back extension bench", kind: "isolation", load: "bw", step: 5,
   typ: { sets: 3, reps: [10, 15], rest: 90 },
   band: "body",
-  why: "Your upper body is the weight. Hold a plate against your chest only when {reps} slow reps are easy.",
+  why: "Your upper body is the weight. Do {reps} slow reps. Hold a plate against your chest only when every set reaches the top number.",
   next: "hold a 5 kg plate against your chest",
   cue: "Bend at the hips over the pad, then lift until your body is straight.",
   setup: [
@@ -1114,7 +1114,7 @@ EX.hangraise = {
   typ: { sets: 3, reps: [10, 15], rest: 60 },
   band: "body",
   why: "Your legs are the weight. Make it harder by straightening them, not by swinging faster.",
-  next: "do the next session with straight legs",
+  next: "do it with straight legs; once that is easy too, raise your feet toward the bar",
   cue: "Hang from the bar and curl your hips up as you lift your knees.",
   setup: [
     "Hang from a pull-up bar, hands shoulder-width apart.",

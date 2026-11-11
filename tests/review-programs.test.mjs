@@ -37,6 +37,10 @@ export default [
         setPlan('build', 4, PROGRAMS.build.variants[4].days);
         out.rdlForCurl = swapIn('legcurl', 'rdl');
         out.inclineDbForBb = find('inclineBB') ? swapIn('inclineBB', 'inclineDB') : null;
+        out.rowForRow = swapIn('cableRow', 'csRow');
+        setPlan('foundation', 3, PROGRAMS.foundation.variants[3].days);
+        out.squatForPress = swapIn('legpress', 'squat');
+        { const at = find('legpress'); S.swaps[slotKey(at[0], at[1])] = 'squat'; out.squatNote = howHeavy('squat', at[0] + '.' + at[1]); delete S.swaps[slotKey(at[0], at[1])]; }
         return out;
       });
       assert.ok(r.dbBench.was.reps[1] <= 5, 'the fixture is not a 3-5 rep slot');
@@ -44,6 +48,10 @@ export default [
       assert.equal(r.dbBench.sets, r.dbBench.was.sets, 'the number of sets changed');
       assert.ok(r.goblet.reps[0] >= 6, 'goblet squat at ' + r.goblet.reps.join('-') + ' reps');
       assert.ok(r.rdlForCurl.rest >= 120, 'a Romanian deadlift with ' + r.rdlForCurl.rest + ' s of rest');
+      // a heavy lift put into a medium lift's slot takes its own reps, and its note agrees with them
+      assert.deepEqual(r.squatForPress.reps, [6, 10], 'a back squat at ' + r.squatForPress.reps.join('-') + ' reps in a leg-press slot');
+      assert.match(r.squatNote, /6–10/);
+      assert.deepEqual(r.rowForRow.reps, r.rowForRow.was.reps, 'a like-for-like swap changed the reps');
       // the same kind of lift in an ordinary slot keeps the slot's prescription
       if (r.inclineDbForBb) assert.deepEqual([r.inclineDbForBb.reps, r.inclineDbForBb.rest], [r.inclineDbForBb.was.reps, r.inclineDbForBb.was.rest]);
     },
