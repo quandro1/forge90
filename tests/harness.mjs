@@ -134,6 +134,30 @@ export async function openApp(env, opts = {}) {
   return { page, context, errors, clock: page.clock };
 }
 
+/**
+ * Wait until an async condition in the page comes true, by asking again every so often.
+ * page.waitForFunction cannot do this: given an async function it sees the promise, which is
+ * truthy, and returns at once without waiting. Polls on the real clock, so a page with a
+ * pretend clock is waited on properly too.
+ */
+export async function until(page, fn, arg, { timeout = 20000, every = 150 } = {}) {
+  const end = Date.now() + timeout;
+  for (;;) {
+    let v = false;
+    try { v = await page.evaluate(fn, arg); } catch (e) { /* the page is navigating: ask again */ }
+    if (v) return v;
+    if (Date.now() > end) throw new Error('until: the condition did not come true within ' + timeout + ' ms');
+    await new Promise((r) => setTimeout(r, every));
+  }
+}
+/** The service worker is the active one and has stored the whole app. */
+export const precached = (page, timeout = 30000) => until(page, async () => {
+  const reg = await navigator.serviceWorker.getRegistration();
+  if (!reg || !reg.active || reg.active.state !== 'activated') return false;      // a worker still installing does not answer the next open
+  const ks = await caches.keys();
+  return ks.length === 1 && (await (await caches.open(ks[0])).keys()).length >= 6;
+}, null, { timeout });
+
 /** Go through first-run set-up with ordinary answers (the suggested plan, starting today). */
 export async function finishSetup(page) {
   await page.locator('#setup.on').waitFor();

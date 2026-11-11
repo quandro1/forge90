@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { v1State, v2State, NOW, TODAY, ROOT } from './harness.mjs';
+import { v1State, v2State, NOW, TODAY, ROOT, precached } from './harness.mjs';
 import { typeSet, tick } from './timer.test.mjs';
 
 const stored = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('forge90_v2')));
@@ -11,11 +11,6 @@ const openToday = async (page, id) => {
   await page.locator('details[data-dayblock="2"] .ex[data-ex="' + id + '"] .ex-h').click();
   await page.locator('details[data-dayblock="2"] .logger[data-log="' + id + '"]').waitFor();
 };
-const precached = (page) => page.waitForFunction(async () => {
-  if (!(await navigator.serviceWorker.getRegistration())) return false;
-  const ks = await caches.keys();
-  return ks.length === 1 && (await (await caches.open(ks[0])).keys()).length >= 6;
-}, null, { timeout: 20000 });
 /* A stand-in for the claude.ai runtime: one private document, kept in localStorage so it outlives a reload. */
 const FAKE_CLOUD = `(() => {
   const K='__cloud_doc';

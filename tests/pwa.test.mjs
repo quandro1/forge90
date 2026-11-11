@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { ROOT, v1State } from './harness.mjs';
+import { ROOT, v1State, until, precached } from './harness.mjs';
 
 const OLD = path.join(ROOT, 'tests', '.out', 'build-2026-10-02');
 /** The files exactly as published on 2 Oct 2026 (commit a3e9dbb), unpacked once. */
@@ -20,12 +20,6 @@ export function oldBuild() {
   }
   return OLD;
 }
-const precached = (page) => page.waitForFunction(async () => {
-  if (!(await navigator.serviceWorker.getRegistration())) return false;
-  const ks = await caches.keys();
-  if (ks.length !== 1) return false;
-  return (await (await caches.open(ks[0])).keys()).length >= 6;
-}, null, { timeout: 20000 });
 const buildOf = (page) => page.evaluate(() => { const m = document.querySelector('meta[name="forge-build"]'); return m ? m.content : null; });
 
 export default [
@@ -57,11 +51,13 @@ export default [
       assert.match(String(build), /^[0-9a-f]{10}$/, 'the page is still the old build');
       assert.deepEqual(await page.evaluate(() => S.logs.inclineBB), logs.inclineBB, 'the log changed');
 
-      await page.waitForFunction(async (old) => {
+      await until(page, async (old) => {                 // the new worker has taken over and the old cache is gone
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (!reg || !reg.active || reg.active.state !== 'activated' || reg.installing || reg.waiting) return false;
         const ks = await caches.keys();
         return ks.length === 1 && ks[0] !== old && /^forge90-auto-[0-9a-f]{12}$/.test(ks[0])
           && (await (await caches.open(ks[0])).keys()).length >= 6;
-      }, oldCache, { timeout: 20000 });
+      }, oldCache);
 
       server.down();
       await page.reload();

@@ -7,7 +7,7 @@
 //   3. after one visit, the app opens with the network off
 import fs from 'node:fs';
 import path from 'node:path';
-import { launch, openApp, v1State, finishSetup, ROOT, TODAY } from './harness.mjs';
+import { launch, openApp, v1State, finishSetup, precached, ROOT, TODAY } from './harness.mjs';
 
 const url = process.argv[2] || 'https://quandro1.github.io/forge90/';
 const stampOf = (html) => (html.match(/<meta name="forge-build" content="([0-9a-f]+)">/) || [])[1] || null;
@@ -90,15 +90,12 @@ try {
     step('3 of 3: offline after one visit');
     const { page, errors, context } = await openApp(env, { state: v1State(), sw: true, now: false });
     const r = {};
-    await page.waitForFunction(async () => {                                 // the worker is registered and has stored the app
-      if (!(await navigator.serviceWorker.getRegistration())) return false;
-      const ks = await caches.keys();
-      return ks.length === 1 && (await (await caches.open(ks[0])).keys()).length >= 6;
-    }, null, { timeout: 30000 });
+    await precached(page);                                                   // the worker is active and has stored the app
     await context.setOffline(true);
     await page.reload({ waitUntil: 'load' });
     r.build = await pageBuild(page);
     r.renders = await page.locator('#ro-today').count();
+    r.fromWorker = await page.evaluate(() => !!navigator.serviceWorker.controller);
     r.caches = await page.evaluate(() => caches.keys());
     r.errors = errors.filter((e) => !/Failed to load resource|net::ERR_INTERNET_DISCONNECTED/.test(e));
     r.ok = r.build === local && r.renders === 1 && r.caches.length === 1 && r.errors.length === 0;
