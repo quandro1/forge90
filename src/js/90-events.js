@@ -1,3 +1,6 @@
+/* ===================================================================
+   EVENTS
+   =================================================================== */
 const TABS=['today','train','plan','fuel','prog'];
 let currentTab='today';
 function setTab(name,skipHash){
@@ -31,6 +34,14 @@ $('#btnTheme').addEventListener('click',()=>{
   S.ui.theme=next; save(); paintThemeColor();
 });
 
+/* how many days a week: picks that variant of the plan and its default weekdays */
+function setDaysPerWeek(n){
+  const p=program();
+  if(!p.variants[n]||n===+S.profile.dpw) return false;
+  S.profile.dpw=n; S.profile.days=p.variants[n].days.slice();
+  save(); return true;
+}
+
 /* --- delegated clicks -------------------------------------------- */
 document.addEventListener('click',e=>{
   const T=e.target;
@@ -45,25 +56,12 @@ document.addEventListener('click',e=>{
   }
   const shop=T.closest('[data-shop]');
   if(shop){
-    S.shop=S.shop||{};
     const k=shop.dataset.shop;
-    S.shop[k]=!S.shop[k];
+    if(S.shop[k]) delete S.shop[k]; else S.shop[k]=true;
     shop.setAttribute('aria-pressed',String(!!S.shop[k]));
     save(); return;
   }
   if(T.closest('[data-hidehelp]')){ S.ui.helpSeen=1; save(); renderHelp(); return; }
-  const rep=T.closest('[data-repeat]');
-  if(rep){
-    const box=rep.closest('.logger'), id=box.dataset.log;
-    const prev=prevSession(id);
-    if(prev){
-      const e=upsert(id);
-      e.sets=prev.sets.map(s=>({w:s.w,r:s.r}));
-      while(e.sets.length<setsWanted(id)) e.sets.push({});
-      save(); refreshLogger(box,id);
-    }
-    return;
-  }
   const cond=T.closest('[data-cond]');
   if(cond){ logCond(cond.dataset.cond); renderCond(); return; }
   if(T.closest('[data-uncond]')){
@@ -89,23 +87,23 @@ document.addEventListener('click',e=>{
     const card=exh.closest('.ex'), id=card.dataset.ex, body=$('.ex-b',card);
     const open=card.classList.toggle('open');
     exh.setAttribute('aria-expanded',String(open));
-    if(open&&!body.dataset.filled){ fillEx(body,id); body.dataset.filled='1'; }
+    if(open&&!body.dataset.filled){ fillEx(body,id,card.dataset.slot); body.dataset.filled='1'; }
     return;
   }
-  const seg=T.closest('#splitSeg button');
-  if(seg){ S.profile.split=seg.dataset.split; save(); renderTrain(); return; }
+  const dpw=T.closest('[data-dpw]');
+  if(dpw){
+    if(setDaysPerWeek(+dpw.dataset.dpw)){
+      if(dpw.closest('#sheet')){ $$('#setDpw button').forEach(b=>b.classList.toggle('on',b===dpw)); renderToday(); }
+      else renderTrain();
+    }
+    return;
+  }
   if(T.closest('#btnLib')){ libSheet(); return; }
   const lg=T.closest('#libSeg button');
   if(lg){
     $$('#libSeg button').forEach(b=>b.classList.toggle('on',b===lg));
     libRender(lg.dataset.g, $('#libSearch')?$('#libSearch').value:'');
     return;
-  }
-  const setSplit=T.closest('#setSplit button');
-  if(setSplit){
-    S.profile.split=setSplit.dataset.split; save();
-    $$('#setSplit button').forEach(b=>b.classList.toggle('on',b===setSplit));
-    renderToday(); return;
   }
   const dseg=T.closest('#dietSeg button');
   if(dseg){ S.ui.diet=dseg.dataset.diet; save(); renderFuel(); return; }
@@ -115,184 +113,174 @@ document.addEventListener('click',e=>{
   const chip=T.closest('[data-food]');
   if(chip){
     const p=chip.dataset.food.split('|'), f=FOODCATS[+p[0]][1][+p[1]];
-    S.food=S.food||{};
     (S.food[TODAY]||(S.food[TODAY]=[])).push({n:f[0],k:f[2],p:f[3],c:f[4],f:f[5]});
     save(); renderProt(); return;
   }
   const unfood=T.closest('[data-unfood]');
   if(unfood){
-    S.food[TODAY].splice(+unfood.dataset.unfood,1);
-    if(!S.food[TODAY].length) delete S.food[TODAY];
+    const a=S.food[TODAY];
+    if(a){ a.splice(+unfood.dataset.unfood,1); if(!a.length) delete S.food[TODAY]; }
     save(); renderProt(); return;
   }
 
-  const addset=T.closest('[data-addset]');
-  if(addset){
-    const box=addset.closest('.logger'), id=box.dataset.log;
-    const entry=upsert(id); entry.sets.push({});
-    save(); refreshLogger(box,id); return;
-  }
-  const ok=T.closest('[data-ok]');
-  if(ok){
-    const box=ok.closest('.logger'), id=box.dataset.log, i=+ok.dataset.ok;
-    const entry=upsert(id);
-    while(entry.sets.length<=i) entry.sets.push({});
-    const s=entry.sets[i], prev=i>0?entry.sets[i-1]:null;
-    if(s.w==null&&prev&&prev.w!=null) s.w=prev.w;          // carry the bar weight forward
-    s.done=1;
-    if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
-    save();
-    // The rest starts first: nothing that happens while redrawing the logbook may stop it.
-    startRest(id,i);
-    try{ refreshLogger(box,id); }catch(err){ console.error(err); }
-    return;
-  }
-  if(T.closest('[data-rest-start]')){
-    const box=T.closest('.logger'), id=box.dataset.log;
-    const cur=(S.logs[id]||[]).find(x=>x.d===TODAY), done=cur?cur.sets.filter(s=>s.done).length:0;
-    startRest(id, done?done-1:-1); return;
+  /* ---- the logbook ---- */
+  const box=T.closest('.logger');
+  if(box){
+    const id=box.dataset.log, ref=box.dataset.ref, it=itemFor(id,ref);
+    if(T.closest('[data-repeat]')){
+      const prev=prevSession(id);
+      if(prev){
+        const en=upsert(id,it);
+        en.sets=prev.sets.map(s=>{ const o={}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; return o; });
+        while(en.sets.length<setsWanted(it)) en.sets.push({});
+        save(); refreshLogger(id);
+      }
+      return;
+    }
+    if(T.closest('[data-addset]')){
+      upsert(id,it).sets.push({});
+      save(); refreshLogger(id); return;
+    }
+    const ok=T.closest('[data-ok]');
+    if(ok){
+      const i=+ok.dataset.ok, en=upsert(id,it);
+      while(en.sets.length<=i) en.sets.push({});
+      const s=en.sets[i], prev=i>0?en.sets[i-1]:null;
+      if(s.w==null&&prev&&prev.w!=null) s.w=prev.w;          // carry the bar weight forward
+      s.done=1;
+      if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
+      save();
+      // The rest starts first: nothing that happens while redrawing the logbook may stop it.
+      startRest(id,i,ref);
+      try{ refreshLogger(id); }catch(err){ console.error(err); }
+      return;
+    }
+    if(T.closest('[data-rest-start]')){
+      const cur=todayEntry(id), done=cur?cur.sets.filter(s=>s.done).length:0;
+      startRest(id, done?done-1:-1, ref); return;
+    }
+    const del=T.closest('[data-del]');
+    if(del){
+      const i=+del.dataset.del, en=upsert(id,it);
+      // an extra row you added comes off entirely; a prescribed row just empties
+      if(i===en.sets.length-1 && en.sets.length>setsWanted(it)) en.sets.pop();
+      else if(en.sets[i]) en.sets[i]={};
+      save(); refreshLogger(id); return;
+    }
+    const savelog=T.closest('[data-savelog]');
+    if(savelog){
+      const en=upsert(id,it);
+      // Trim only blank rows off the END. Filtering the whole array renumbered
+      // the sets, so skipping set 2 silently turned set 3 into set 2.
+      let n=en.sets.length;
+      while(n>setsWanted(it) && blankSet(en.sets[n-1])) n--;
+      en.sets.length=n;
+      if(en.sets.every(blankSet)){ S.logs[id]=S.logs[id].filter(x=>x!==en); if(!S.logs[id].length) delete S.logs[id]; }
+      else{
+        const arr=S.checks[TODAY]||(S.checks[TODAY]=[]);
+        if(arr.indexOf('session')<0) arr.push('session');
+      }
+      save(); refreshLogger(id);
+      const btn=$('.logger[data-log="'+id+'"][data-ref="'+ref+'"] [data-savelog]');
+      if(btn){ btn.textContent='Saved'; setTimeout(()=>{ btn.textContent='Save session'; },1400); }
+      return;
+    }
   }
   const adj=T.closest('[data-rest-adj]');
   if(adj){ adjustRest(+adj.dataset.restAdj); return; }
   if(T.closest('[data-rest-stop]')){ stopRest(); return; }
   if(T.closest('[data-rest-go]')){ scrollToRest(); return; }
-  const del=T.closest('[data-del]');
-  if(del){
-    const box=del.closest('.logger'), id=box.dataset.log, i=+del.dataset.del;
-    const entry=upsert(id);
-    // an extra row you added comes off entirely; a prescribed row just empties
-    if(i===entry.sets.length-1 && entry.sets.length>setsWanted(id)) entry.sets.pop();
-    else if(entry.sets[i]) entry.sets[i]={};
-    save(); refreshLogger(box,id); return;
-  }
-  const savelog=T.closest('[data-savelog]');
-  if(savelog){
-    const box=savelog.closest('.logger'), id=box.dataset.log, entry=upsert(id);
-    // Trim only blank rows off the END. Filtering the whole array renumbered
-    // the sets, so skipping set 2 silently turned set 3 into set 2.
-    let n=entry.sets.length;
-    while(n>setsWanted(id) && blankSet(entry.sets[n-1])) n--;
-    entry.sets.length=n;
-    if(entry.sets.every(blankSet)){ S.logs[id]=S.logs[id].filter(x=>x!==entry); if(!S.logs[id].length) delete S.logs[id]; }
-    else{
-      const arr=S.checks[TODAY]||(S.checks[TODAY]=[]);
-      if(arr.indexOf('session')<0) arr.push('session');
-    }
-    save(); refreshLogger(box,id);
-    savelog.textContent='Saved'; setTimeout(()=>{ savelog.textContent='Save session'; },1400);
-    return;
-  }
 
   const dm=T.closest('[data-delmeas]');
-  if(dm){ S.meas.splice(+dm.dataset.delmeas,1); save(); renderMeas(); return; }
+  if(dm){
+    const row=S.meas.slice().sort((a,b)=>a.d<b.d?-1:1)[+dm.dataset.delmeas];
+    const at=S.meas.indexOf(row);
+    if(at>=0) S.meas.splice(at,1);
+    save(); renderMeas(); return;
+  }
 });
 
 $('#addMeas').addEventListener('click',()=>{
   openSheet('New measurement',
     '<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:14px">Morning, relaxed, before food. Waist at the navel — do not suck in. Same tape, same spots, every time.</p>'
     +'<div class="card">'
-    +srow('Date','m-d','date',TODAY)
-    +srow('Waist (cm)','m-waist','number','')
-    +srow('Chest (cm)','m-chest','number','')
-    +srow('Shoulders (cm)','m-sh','number','')
-    +srow('Arm (cm)','m-arm','number','')
-    +srow('Thigh (cm)','m-thigh','number','')
+    +mrow('Date','m-d','date',TODAY)
+    +mrow('Waist (cm)','m-waist','number','')
+    +mrow('Chest (cm)','m-chest','number','')
+    +mrow('Shoulders (cm)','m-sh','number','')
+    +mrow('Arm (cm)','m-arm','number','')
+    +mrow('Thigh (cm)','m-thigh','number','')
     +'</div><button class="btn primary wide" id="saveMeas" style="margin-top:14px">Save entry</button>');
   $('#saveMeas').addEventListener('click',()=>{
     const g=k=>$('#f-m-'+k).value;
-    if(!g('d')) return;
-    S.meas.push({d:g('d'), waist:g('waist'), chest:g('chest'), sh:g('sh'), arm:g('arm'), thigh:g('thigh')});
-    if(g('waist')) S.waist[g('d')]=g('waist');
+    if(!isDate(g('d'))) return;
+    const row={d:g('d')};
+    ['waist','chest','sh','arm','thigh'].forEach(k=>{ const n=numIn(g(k),1,999,null); if(n!=null) row[k]=n; });
+    if(Object.keys(row).length<2) return;                    // nothing measured
+    S.meas.push(row);
+    if(row.waist!=null) S.waist[row.d]=row.waist;
     save(); closeSheet(); renderProg();
   });
 });
+function mrow(label,key,type,val){
+  return '<div class="frow"><label for="f-'+key+'">'+esc(label)+'</label>'
+    +'<input class="num" id="f-'+key+'" type="'+type+'" value="'+esc(val)+'"'
+    +(type==='number'?' step="0.5" inputmode="decimal"':'')+'></div>';
+}
 
 /* --- delegated input --------------------------------------------- */
-function setsWanted(id){ return +((EX[id]||{}).sets)||3; }
-function blankSet(s){ return !s || (s.w==null && s.r==null && !s.done); }
-function upsert(id){
-  const arr=S.logs[id]||(S.logs[id]=[]);
-  let e=arr.find(x=>x.d===TODAY);
-  if(!e){ e={d:TODAY,sets:[]}; arr.push(e); arr.sort((a,b)=>a.d<b.d?-1:1); }
-  // the rows the program prescribes always exist in state, so "+ Set" adds a
-  // real row instead of silently filling an invisible gap
-  while(e.sets.length<setsWanted(id)) e.sets.push({});
-  return e;
-}
-/* One definition of "last time", used by the header AND the button, so the
-   two can never disagree: a session that actually has reps in it. */
-function prevSession(id){
-  return (S.logs[id]||[]).filter(x=>x.d!==TODAY&&(x.sets||[]).some(s=>s&&s.r>0)).pop()||null;
-}
-/* The same exercise appears on two days of the split (lateral raise on 1 and 4,
-   leg curl on 3 and 5), so two logbooks for it can be open at once. Refresh
-   every copy or the other one sits there showing stale numbers. */
-function refreshLogger(box,id){
-  const a=document.activeElement;
-  const keep=(a&&a.closest&&a.closest('.logger[data-log="'+id+'"]'))
-    ? {set:a.dataset.set, f:a.dataset.f} : null;
-  $$('.logger[data-log="'+id+'"]').forEach(b=>{
-    const wrap=b.parentNode; if(!wrap) return;
-    const tmp=document.createElement('div');
-    tmp.innerHTML=logger(id);
-    wrap.replaceChild(tmp.firstChild,b);
-  });
-  if(keep&&keep.set!=null){
-    const el=$('.logger[data-log="'+id+'"] input[data-set="'+keep.set+'"][data-f="'+keep.f+'"]');
-    if(el) try{ el.focus({preventScroll:true}); }catch(e){ el.focus(); }
-  }
-}
 document.addEventListener('input',e=>{
   const T=e.target;
-  const st=T.closest('[data-set]');
-  if(st){
+  if(T.dataset&&T.dataset.set!=null&&T.closest('.logger')){
     const box=T.closest('.logger'), id=box.dataset.log, i=+T.dataset.set, f=T.dataset.f;
-    const entry=upsert(id);
-    while(entry.sets.length<=i) entry.sets.push({});
+    const en=upsert(id,itemFor(id,box.dataset.ref));
+    while(en.sets.length<=i) en.sets.push({});
     // keep only digits (and one dot for weight), so junk never reaches state
-    let raw=String(T.value).replace(f==='w'?/[^0-9.]/g:/[^0-9]/g,'');
+    let raw=String(T.value).replace(',', '.').replace(f==='w'?/[^0-9.]/g:/[^0-9]/g,'');
     if(f==='w') raw=raw.replace(/(\..*)\./g,'$1');
+    if(raw.length>7) raw=raw.slice(0,7);
     if(raw!==T.value){ const at=T.selectionStart; T.value=raw; try{T.setSelectionRange(at-1,at-1);}catch(err){} }
-    if(raw===''){ entry.sets[i][f]=null; }
+    if(raw===''){ delete en.sets[i][f]; }
     else{
       const v=parseFloat(raw);          // "7." parses to 7 and the field keeps "7."
-      if(isFinite(v)) entry.sets[i][f]=v; else return;
+      if(isFinite(v)) en.sets[i][f]=v; else return;
     }
     // keep the other open copy of this exercise in step while typing
     $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="'+f+'"]')
       .forEach(el=>{ if(el!==T) el.value=T.value; });
     save(); return;
   }
-  if(T.id==='qWeight'){ setNum(S.weights,T.value); return; }
-  if(T.id==='qWaist'){ setNum(S.waist,T.value); return; }
-  if(T.id==='qSteps'){ setNum(S.steps,T.value); return; }
+  if(T.id==='qWeight'){ setNum(S.weights,T.value,1,999); return; }
+  if(T.id==='qWaist'){ setNum(S.waist,T.value,1,999); return; }
+  if(T.id==='qSteps'){ setNum(S.steps,T.value,0,500000); return; }
   const pf=T.closest('[data-prof]');
   if(pf){
-    const k=pf.dataset.prof;
-    S.profile[k]=(k==='start')?pf.value:(pf.tagName==='SELECT'?+pf.value:(pf.value===''?DEFAULTS.profile[k]:+pf.value));
-    save(); renderToday(); return;
+    // A profile field changes the plan only once it holds a usable value:
+    // a half-typed or impossible number is ignored, never stored.
+    const k=pf.dataset.prof, raw=pf.value, next=Object.assign({},S.profile);
+    if(k==='start'){ if(!isDate(raw)) return; next.start=raw; }
+    else if(k==='sex'||k==='goal'){ next[k]=raw; }
+    else if(k==='targetW'){ next.targetW=raw===''?null:+raw; }
+    else{ if(raw==='') return; next[k]=+raw; }
+    const ok=cleanProfile(next,false);
+    if(k!=='start'&&k!=='sex'&&k!=='goal'&&next[k]!=null&&ok[k]!==next[k]) return;      // out of range
+    S.profile=ok; save(); renderToday(); return;
   }
 });
-function setNum(obj,v){
-  if(v==='') delete obj[TODAY]; else obj[TODAY]=+v;
+function setNum(obj,v,lo,hi){
+  const n=numIn(v,lo,hi,null);
+  if(n==null) delete obj[TODAY]; else obj[TODAY]=n;
   save();
   clearTimeout(setNum.t);
   setNum.t=setTimeout(()=>{ if(currentTab==='today'){ renderTodayReadout(); renderCond(); } },500);
 }
 function renderTodayReadout(){
   const t=targets(), wl=weightList(), latest=wl.length?wl[wl.length-1][1]:null;
-  const startW=wl.length?wl[0][1]:t.w, di=todayIndex(), started=di>=1&&di<=91, info=started?dayInfo(di):null;
+  const startW=wl.length?wl[0][1]:t.w, di=todayIndex(), started=di>=1&&di<=BLOCK_DAYS, info=started?dayInfo(di):null;
   $('#ro-today').innerHTML=[
-    ro('Day', started?di:(di>91?91:0), '/ 91', true),
+    ro('Day', started?di:(di>BLOCK_DAYS?BLOCK_DAYS:0), '/ '+BLOCK_DAYS, true),
     ro('Phase', started?info.phase:'—', started?PHASES[info.phase-1].name:''),
     ro('Weight', latest!=null?latest.toFixed(1):'—', latest!=null?(latest-startW>=0?'+':'')+(latest-startW).toFixed(1)+' kg':'log one'),
     ro('Streak', streak(), 'days', true)
   ].join('');
 }
-
-/* ===================================================================
-   APP SHELL — manifest, service worker, install, offline
-   The page works identically as a plain web page, a home-screen app, or
-   the double-click file on the laptop; every hook below is feature-detected
-   and silently absent when the platform does not offer it.
-   =================================================================== */

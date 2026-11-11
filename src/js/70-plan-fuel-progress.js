@@ -2,9 +2,9 @@ function renderPlan(){
   $('#fullPunch').innerHTML=punch(0,13);
   const di=todayIndex();
   let liftDone=0, liftTotal=0;
-  for(let i=1;i<=91;i++){ const d=dayInfo(i); if(d.type==='lift'){liftTotal++; if(sessionDone(d.date)) liftDone++;} }
+  for(let i=1;i<=BLOCK_DAYS;i++){ const d=dayInfo(i); if(d.type==='lift'){liftTotal++; if(sessionDone(d.date)) liftDone++;} }
   $('#punchPct').textContent=liftTotal?Math.round(liftDone/liftTotal*100)+'% of sessions':'—';
-  const cur=di>=1&&di<=91?dayInfo(di).phase:0;
+  const cur=di>=1&&di<=BLOCK_DAYS?dayInfo(di).phase:0;
   $('#phaseList').innerHTML=PHASES.map(p=>
     '<details'+(p.n===cur?' open':'')+'><summary><span class="idx">P'+p.n+'</span>'
     +'<span style="flex:1;min-width:0"><span style="display:block">'+esc(p.name)+'</span>'
@@ -233,7 +233,7 @@ function renderMeas(){
   let h='<table><thead><tr><th>Date</th><th class="n">Waist</th><th class="n">Chest</th><th class="n">Shoulders</th><th class="n">Arm</th><th class="n">Thigh</th><th></th></tr></thead><tbody>';
   if(!rows.length) h+='<tr><td colspan="7" style="color:var(--text-faint)">Nothing yet. Take a baseline today — you cannot get it back later.</td></tr>';
   rows.forEach((r,i)=>{
-    h+='<tr><td>'+fmtDate(r.d)+'</td>'+['waist','chest','sh','arm','thigh'].map(k=>'<td class="n">'+(r[k]||'—')+'</td>').join('')
+    h+='<tr><td>'+fmtDate(r.d)+'</td>'+['waist','chest','sh','arm','thigh'].map(k=>'<td class="n">'+(r[k]!=null?esc(r[k]):'—')+'</td>').join('')
       +'<td><button class="del" data-delmeas="'+i+'" aria-label="Delete entry">×</button></td></tr>';
   });
   $('#measTable').innerHTML=h+'</tbody></table>';
@@ -276,7 +276,7 @@ function renderHabit(){
   for(let w=1;w<=13;w++){
     let hit=0, poss=0;
     for(let k=0;k<7;k++){
-      const i=(w-1)*7+k+1; if(i>91) break;
+      const i=(w-1)*7+k+1; if(i>BLOCK_DAYS) break;
       const d=dayInfo(i);
       if(parseISO(d.date)>parseISO(TODAY)) continue;
       poss+=total; hit+=(S.checks[d.date]||[]).length;

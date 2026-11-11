@@ -1,11 +1,11 @@
 function renderToday(){
   const t=targets(), di=todayIndex(), info=infoForDate(TODAY);
-  const started=di>=1, done=di>91;
+  const started=di>=1, done=di>BLOCK_DAYS;
 
   $('#dayline').textContent = !started
     ? 'Starts '+fmtDate(S.profile.start)
     : done ? 'Block complete · '+fmtDate(TODAY)
-    : 'Day '+di+' of 91 · Week '+info.week+' · Phase '+info.phase+(info.deload?' · deload':'');
+    : 'Day '+di+' of '+BLOCK_DAYS+' · Week '+info.week+' · Phase '+info.phase+(info.deload?' · deload':'');
 
   $('#todaylede').textContent = !started
     ? 'Your block begins on '+fmtDate(S.profile.start)+'. Change the start date in Settings if that is wrong — everything on this page keys off it.'
@@ -17,7 +17,7 @@ function renderToday(){
   const wl=weightList(), latest=wl.length?wl[wl.length-1][1]:null;
   const startW=wl.length?wl[0][1]:t.w;
   $('#ro-today').innerHTML=[
-    ro('Day', started&&!done?di:(done?91:0), '/ 91', true),
+    ro('Day', started&&!done?di:(done?BLOCK_DAYS:0), '/ '+BLOCK_DAYS, true),
     ro('Phase', started&&!done?info.phase:'—', started&&!done?PHASES[info.phase-1].name:''),
     ro('Weight', latest!=null?latest.toFixed(1):'—', latest!=null?(latest-startW>=0?'+':'')+(latest-startW).toFixed(1)+' kg':'log one'),
     ro('Streak', streak(), 'days', true)
@@ -29,9 +29,9 @@ function renderToday(){
     sc='<div class="session rest"><div class="tag">'+(done?'Finished':'Not started')+'</div><h3>'+(done?'Block complete':'Waiting to begin')+'</h3><p class="focus">'+(done?'Log your final measurements in Progress.':'Set your start date in Settings to light this up.')+'</p></div>';
   }else if(info.type==='lift'){
     const s=info.session;
-    sc='<div class="session"><div class="tag">'+esc(s.tag)+(info.deload?' · DELOAD':'')+'</div>'
+    sc='<div class="session"><div class="tag">'+esc('Day '+(info.idx+1)+' · '+s.tag)+(info.deload?' · DELOAD':'')+'</div>'
       +'<h3>'+esc(s.name)+'</h3><p class="focus">'+esc(s.focus)+'</p><div class="meta">'
-      +'<span class="pill hot">'+s.ex.length+' exercises</span>'
+      +'<span class="pill hot">'+s.items.length+' exercises</span>'
       +'<span class="pill">'+condToday(info)+'</span>'
       +(info.deload?'<span class="pill warn">−10% load, drop a set</span>':'')
       +(sessionDone(TODAY)?'<span class="pill good">Done</span>':'')
@@ -92,7 +92,7 @@ function stepsTarget(week){
 }
 function weekDates(week){
   const out=[];
-  for(let k=0;k<7;k++){ const i=(week-1)*7+k+1; if(i<=91) out.push(dayInfo(i).date); }
+  for(let k=0;k<7;k++){ const i=(week-1)*7+k+1; if(i<=BLOCK_DAYS) out.push(dayInfo(i).date); }
   return out;
 }
 function condCount(week,kind){
@@ -118,7 +118,7 @@ function dots(done,target){
 }
 function renderCond(){
   const di=todayIndex();
-  if(di<1||di>91){ $('#condCard').innerHTML='<div class="card-h"><h3>Conditioning</h3></div>'
+  if(di<1||di>BLOCK_DAYS){ $('#condCard').innerHTML='<div class="card-h"><h3>Conditioning</h3></div>'
     +'<p style="font-size:13px;color:var(--text-dim)">Starts with the block.</p>'; return; }
   const info=dayInfo(di), c=COND[info.phase], t=targets();
   const st=stepsTarget(info.week), today=S.steps[TODAY]||0;
@@ -143,7 +143,7 @@ function renderCond(){
       +'Zone 2 pace for you is about <b>'+t.z2[0]+'–'+t.z2[1]+' bpm</b> — a pace you could still talk at.</div>';
 }
 function renderCondSection(){
-  const di=todayIndex(), ph=(di>=1&&di<=91)?dayInfo(di).phase:1;
+  const di=todayIndex(), ph=(di>=1&&di<=BLOCK_DAYS)?dayInfo(di).phase:1;
   $('#condSection').innerHTML=
     CONDTOOLS.map((x,i)=>{
       const c=COND[ph];
@@ -185,7 +185,7 @@ function punch(fromWeek,weeks){
     h+='<div class="wk">'+(w+1)+'</div>';
     for(let k=0;k<7;k++){
       const i=w*7+k+1;
-      if(i>91){ h+='<div></div>'; continue; }
+      if(i>BLOCK_DAYS){ h+='<div></div>'; continue; }
       const d=dayInfo(i), isToday=d.date===TODAY, past=parseISO(d.date)<parseISO(TODAY);
       const done=d.type!=='rest'&&sessionDone(d.date);
       const cls=['day',d.type==='lift'?'lift':d.type==='cardio'?'cardio':'',

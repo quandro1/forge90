@@ -52,7 +52,7 @@ function appBox(){
   if(PWA.installed||isStandalone())
     return '<div class="appbox"><div class="ai">'+icon+'<span class="at"><b>Installed.</b> '
       +'You are running FORGE 90 as an app — it opens from your home screen, fills the whole screen, '
-      +'and works without a signal. Your log still backs up to your account whenever you are online.</span></div></div>';
+      +'and works without a signal. '+(CLOUD.doc?'Your log still backs up to your account whenever you are online.':'Your log is kept on this phone — export a backup now and then.')+'</span></div></div>';
   if(PWA.prompt)
     return '<div class="appbox"><div class="ai">'+icon+'<span class="at"><b>Install it.</b> '
       +'Puts FORGE 90 on your home screen with its own icon, no browser bars, and it opens offline.</span></div>'
@@ -143,8 +143,15 @@ document.addEventListener('click',e=>{
       const f=inp.files[0]; if(!f) return;
       const r=new FileReader();
       r.onload=()=>{ try{
-          const p=mergeState(JSON.parse(r.result)); p.ui.savedAt=Date.now();
-          localStorage.setItem(KEY,JSON.stringify(p)); location.reload(); }
+          const raw=JSON.parse(r.result);
+          // only something that looks like a backup may replace what is on the device
+          if(!isObj(raw)||!(isObj(raw.profile)||isObj(raw.logs)||isObj(raw.weights))) throw new Error('not a backup');
+          const p=normalize(raw); p.ui.savedAt=Date.now(); p.profile.setup=true;
+          // The restored state becomes THE state before the page reloads: the save
+          // that runs as a page closes would otherwise write the old one back.
+          S=p; writeNow();
+          if(!SAVE_OK) throw new Error('storage refused the write');
+          cloudQueue(); SAVE_HALT=true; location.reload(); }
         catch(err){ e.target.textContent='Could not read that file'; } };
       r.readAsText(f);
     });
@@ -152,7 +159,8 @@ document.addEventListener('click',e=>{
   }
   if(e.target.id==='btnWipe'){
     if(e.target.dataset.armed){
-      localStorage.removeItem(KEY);
+      SAVE_HALT=true;                        // nothing may write the old state back while the page closes
+      localStorage.removeItem(KEY); localStorage.removeItem(KEY_V1);
       const done=()=>location.reload();
       if(CLOUD.doc){ e.target.textContent='Erasing…'; CLOUD.doc.delete().then(done,done); } else done();
     }
@@ -166,12 +174,13 @@ document.addEventListener('click',e=>{
    =================================================================== */
 (function init(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
+  if(BOOT.write) writeNow();               // a converted or repaired state gets its own copy at once
   ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW(); requestPersistence();
   if(isStandalone()) document.documentElement.classList.add('standalone');
   $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===S.ui.diet));
   // a rest timer that was running when the page closed picks up where it was
   const r=S.ui.rest;
-  if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); }
+  if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); }
   else if(r){ delete S.ui.rest; save(); }
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible') return;

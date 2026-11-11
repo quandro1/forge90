@@ -19,7 +19,7 @@
 /*__FORGE_CSS__*/
 </style>
 <script>
-(function(){try{var s=JSON.parse(localStorage.getItem('forge90_v1')||'{}');
+(function(){try{var s=JSON.parse(localStorage.getItem('forge90_v2')||localStorage.getItem('forge90_v1')||'{}');
 if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.theme);}catch(e){}})();
 </script>
 </head>
@@ -80,10 +80,8 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
     <h2 id="h-train">Train</h2>
     <p class="lede">Every session below carries its own logbook. Enter what you lift and the app tells you what to do next week — that decision is the whole program.</p>
     <div class="stack">
-      <div class="seg" id="splitSeg" role="group" aria-label="Choose your split">
-        <button data-split="five" class="on">5-Day</button>
-        <button data-split="four">4-Day</button>
-      </div>
+      <div id="planBar"></div>
+      <div class="seg" id="splitSeg" role="group" aria-label="Days a week"></div>
       <button class="btn wide" id="btnLib">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 15l5-4 3 2.5L15.5 9 21 14"/><circle cx="8.5" cy="8.5" r="1.3"/></svg>
         Exercise library — photos &amp; video
@@ -208,8 +206,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
 
 <div class="wrap foot">
   <div class="fm">FORGE 90</div>
-  <p style="margin-top:6px">Built for a 23-year-old intermediate lifter at 88 kg · halal Pakistani kitchen · 9 AM sessions.<br>
-  Educational, not medical advice. See a doctor before starting if you have any condition, take medication, or train through pain.</p>
+  <p style="margin-top:6px">Educational, not medical advice. See a doctor before starting if you have any condition, take medication, or train through pain.</p>
 </div>
 
 <nav class="tabbar" aria-label="Sections">

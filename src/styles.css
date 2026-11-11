@@ -239,8 +239,8 @@ summary{
 summary::-webkit-details-marker{display:none}
 summary .chev{margin-left:auto; color:var(--text-faint); transition:transform .2s; flex:none}
 summary .chev svg{width:15px;height:15px;display:block}
-details[open] summary .chev{transform:rotate(90deg)}
-details[open] summary{border-bottom:1px solid var(--line-soft)}
+details[open]>summary .chev{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line-soft)}
 .dbody{padding:14px}
 summary .idx{font-family:var(--font-m); font-size:11px; color:var(--ember); flex:none; width:22px}
 
@@ -287,6 +287,29 @@ summary .idx{font-family:var(--font-m); font-size:11px; color:var(--ember); flex
 svg{display:block}
 .mz{fill:var(--zone-off); transition:fill .3s}
 .mz.on{fill:var(--ember)}
+.mz.sec{fill:color-mix(in srgb,var(--ember) 38%,var(--zone-off))}
+
+/* ============ HOW TO DO IT (the written guide inside a card) ============ */
+details.how{margin-top:12px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
+details.how>summary{padding:10px 12px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); min-height:44px}
+details.how>summary .how-t{flex:1}
+.how-b{padding:4px 12px 12px}
+.how-sec{margin-top:12px}
+.how-sec:first-child{margin-top:8px}
+.how-sec .eyebrow{margin-bottom:7px}
+.how-sec .steps b,.fixes span b{color:var(--text); font-weight:600}
+.how-note{margin-top:12px}
+.fixes{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--text-dim); line-height:1.45}
+.fixes li{border-left:2px solid var(--warn); padding-left:10px}
+.fixes li>b{display:block; color:var(--text); font-weight:600}
+.daytag{display:block; font-family:var(--font-m); font-size:10.5px; letter-spacing:.08em; color:var(--text-faint); text-transform:uppercase}
+.planbar{display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:12px 14px}
+.planbar .pb-t{flex:1; min-width:0}
+.planbar .pb-k{display:block; font-family:var(--font-d); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ember)}
+.planbar .pb-n{display:block; font-family:var(--font-d); font-size:20px; margin-top:2px}
+.planbar .pb-l{display:block; font-size:13px; color:var(--text-dim); margin-top:2px}
+.seg.wrap{flex-wrap:wrap}
+.seg.wrap button{flex:1 0 auto}
 .silo{fill:var(--silo-fill); stroke:var(--silo-line); stroke-width:1}
 
 /* ============ DEMO LINKS (photos / video) ============ */
@@ -351,6 +374,7 @@ svg{display:block}
   font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:14px; text-align:center; min-width:0;
 }
 .setrow input::placeholder{color:var(--text-faint); font-size:12px}
+.setrow .nw{text-align:center; color:var(--text-faint); font-family:var(--font-m)}
 .setrow input:focus{border-color:var(--ember); outline:none}
 .setrow .del{color:var(--text-faint); font-size:17px; line-height:1; padding:4px}
 .setrow .del:hover{color:var(--bad)}
