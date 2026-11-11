@@ -5,7 +5,8 @@ const PORTIONS=[
  ['Lean beef, cooked','1 palm (~100 g)',200,'28 g'],
  ['Lean qeema, light oil','1 small bowl (~150 g)',250,'30 g'],
  ['Cooked rice','1 cup (2 cupped hands)',205,'4 g'],
- ['Chapati','1 medium',120,'4 g'],
+ ['Chapati, small','1 thin (~45 g cooked)',120,'4 g'],
+ ['Roti, large','1 home size (~70 g cooked)',200,'7 g'],
  ['Oats, cooked','1 cup (40 g dry)',150,'5 g'],
  ['Daal, cooked','1 cup',220,'14 g'],
  ['Dahi','1 cup',150,'8 g'],
@@ -19,7 +20,7 @@ const PORTIONS=[
 const HUNGRY=[
  'Add vegetables or salad: close to free.',
  'Add protein (eggs, dahi, whey) before carbs or fat.',
- 'Drink a glass of water. Thirst feels almost exactly like hunger.',
+ 'Drink a glass of water. It is easy to mistake thirst for hunger.',
  'Black coffee or plain tea takes the edge off for an hour.'
 ];
 const DAWAT=[
@@ -58,8 +59,8 @@ const GUIDE=[
   <div class="tw" style="margin-top:10px"><table>
   <thead><tr><th>What the trend shows</th><th>What you do</th></tr></thead><tbody>
   <tr><td>Moving at the pace your goal asks for</td><td>Nothing. It is working.</td></tr>
-  <tr><td>Losing fat: weight and waist flat for 2–3 weeks</td><td>Take 150–200 kcal a day off carbs or fat, or add 1,000 steps. Not both.</td></tr>
-  <tr><td>Losing more than 1% of your bodyweight a week</td><td>Add about 150 kcal a day. You are losing muscle.</td></tr>
+  <tr><td>Losing fat: weight and waist flat for 2–3 weeks</td><td>Take 150–200 kcal a day off carbs or fat, or add 1,000 steps. Not both. If your target is already at the safe minimum, add the steps and do not cut food.</td></tr>
+  <tr><td>Losing more than 1% of your bodyweight a week (after the first two weeks)</td><td>Add about 150 kcal a day. You are likely losing muscle too.</td></tr>
   <tr><td>Building muscle: no gain for 2–3 weeks</td><td>Add about 150 kcal a day.</td></tr>
   <tr><td>Lifts dropping across the board</td><td>Cut cardio first, then eat more. Never cut protein or sleep.</td></tr>
   <tr><td>Worn down, sleeping badly</td><td>Eat at maintenance for 3–7 days, then go back.</td></tr>
@@ -74,7 +75,7 @@ const GUIDE=[
   <li><b>Keep coffee and tea at least eight hours before bed.</b></li>
   <li><b>Protect some quiet time.</b> Long-term stress slows fat loss and drives cravings. A walk, prayer, breathing, time away from the phone.</li>
   <li><b>5–10 minutes of mobility a day</b> for the hips, upper back and shoulders: the three things sitting stiffens most.</li>
-  <li><b>Drink enough water.</b> Being a little dry feels almost exactly like hunger and tiredness.</li>
+  <li><b>Drink enough water.</b> Being a little dry is easy to mistake for hunger and tiredness.</li>
   </ul>
   <p style="margin-top:12px">Check yourself most mornings against this table. <b>Two reds: take an easy day.</b> That call is what prevents the injury that ends a block.</p>
   <div class="tw" style="margin-top:10px"><table>
@@ -99,9 +100,9 @@ const GUIDE=[
   </ul>`},
  {t:'What 91 days can do', b:()=>{
    const rows={
-    lose:['<b>4–7 kg of fat lost</b> at a steady deficit. The scale may show a little more once water settles.','<b>Some muscle gained or all of it kept</b>, depending on how long you have trained.','<b>Waist down several centimetres.</b>','<b>Main lifts up</b>, even while eating less: 5–15% is common.'],
+    lose:['<b>About '+Math.max(1,Math.round(-targets().weekly*13))+' kg lost</b> at the pace your target sets. The scale may show a little more once water settles.','<b>Some muscle gained or all of it kept</b>, depending on how long you have trained.','<b>Waist down several centimetres.</b>','<b>Main lifts up</b>, even while eating less: 5–15% is common.'],
     hold:['<b>The same weight, made of more muscle and less fat.</b>','<b>Main lifts up 10–20%.</b>','<b>Fitter</b>: a lower resting heart rate and easier stairs.'],
-    gain:['<b>1–3 kg of muscle</b> for most people past the beginner stage; more in a first year of lifting.','<b>Main lifts up 10–25%.</b>','<b>A little fat comes with it.</b> Keeping the surplus small keeps that small.']}[goalClass()];
+    gain:['<b>0.5–1.5 kg of muscle</b> for most people past the beginner stage; 2–3 kg in a first year of lifting. Women gain about half as fast.','<b>Main lifts up 10–25%.</b>','<b>A little fat comes with it.</b> Keeping the surplus small keeps that small.']}[goalClass()];
    return '<p>Plainly, with no inflation:</p><ul class="klist" style="margin-top:10px">'+rows.map(r=>'<li>'+r+'</li>').join('')+'</ul>'
     +'<p style="margin-top:12px">Ninety-one days build the habits and the strength base. A big change in bodyweight usually takes two or three blocks. When this one ends, start the next: same plan or a new target.</p>';
  }}

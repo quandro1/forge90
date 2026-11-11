@@ -26,8 +26,10 @@ const FOODCATS=[
   ['Whey protein','1 scoop',120,24,3,2,'whey']
  ]],
  ['Carbs', [
-  ['Chapati','1 medium',120,4,24,2,'chapati'],
-  ['Naan','1',260,8,48,4,'naan'],
+  ['Chapati, small','1 thin, ~45 g cooked',120,4,24,2,'chapati'],
+  ['Roti, large','1 home size, ~70 g cooked',200,7,40,2,'roti'],
+  ['Naan, small','1, ~90 g',260,8,48,4,'naan'],
+  ['Naan, tandoor','1, ~130 g',375,12,69,6,'naanL'],
   ['Paratha','1',360,7,40,19,'paratha'],
   ['Rice, cooked','1 cup',205,4,45,1,'rice'],
   ['Biryani','1 plate',600,25,75,22,'biryani'],
@@ -40,7 +42,8 @@ const FOODCATS=[
  ['Dairy', [
   ['Milk, full-fat','1 glass',155,8,12,8,'milk'],
   ['Dahi','1 cup',150,8,12,8,'dahi'],
-  ['Greek yogurt','~200 g (¾ cup)',130,20,7,3,'gyogurt'],
+  ['Greek yogurt, low-fat','~200 g (¾ cup)',130,20,7,3,'gyogurt'],
+  ['Strained dahi, full-fat','~200 g',230,15,9,15,'hung'],
   ['Lassi, sweet','1 glass',220,8,30,7,'lassi'],
   ['Chai, with sugar','1 cup',120,3,14,5,'chaiSugar'],
   ['Chai, no sugar','1 cup',60,3,4,4,'chai']
@@ -62,7 +65,7 @@ const FOODCATS=[
   ['Peanut butter','1 thumb',95,4,3,8,'pb'],
   ['Oil / ghee','1 thumb',120,0,0,14,'oil'],
   ['Samosa','1',260,5,25,15,'samosa'],
-  ['Soft drink','1 glass',140,0,35,0,'softdrink']
+  ['Soft drink','1 can, 330 ml',140,0,35,0,'softdrink']
  ]]
 ];
 const FOOD={};
@@ -125,14 +128,14 @@ const LEVERS=[
 const MEALFOOD={
  egg:      q=>[frac(q), q===1?'Whole egg':'Whole eggs'],
  eggwhite: q=>[frac(q), q===1?'Egg white':'Egg whites'],
- chapati:  q=>[frac(q), 'Chapati'],
+ chapati:  q=>[frac(q), 'Chapati', 'small and thin; a large home roti counts as 1½'],
  milk:     q=>[frac(q)+(q===1?' glass':' glasses'), 'Milk'],
  whey:     q=>[frac(q)+(q===1?' scoop':' scoops'), 'Whey protein in water'],
  chicken:  q=>[frac(q)+(q>1?' palms':' palm'), 'Chicken breast', '~'+Math.round(100*q)+' g cooked'],
  rice:     q=>[frac(q)+(q>1?' cups':' cup'), 'Cooked rice'],
  dahi:     q=>[frac(q)+(q>1?' cups':' cup'), 'Dahi'],
  salad:    q=>['1 plate', 'Salad, as much as you like'],
- gyogurt:  q=>['~'+Math.round(200*q)+' g', 'Greek or strained yogurt'],
+ gyogurt:  q=>['~'+Math.round(200*q)+' g', 'Low-fat Greek yogurt'],
  almonds:  q=>[frac(q)+(q>1?' handfuls':' handful'), 'Almonds', 'about '+Math.round(20*q)],
  qeemaLean:q=>[frac(q)+(q>1?' bowls':' bowl'), 'Lean qeema, cooked in a little oil', '~'+Math.round(150*q)+' g'],
  sabzi:    q=>['1 bowl', 'Sabzi'],
@@ -144,23 +147,23 @@ function frac(q){ const w=Math.floor(q), h=q-w>=0.5; return (w?String(w):'')+(h?
 
 /* ---- SWAPS, GROCERY, SUPPLEMENTS ------------------------------- */
 const SWAPS=[
- ['1 palm chicken breast','1 large palm grilled fish · 1 small bowl lean qeema · 1 cup beef salan · 3 eggs + 3 whites','~30 g protein'],
- ['No meat','150 g paneer · 1½ bowls daal with a cup of dahi · 2 cups chana with a cup of dahi','~30 g protein'],
- ['1 cup rice','2 chapati · 1 large potato · 1½ cups cooked oats','~45 g carbs'],
- ['2 chapati at breakfast','1 cup cooked oats with a banana · 2 slices brown bread with a banana','~50 g carbs'],
- ['1 scoop whey','200 g Greek yogurt · 1 small can tuna · 4 egg whites + 1 egg','~22 g protein'],
+ ['1 palm chicken breast','1 large palm grilled fish · 1 small bowl lean qeema (+85 kcal) · 1 cup beef salan (+215 kcal) · 3 eggs + 3 whites (+110 kcal)','~30 g protein'],
+ ['No meat','150 g paneer (400 kcal) · 1½ bowls daal with a cup of dahi (480 kcal) · 2 cups chana with a cup of dahi (650 kcal)','~30 g protein, more calories'],
+ ['1 cup rice','2 small chapati · 1 large home roti · 1 large potato · 1½ cups cooked oats','~45 g carbs'],
+ ['2 small chapati at breakfast','1 cup cooked oats with a banana · 2 slices brown bread with a banana','~50 g carbs'],
+ ['1 scoop whey','200 g low-fat Greek yogurt · 1 small can tuna · 4 egg whites + 1 egg','~22 g protein'],
  ['Almonds','Peanuts · roasted chana (more protein, fewer calories)','about the same'],
  ['Anything you dislike','Any food of the same kind and size','the plan survives it']
 ];
 const GROCERY=[
  ['Protein', [['Eggs','2–3 dozen'],['Chicken breast','1.5–2 kg'],['Lean beef or qeema','about 1 kg'],['Fish or canned tuna','if you eat it'],['Whey protein','1 tub'],['Daal (chana, masoor)','1 kg']]],
  ['Carbs', [['Rice','2 kg'],['Atta','5 kg'],['Oats','1 kg, if you eat them'],['Potatoes','1 kg'],['Bananas','1 dozen'],['Dates','small pack']]],
- ['Dairy', [['Milk','daily'],['Dahi','large tub'],['Greek or strained yogurt','as available']]],
+ ['Dairy', [['Milk','daily'],['Dahi','large tub'],['Low-fat Greek yogurt','if you can get it']]],
  ['Vegetables', [['Salad vegetables','cucumber, tomato, onion, lettuce'],['Sabzi vegetables','spinach, okra, cauliflower, peas'],['Lemons','a few']]],
  ['Fruit & extras', [['Fruit in season','a week\'s worth'],['Almonds or peanuts','small pack'],['Roasted chana','500 g'],['Oil','use sparingly'],['Green tea, spices','staples']]]
 ];
 const SUPPS=[
- ['Creatine monohydrate','3–5 g every day','The best-studied supplement there is, and the cheapest thing on this page. It takes 3–4 weeks to build up, then gives a small strength increase. Timing does not matter: training day or not, just take it. Plain monohydrate; skip the expensive versions.'],
+ ['Creatine monohydrate','3–5 g every day','The best-studied supplement there is, and the cheapest thing on this page. It takes 3–4 weeks to build up, then gives a small strength increase. Timing does not matter: training day or not, just take it. Plain monohydrate; skip the expensive versions. Expect the scale to rise about a kilo in the first weeks: that is water held in the muscle, not fat. Not for under-18s, and not with kidney disease, without a doctor\'s advice.'],
  ['Whey protein','1–2 scoops a day, if you need them','Not magic: fast, cheap protein that makes the daily target reachable on a busy day. Whole food first, whey to close the gap. Check the label if you need it halal or vegetarian.'],
  ['Vitamin D3','1,000–2,000 IU with a meal','Low levels are common with an indoor life. Cheap insurance for bone health. Have it tested first if you can.'],
  ['Electrolytes','Around training and in hot weather','A pinch of salt and a squeeze of lemon in water does the job for almost nothing.'],

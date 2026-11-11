@@ -13,7 +13,7 @@ const PHASES=[
    gain:['Hit your protein every day.','Reach your calorie target: a small surplus only works if you actually eat it.','Add food to the meals around training first.']},
   cond:['Build your daily steps by about 1,000 a week.','Zone 2 twice a week, 25–30 minutes. It should feel easy.','No hard intervals yet: build the easy base first.'],
   out:{
-   lose:'Usually 1.5 to 3 kg down, some of it water. Clothes looser, technique solid.',
+   lose:'Usually 1 to 3 kg down, less on the slow plan, and some of it water. Clothes looser, technique solid.',
    hold:'Technique solid, every lift logged, the routine in place.',
    gain:'Technique solid and the first small increases on the bar.'}},
  {n:2, name:'Overload', sub:'Weeks 5–8', w:[5,8], color:'ember',
@@ -32,14 +32,14 @@ const PHASES=[
   goal:'Hold the heavy work, tidy the details, and finish strong.',
   train:['Keep the main lifts heavy: that is what keeps your muscle.','On small lifts you may take the last set to failure.','Week 12 is a deload, then one hard final week.'],
   eat:{
-   lose:['Hold the deficit. If you feel worn down, eat at maintenance for 3 to 5 days, then go back.','Watch the oil and ghee your food is cooked in: that is where calories hide.','Protein stays high.'],
+   lose:['Hold the deficit. If you feel worn down, eat at maintenance for 3 to 7 days, then go back.','Watch the oil and ghee your food is cooked in: that is where calories hide.','Protein stays high.'],
    hold:['Keep doing what works.','Protein stays high.'],
    gain:['Keep the surplus small.','If your waist grows faster than your lifts, take 100–150 kcal a day off.']},
   cond:['About 9,500 steps a day.','Zone 2 twice a week; intervals up to twice if your lifts are not dropping. One is enough on a three-day plan.'],
   out:{
    lose:'Your leanest point of the block, with your strength intact.',
    hold:'A stronger, fitter version of the same bodyweight.',
-   gain:'A few kilos heavier, most of it muscle, and stronger on everything.'}}
+   gain:'A kilo or three heavier, a good part of it muscle, and stronger on everything.'}}
 ];
 
 /* ---- CONDITIONING -----------------------------------------------
@@ -62,7 +62,7 @@ const CONDTOOLS=[
   how:`Incline treadmill walk, stationary bike or elliptical: easy on the joints, so your legs stay fresh. Do it on a rest day or <em>after</em> lifting, never before.`},
  {k:'hiit', n:'Intervals', tag:'A small dose, from phase 2',
   b:`Hard intervals build fitness fast but are <b>costly to recover from</b>, so the dose stays small and starts only once the easy base is there. If your lifts start to drop, this is the first thing to cut.`,
-  how:`8–10 rounds of <b>20 seconds hard, 60–90 seconds easy</b> on a bike, rower or incline. Twenty minutes in all, warm-up included. On a rest day, or straight after a lifting session (after upper body, if your plan has upper-body days). Keep them off the day before you train legs.`}
+  how:`6–8 rounds of <b>20 seconds hard, 60–90 seconds easy</b> on a bike, rower or incline. About twenty minutes with a five-minute warm-up. On a rest day, or straight after a lifting session (after upper body, if your plan has upper-body days). Keep them off the day before you train legs.`}
 ];
 const CARDIO_DEMOS=[
  ['Incline treadmill walk','Zone 2 · easiest on the joints'],

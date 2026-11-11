@@ -2,7 +2,7 @@
    RENDER — MAP
    =================================================================== */
 /* which set of advice a goal reads: losing fat, holding weight, or gaining */
-function goalClass(){ const g=S.profile.goal; return g==='gain'?'gain':g==='maintain'?'hold':'lose'; }
+function goalClass(){ const g=S.profile.goal; return g==='gain'?'gain':(g==='maintain'||noDeficit())?'hold':'lose'; }
 const GOAL_NAME={cut:'Lose fat', recomp:'Lose fat slowly, build muscle', maintain:'Stay at this weight', gain:'Build muscle'};
 function renderPlan(){
   $('#fullPunch').innerHTML=punch(0,13);
@@ -40,7 +40,7 @@ function dietType(){
 /* The example day for this person. It starts from the base meals and changes
    portions until the day is close enough to the day's numbers:
      calories   within 40 kcal, and never under the safe minimum
-     protein    from 5 g under to 20 g over, or up to a fifth of the day's
+     protein    from the target to 20 g over, or up to a fifth of the day's
                 calories where that is more. Ordinary food carries that much,
                 and a day forced under it stops being a day anyone would eat.
    Each step is the one that buys the most closeness for the least change to
@@ -61,7 +61,7 @@ function mealPlan(type){
   // how far outside "close enough" a day is; 0 when it fits
   const under=Math.max(0,Math.min(40,wantK-t.floor)), over=Math.max(20, wantK*0.2/4-wantP);
   const miss=(k,p)=>{
-    const dk=k-wantK, a=(dk<-under?-under-dk:dk>40?dk-40:0)/25, d=p-wantP, b=d<-5?(-5-d)/5:d>over?(d-over)/10:0;
+    const dk=k-wantK, a=(dk<-under?-under-dk:dk>40?dk-40:0)/25, d=p-wantP, b=d<0?-d/5:d>over?(d-over)/10:0;
     return a*a+b*b;
   };
   // every legal step of one portion; c is what it costs in distance from the base day
@@ -115,16 +115,22 @@ function renderFuel(){
   $('#ro-macros').innerHTML=[
     ro('Calories', kcal, isT?'training day':'rest day', true),
     ro('Protein', t.prot, 'g · every day'),
-    ro('Carbs', carb, 'g'),
-    ro('Fat', t.fat, 'g')
+    ro('Carbs', carb, 'g · about'),
+    ro('Fat', t.fat, 'g · at least')
   ].join('');
   $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===type));
-  const wk=Math.abs(t.weekly);
-  $('#fuelGoal').innerHTML='<b>'+esc(GOAL_NAME[S.profile.goal])+'.</b> '
-    +(S.profile.goal==='maintain'?'You eat what you burn: about '+t.tdee.toLocaleString()+' kcal a day.'
-      :'You burn about '+t.tdee.toLocaleString()+' kcal a day and the plan averages '+t.kcal.toLocaleString()+'. That should take the scale '
-        +(t.weekly<0?'down':'up')+' by about '+wk.toFixed(1)+' kg a week.')
-    +(t.floored?' <b>This is the lowest safe target:</b> do not eat less than this without a doctor.':'')
+  const wk=Math.abs(t.weekly), goal=S.profile.goal, losing=goal==='cut'||goal==='recomp', burn=t.tdee.toLocaleString();
+  let line;
+  if(t.guard) line='The app has not set a deficit for you: at your '+(t.guard==='age'?'age':'height and weight')
+    +', losing weight needs a doctor\'s advice. You are set to eat what you burn, about '+burn+' kcal a day.';
+  else if(losing&&t.floored&&t.kcal>=t.tdee-100) line='You burn about '+burn+' kcal a day. At your size the safe minimum is about that much, so the app cannot set a deficit. '
+    +'Fat loss here comes from the steps and the training.';
+  else if(goal==='maintain') line=t.floored?'You burn about '+burn+' kcal a day. The app does not go under '+t.floor.toLocaleString()+', so your target sits a little above that.'
+    :'You eat what you burn: about '+burn+' kcal a day.';
+  else line='You burn about '+burn+' kcal a day and the plan averages '+t.kcal.toLocaleString()+'. That should take the scale '
+    +(t.weekly<0?'down':'up')+' by about '+wk.toFixed(1)+' kg a week.';
+  $('#fuelGoal').innerHTML='<b>'+esc(GOAL_NAME[goal])+'.</b> '+esc(line)
+    +(t.floored&&!t.guard?' <b>This is the lowest safe target:</b> do not eat less than this without a doctor.':'')
     +' <span style="color:var(--text-faint)">Change your goal or your numbers in Settings.</span>';
 
   const d=mealPlan(type), gap=d.k-d.wantK;
@@ -139,6 +145,7 @@ function renderFuel(){
       +' (carbs '+d.c+' g, fat '+d.f+' g). Your target today is <b>'+d.wantK+' kcal</b> and <b>at least '+d.wantP+' g of protein</b>.'
       +(Math.abs(gap)<=90?'':(gap<0?' It is '+(-gap)+' kcal short: add more rice, chapati, fruit or nuts to reach your target.'
                                   :' It is '+gap+' kcal over: leave out the snack, or a chapati.'))
+      +(d.p<d.wantP-5?' It is '+(d.wantP-d.p)+' g short on protein: add a scoop of whey or another palm of chicken.':'')
       +' Portions are household measures, so judge it on your weekly trend, not on one day.</div>';
 
   renderProt();
@@ -159,7 +166,7 @@ function renderFuel(){
     +'<ul class="klist">'+DAWAT.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
     +'</div></details>'
     +'<details><summary><span class="idx">04</span>Swaps<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
-    +'<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:11px">Mix freely. The plan does not care which protein you pick, only that it is there.</p>'
+    +'<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:11px">Each row matches the protein or the carbs, not always the calories. Where a swap costs more, leave out that meal\'s rice or chapati.</p>'
     +SWAPS.map(s=>'<div class="swap"><div class="sw-h"><span style="color:var(--text-faint);font-size:12.5px">Instead of</span><b>'+esc(s[0])+'</b><span class="pill">'+esc(s[2])+'</span></div>'
       +'<ul class="klist">'+s[1].split(' · ').map(o=>'<li>'+esc(o)+'</li>').join('')+'</ul></div>').join('')
     +'</div></details>'
@@ -187,9 +194,9 @@ function renderProt(){
   const goal={k:isT?t.train:t.rest, p:t.prot, c:isT?t.carbT:t.carbR, f:t.fat};
   const tot=foodTotals();
   $('#foodDate').textContent=fmtDate(TODAY);
-  const bar=(lbl,got,want,unit,hot)=>{
+  const bar=(lbl,got,want,unit,hot)=>{            // hot = calories: the one number that can be "over"
     const pct=want?Math.min(100,Math.round(got/want*100)):0;
-    const over=got>want*1.08;
+    const over=!!hot&&got>want*1.08;
     return '<div class="mrow"><div class="mtop"><span class="ml">'+lbl+'</span>'
       +'<span class="mv num'+(hot?' hot':'')+'">'+Math.round(got)+'<span class="mu"> / '+want+' '+unit+'</span></span></div>'
       +'<div class="pbar sm"><i class="'+(over?'over':'')+'" style="width:'+pct+'%"></i></div>'
@@ -229,8 +236,9 @@ function rolling(list){
 }
 /* kg per week: the straight line through the last 14 days of weigh-ins. Needs five readings
    across a week; it is "firm" (worth acting on) from eight readings across ten days. */
+function staleWeighIns(list){ return !!list.length&&daysBetween(parseISO(list[list.length-1][0]),parseISO(TODAY))>7; }
 function weeklyRate(list){
-  if(!list.length) return null;
+  if(!list.length||staleWeighIns(list)) return null;           // a trend from weeks ago is not today's
   const from=iso(addDays(parseISO(list[list.length-1][0]),-13));
   const pts=list.filter(p=>p[0]>=from).map(p=>[daysBetween(parseISO(from),parseISO(p[0])),p[1]]);
   if(pts.length<5) return null;
@@ -257,36 +265,45 @@ function renderProg(){
   ].join('');
 
   const tr=weeklyRate(wl);
-  $('#trendPill').textContent = !tr?'need 5 readings over a week':(tr.rate>0?'+':'')+tr.rate.toFixed(2)+' kg/week'+(tr.firm?'':' · early');
+  $('#trendPill').textContent = !tr?(staleWeighIns(wl)?'no weigh-ins this week':'need 5 readings over a week'):(tr.rate>0?'+':'')+tr.rate.toFixed(2)+' kg/week'+(tr.firm?'':' · early');
 
   $('#chartBox').innerHTML=chart(wl,avg,t);
-  $('#verdictCard').innerHTML=trendVerdict(tr,t);
+  $('#verdictCard').innerHTML=trendVerdict(tr,t,staleWeighIns(wl))+ownTarget(tr,t,lastAvg);
   renderMeas();
   renderPR();
   renderHabit();
   renderBlocks();
 }
-function trendVerdict(tr,t){
-  const g=S.profile.goal, w=t.w;
+function trendVerdict(tr,t,stale){
+  const g=t.guard?'maintain':S.profile.goal, w=t.w;
+  const atFloor=t.rest-150<t.floor;          // nothing left to take off the plate
   let cls='note', title, body;
-  if(!tr){ title='Not enough data yet';
+  if(!tr&&stale){ title='No weigh-ins this week';
+    body='The trend is read from the last two weeks. Weigh yourself a few mornings this week and this panel comes back.'; }
+  else if(!tr){ title='Not enough data yet';
     body='Weigh yourself in the morning, before food and after the toilet. Five readings across a week and this panel starts telling you what to change.'; }
   else if(!tr.firm){ title='Early days';
     body='About '+(tr.rate>0?'+':'')+tr.rate.toFixed(1)+' kg a week so far, from '+tr.n+' weigh-ins. Keep weighing for two weeks before you change anything: one salty meal moves the scale more than a week of fat does.'; }
   else if(g==='cut'||g==='recomp'){
-    const r=tr.rate;
-    if(r<-w*0.01){ cls='note hot'; title='You are losing too fast';
-      body='More than 1% of your bodyweight a week takes muscle along with the fat. Add about 150 kcal a day, as carbs on training days, and hold there for two weeks.'; }
-    else if(r<=t.weekly*0.6){ title='On target — change nothing';
+    const r=tr.rate, plan=Math.min(t.weekly,-0.1);      // the pace the target sets; never "on target" for standing still
+    if(r<-w*0.01&&todayIndex()<=21){ title='A fast start';
+      body='The first two weeks of eating less take water with them, so the scale runs ahead of the fat. Change nothing yet. If it is still more than 1% of your bodyweight a week in week 4, add about 150 kcal a day.'; }
+    else if(r<-w*0.01){ cls='note hot'; title='You are losing too fast';
+      body='More than 1% of your bodyweight a week usually takes muscle along with the fat. Add about 150 kcal a day, as carbs on training days, and hold there for two weeks.'; }
+    else if(g==='recomp'&&r<plan*2.5){ title='Faster than you planned';
+      body='You chose to lose slowly so the training can build muscle. This pace is a bigger deficit than that: add 100–150 kcal a day, as carbs around training.'; }
+    else if(r<=plan*0.6){ title='On target — change nothing';
       body='This is the pace that keeps your muscle while the fat comes off. Trying to speed it up is the thing most likely to cost you the result.'; }
     else if(r<-0.05){ title='Slower than planned, but moving';
       body='Give it another week before changing anything. If it is still slow, add 1,000 steps a day rather than cutting food.'; }
     else { cls='note hot'; title='Flat or climbing';
-      body='If this lasts two to three weeks, take 150–200 kcal a day off carbs or fat, never protein, or add 1,000 steps a day. Choose one, so you know which worked. Look at the weekends first: that is usually where it hides.'; }
+      body=atFloor?'If this lasts two to three weeks, add 1,000 steps a day. Do not eat less: your target is already at the safe minimum. Look at the weekends first: that is usually where it hides.'
+        :'If this lasts two to three weeks, take 150–200 kcal a day off carbs or fat, never protein, or add 1,000 steps a day. Choose one, so you know which worked. Look at the weekends first: that is usually where it hides.'; }
   }else if(g==='maintain'){
     const r=tr.rate;
     if(Math.abs(r)<=0.25){ title='Holding steady — change nothing'; body='Your weight is stable. Keep eating as you are and let the logbook show the progress.'; }
-    else if(r>0){ title='Drifting up'; body='If this lasts two to three weeks, take about 150 kcal a day off carbs or fat.'; }
+    else if(r>0){ title='Drifting up'; body=atFloor?'If this lasts two to three weeks, add 1,000 steps a day rather than eating less: your target is already at the safe minimum.'
+      :'If this lasts two to three weeks, take about 150 kcal a day off carbs or fat.'; }
     else { title='Drifting down'; body='If this lasts two to three weeks, add about 150 kcal a day, as carbs around training.'; }
   }else{
     const r=tr.rate;
@@ -298,6 +315,20 @@ function trendVerdict(tr,t){
   }
   return '<div class="card"><div class="card-h"><h3>What to do about it</h3></div><div class="'+cls+'"><b>'+esc(title)+'</b><br>'+esc(body)+'</div></div>';
 }
+/* the target weight typed in Settings: how far, and how long at the pace the scale is really moving */
+function ownTarget(tr,t,lastAvg){
+  const tw=S.profile.targetW; if(tw==null) return '';
+  const now=lastAvg!=null?lastAvg:t.w, gap=now-tw, away=Math.abs(gap);
+  let msg;
+  if(away<0.3) msg='You are there.';
+  else{
+    const pace=(tr&&tr.firm)?tr.rate:t.weekly, toward=(gap>0&&pace<-0.03)||(gap<0&&pace>0.03);
+    const weeks=toward?Math.max(1,Math.round(away/Math.abs(pace))):0;
+    msg=away.toFixed(1)+' kg to go'+(toward?(weeks>104?', a long way at this pace.':': about '+weeks+(weeks===1?' week':' weeks')+' at '+((tr&&tr.firm)?'the pace the scale is moving':'the pace your plan sets')+'.')
+      :'. The scale is not moving toward it at the moment.');
+  }
+  return '<div class="card"><div class="card-h"><h3>Your target</h3><span class="pill cool">'+esc(tw)+' kg</span></div><p style="font-size:13.5px;color:var(--text-dim)">'+esc(msg)+'</p></div>';
+}
 
 /* ---- weight chart: raw dots + 7-day average + the block's target ------ */
 function chart(wl,avg,t){
@@ -306,7 +337,8 @@ function chart(wl,avg,t){
   const W=600,H=210,PL=34,PR=12,PT=12,PB=22;
   const xs=wl.map(p=>parseISO(p[0]).getTime());
   const x0=Math.min.apply(null,xs), x1=Math.max.apply(null,xs);
-  const vals=wl.map(p=>p[1]).concat([t.target90]);
+  const own=S.profile.targetW, near=own!=null&&Math.abs(own-wl[wl.length-1][1])<=8;
+  const vals=wl.map(p=>p[1]).concat([t.target90], near?[own]:[]);
   let lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
   const pad=Math.max(0.8,(hi-lo)*0.15); lo-=pad; hi+=pad;
   // snap the axis to a round step so the labels read as kilos, not noise (never more than about six lines)
@@ -337,6 +369,8 @@ function chart(wl,avg,t){
     +g
     +(goalIn?'<line class="goal-l" x1="'+PL+'" y1="'+gy+'" x2="'+(W-PR)+'" y2="'+gy+'"/>'
       +'<text class="axis-t" x="'+(W-PR)+'" y="'+(+gy-5)+'" text-anchor="end" style="fill:var(--steel)">91-day target '+t.target90.toFixed(1)+'</text>':'')
+    +(near&&Math.abs(own-t.target90)>=0.5?'<line class="goal-l" x1="'+PL+'" y1="'+Y(own).toFixed(1)+'" x2="'+(W-PR)+'" y2="'+Y(own).toFixed(1)+'"/>'
+      +'<text class="axis-t" x="'+PL+'" y="'+(Y(own)-5).toFixed(1)+'" style="fill:var(--steel)">your target '+(+own).toFixed(1)+'</text>':'')
     +'<path class="area" d="'+area+'"/>'
     +dots
     +'<path class="trend" d="'+line(avg)+'"/>'

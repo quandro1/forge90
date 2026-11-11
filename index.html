@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="b96e499857">
+<meta name="forge-build" content="3f47c79db0">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2376,7 +2376,7 @@ const PHASES=[
    gain:['Hit your protein every day.','Reach your calorie target: a small surplus only works if you actually eat it.','Add food to the meals around training first.']},
   cond:['Build your daily steps by about 1,000 a week.','Zone 2 twice a week, 25–30 minutes. It should feel easy.','No hard intervals yet: build the easy base first.'],
   out:{
-   lose:'Usually 1.5 to 3 kg down, some of it water. Clothes looser, technique solid.',
+   lose:'Usually 1 to 3 kg down, less on the slow plan, and some of it water. Clothes looser, technique solid.',
    hold:'Technique solid, every lift logged, the routine in place.',
    gain:'Technique solid and the first small increases on the bar.'}},
  {n:2, name:'Overload', sub:'Weeks 5–8', w:[5,8], color:'ember',
@@ -2395,14 +2395,14 @@ const PHASES=[
   goal:'Hold the heavy work, tidy the details, and finish strong.',
   train:['Keep the main lifts heavy: that is what keeps your muscle.','On small lifts you may take the last set to failure.','Week 12 is a deload, then one hard final week.'],
   eat:{
-   lose:['Hold the deficit. If you feel worn down, eat at maintenance for 3 to 5 days, then go back.','Watch the oil and ghee your food is cooked in: that is where calories hide.','Protein stays high.'],
+   lose:['Hold the deficit. If you feel worn down, eat at maintenance for 3 to 7 days, then go back.','Watch the oil and ghee your food is cooked in: that is where calories hide.','Protein stays high.'],
    hold:['Keep doing what works.','Protein stays high.'],
    gain:['Keep the surplus small.','If your waist grows faster than your lifts, take 100–150 kcal a day off.']},
   cond:['About 9,500 steps a day.','Zone 2 twice a week; intervals up to twice if your lifts are not dropping. One is enough on a three-day plan.'],
   out:{
    lose:'Your leanest point of the block, with your strength intact.',
    hold:'A stronger, fitter version of the same bodyweight.',
-   gain:'A few kilos heavier, most of it muscle, and stronger on everything.'}}
+   gain:'A kilo or three heavier, a good part of it muscle, and stronger on everything.'}}
 ];
 
 /* ---- CONDITIONING -----------------------------------------------
@@ -2425,7 +2425,7 @@ const CONDTOOLS=[
   how:`Incline treadmill walk, stationary bike or elliptical: easy on the joints, so your legs stay fresh. Do it on a rest day or <em>after</em> lifting, never before.`},
  {k:'hiit', n:'Intervals', tag:'A small dose, from phase 2',
   b:`Hard intervals build fitness fast but are <b>costly to recover from</b>, so the dose stays small and starts only once the easy base is there. If your lifts start to drop, this is the first thing to cut.`,
-  how:`8–10 rounds of <b>20 seconds hard, 60–90 seconds easy</b> on a bike, rower or incline. Twenty minutes in all, warm-up included. On a rest day, or straight after a lifting session (after upper body, if your plan has upper-body days). Keep them off the day before you train legs.`}
+  how:`6–8 rounds of <b>20 seconds hard, 60–90 seconds easy</b> on a bike, rower or incline. About twenty minutes with a five-minute warm-up. On a rest day, or straight after a lifting session (after upper body, if your plan has upper-body days). Keep them off the day before you train legs.`}
 ];
 const CARDIO_DEMOS=[
  ['Incline treadmill walk','Zone 2 · easiest on the joints'],
@@ -2461,8 +2461,10 @@ const FOODCATS=[
   ['Whey protein','1 scoop',120,24,3,2,'whey']
  ]],
  ['Carbs', [
-  ['Chapati','1 medium',120,4,24,2,'chapati'],
-  ['Naan','1',260,8,48,4,'naan'],
+  ['Chapati, small','1 thin, ~45 g cooked',120,4,24,2,'chapati'],
+  ['Roti, large','1 home size, ~70 g cooked',200,7,40,2,'roti'],
+  ['Naan, small','1, ~90 g',260,8,48,4,'naan'],
+  ['Naan, tandoor','1, ~130 g',375,12,69,6,'naanL'],
   ['Paratha','1',360,7,40,19,'paratha'],
   ['Rice, cooked','1 cup',205,4,45,1,'rice'],
   ['Biryani','1 plate',600,25,75,22,'biryani'],
@@ -2475,7 +2477,8 @@ const FOODCATS=[
  ['Dairy', [
   ['Milk, full-fat','1 glass',155,8,12,8,'milk'],
   ['Dahi','1 cup',150,8,12,8,'dahi'],
-  ['Greek yogurt','~200 g (¾ cup)',130,20,7,3,'gyogurt'],
+  ['Greek yogurt, low-fat','~200 g (¾ cup)',130,20,7,3,'gyogurt'],
+  ['Strained dahi, full-fat','~200 g',230,15,9,15,'hung'],
   ['Lassi, sweet','1 glass',220,8,30,7,'lassi'],
   ['Chai, with sugar','1 cup',120,3,14,5,'chaiSugar'],
   ['Chai, no sugar','1 cup',60,3,4,4,'chai']
@@ -2497,7 +2500,7 @@ const FOODCATS=[
   ['Peanut butter','1 thumb',95,4,3,8,'pb'],
   ['Oil / ghee','1 thumb',120,0,0,14,'oil'],
   ['Samosa','1',260,5,25,15,'samosa'],
-  ['Soft drink','1 glass',140,0,35,0,'softdrink']
+  ['Soft drink','1 can, 330 ml',140,0,35,0,'softdrink']
  ]]
 ];
 const FOOD={};
@@ -2560,14 +2563,14 @@ const LEVERS=[
 const MEALFOOD={
  egg:      q=>[frac(q), q===1?'Whole egg':'Whole eggs'],
  eggwhite: q=>[frac(q), q===1?'Egg white':'Egg whites'],
- chapati:  q=>[frac(q), 'Chapati'],
+ chapati:  q=>[frac(q), 'Chapati', 'small and thin; a large home roti counts as 1½'],
  milk:     q=>[frac(q)+(q===1?' glass':' glasses'), 'Milk'],
  whey:     q=>[frac(q)+(q===1?' scoop':' scoops'), 'Whey protein in water'],
  chicken:  q=>[frac(q)+(q>1?' palms':' palm'), 'Chicken breast', '~'+Math.round(100*q)+' g cooked'],
  rice:     q=>[frac(q)+(q>1?' cups':' cup'), 'Cooked rice'],
  dahi:     q=>[frac(q)+(q>1?' cups':' cup'), 'Dahi'],
  salad:    q=>['1 plate', 'Salad, as much as you like'],
- gyogurt:  q=>['~'+Math.round(200*q)+' g', 'Greek or strained yogurt'],
+ gyogurt:  q=>['~'+Math.round(200*q)+' g', 'Low-fat Greek yogurt'],
  almonds:  q=>[frac(q)+(q>1?' handfuls':' handful'), 'Almonds', 'about '+Math.round(20*q)],
  qeemaLean:q=>[frac(q)+(q>1?' bowls':' bowl'), 'Lean qeema, cooked in a little oil', '~'+Math.round(150*q)+' g'],
  sabzi:    q=>['1 bowl', 'Sabzi'],
@@ -2579,23 +2582,23 @@ function frac(q){ const w=Math.floor(q), h=q-w>=0.5; return (w?String(w):'')+(h?
 
 /* ---- SWAPS, GROCERY, SUPPLEMENTS ------------------------------- */
 const SWAPS=[
- ['1 palm chicken breast','1 large palm grilled fish · 1 small bowl lean qeema · 1 cup beef salan · 3 eggs + 3 whites','~30 g protein'],
- ['No meat','150 g paneer · 1½ bowls daal with a cup of dahi · 2 cups chana with a cup of dahi','~30 g protein'],
- ['1 cup rice','2 chapati · 1 large potato · 1½ cups cooked oats','~45 g carbs'],
- ['2 chapati at breakfast','1 cup cooked oats with a banana · 2 slices brown bread with a banana','~50 g carbs'],
- ['1 scoop whey','200 g Greek yogurt · 1 small can tuna · 4 egg whites + 1 egg','~22 g protein'],
+ ['1 palm chicken breast','1 large palm grilled fish · 1 small bowl lean qeema (+85 kcal) · 1 cup beef salan (+215 kcal) · 3 eggs + 3 whites (+110 kcal)','~30 g protein'],
+ ['No meat','150 g paneer (400 kcal) · 1½ bowls daal with a cup of dahi (480 kcal) · 2 cups chana with a cup of dahi (650 kcal)','~30 g protein, more calories'],
+ ['1 cup rice','2 small chapati · 1 large home roti · 1 large potato · 1½ cups cooked oats','~45 g carbs'],
+ ['2 small chapati at breakfast','1 cup cooked oats with a banana · 2 slices brown bread with a banana','~50 g carbs'],
+ ['1 scoop whey','200 g low-fat Greek yogurt · 1 small can tuna · 4 egg whites + 1 egg','~22 g protein'],
  ['Almonds','Peanuts · roasted chana (more protein, fewer calories)','about the same'],
  ['Anything you dislike','Any food of the same kind and size','the plan survives it']
 ];
 const GROCERY=[
  ['Protein', [['Eggs','2–3 dozen'],['Chicken breast','1.5–2 kg'],['Lean beef or qeema','about 1 kg'],['Fish or canned tuna','if you eat it'],['Whey protein','1 tub'],['Daal (chana, masoor)','1 kg']]],
  ['Carbs', [['Rice','2 kg'],['Atta','5 kg'],['Oats','1 kg, if you eat them'],['Potatoes','1 kg'],['Bananas','1 dozen'],['Dates','small pack']]],
- ['Dairy', [['Milk','daily'],['Dahi','large tub'],['Greek or strained yogurt','as available']]],
+ ['Dairy', [['Milk','daily'],['Dahi','large tub'],['Low-fat Greek yogurt','if you can get it']]],
  ['Vegetables', [['Salad vegetables','cucumber, tomato, onion, lettuce'],['Sabzi vegetables','spinach, okra, cauliflower, peas'],['Lemons','a few']]],
  ['Fruit & extras', [['Fruit in season','a week\'s worth'],['Almonds or peanuts','small pack'],['Roasted chana','500 g'],['Oil','use sparingly'],['Green tea, spices','staples']]]
 ];
 const SUPPS=[
- ['Creatine monohydrate','3–5 g every day','The best-studied supplement there is, and the cheapest thing on this page. It takes 3–4 weeks to build up, then gives a small strength increase. Timing does not matter: training day or not, just take it. Plain monohydrate; skip the expensive versions.'],
+ ['Creatine monohydrate','3–5 g every day','The best-studied supplement there is, and the cheapest thing on this page. It takes 3–4 weeks to build up, then gives a small strength increase. Timing does not matter: training day or not, just take it. Plain monohydrate; skip the expensive versions. Expect the scale to rise about a kilo in the first weeks: that is water held in the muscle, not fat. Not for under-18s, and not with kidney disease, without a doctor\'s advice.'],
  ['Whey protein','1–2 scoops a day, if you need them','Not magic: fast, cheap protein that makes the daily target reachable on a busy day. Whole food first, whey to close the gap. Check the label if you need it halal or vegetarian.'],
  ['Vitamin D3','1,000–2,000 IU with a meal','Low levels are common with an indoor life. Cheap insurance for bone health. Have it tested first if you can.'],
  ['Electrolytes','Around training and in hot weather','A pinch of salt and a squeeze of lemon in water does the job for almost nothing.'],
@@ -2608,7 +2611,8 @@ const PORTIONS=[
  ['Lean beef, cooked','1 palm (~100 g)',200,'28 g'],
  ['Lean qeema, light oil','1 small bowl (~150 g)',250,'30 g'],
  ['Cooked rice','1 cup (2 cupped hands)',205,'4 g'],
- ['Chapati','1 medium',120,'4 g'],
+ ['Chapati, small','1 thin (~45 g cooked)',120,'4 g'],
+ ['Roti, large','1 home size (~70 g cooked)',200,'7 g'],
  ['Oats, cooked','1 cup (40 g dry)',150,'5 g'],
  ['Daal, cooked','1 cup',220,'14 g'],
  ['Dahi','1 cup',150,'8 g'],
@@ -2622,7 +2626,7 @@ const PORTIONS=[
 const HUNGRY=[
  'Add vegetables or salad: close to free.',
  'Add protein (eggs, dahi, whey) before carbs or fat.',
- 'Drink a glass of water. Thirst feels almost exactly like hunger.',
+ 'Drink a glass of water. It is easy to mistake thirst for hunger.',
  'Black coffee or plain tea takes the edge off for an hour.'
 ];
 const DAWAT=[
@@ -2661,8 +2665,8 @@ const GUIDE=[
   <div class="tw" style="margin-top:10px"><table>
   <thead><tr><th>What the trend shows</th><th>What you do</th></tr></thead><tbody>
   <tr><td>Moving at the pace your goal asks for</td><td>Nothing. It is working.</td></tr>
-  <tr><td>Losing fat: weight and waist flat for 2–3 weeks</td><td>Take 150–200 kcal a day off carbs or fat, or add 1,000 steps. Not both.</td></tr>
-  <tr><td>Losing more than 1% of your bodyweight a week</td><td>Add about 150 kcal a day. You are losing muscle.</td></tr>
+  <tr><td>Losing fat: weight and waist flat for 2–3 weeks</td><td>Take 150–200 kcal a day off carbs or fat, or add 1,000 steps. Not both. If your target is already at the safe minimum, add the steps and do not cut food.</td></tr>
+  <tr><td>Losing more than 1% of your bodyweight a week (after the first two weeks)</td><td>Add about 150 kcal a day. You are likely losing muscle too.</td></tr>
   <tr><td>Building muscle: no gain for 2–3 weeks</td><td>Add about 150 kcal a day.</td></tr>
   <tr><td>Lifts dropping across the board</td><td>Cut cardio first, then eat more. Never cut protein or sleep.</td></tr>
   <tr><td>Worn down, sleeping badly</td><td>Eat at maintenance for 3–7 days, then go back.</td></tr>
@@ -2677,7 +2681,7 @@ const GUIDE=[
   <li><b>Keep coffee and tea at least eight hours before bed.</b></li>
   <li><b>Protect some quiet time.</b> Long-term stress slows fat loss and drives cravings. A walk, prayer, breathing, time away from the phone.</li>
   <li><b>5–10 minutes of mobility a day</b> for the hips, upper back and shoulders: the three things sitting stiffens most.</li>
-  <li><b>Drink enough water.</b> Being a little dry feels almost exactly like hunger and tiredness.</li>
+  <li><b>Drink enough water.</b> Being a little dry is easy to mistake for hunger and tiredness.</li>
   </ul>
   <p style="margin-top:12px">Check yourself most mornings against this table. <b>Two reds: take an easy day.</b> That call is what prevents the injury that ends a block.</p>
   <div class="tw" style="margin-top:10px"><table>
@@ -2702,9 +2706,9 @@ const GUIDE=[
   </ul>`},
  {t:'What 91 days can do', b:()=>{
    const rows={
-    lose:['<b>4–7 kg of fat lost</b> at a steady deficit. The scale may show a little more once water settles.','<b>Some muscle gained or all of it kept</b>, depending on how long you have trained.','<b>Waist down several centimetres.</b>','<b>Main lifts up</b>, even while eating less: 5–15% is common.'],
+    lose:['<b>About '+Math.max(1,Math.round(-targets().weekly*13))+' kg lost</b> at the pace your target sets. The scale may show a little more once water settles.','<b>Some muscle gained or all of it kept</b>, depending on how long you have trained.','<b>Waist down several centimetres.</b>','<b>Main lifts up</b>, even while eating less: 5–15% is common.'],
     hold:['<b>The same weight, made of more muscle and less fat.</b>','<b>Main lifts up 10–20%.</b>','<b>Fitter</b>: a lower resting heart rate and easier stairs.'],
-    gain:['<b>1–3 kg of muscle</b> for most people past the beginner stage; more in a first year of lifting.','<b>Main lifts up 10–25%.</b>','<b>A little fat comes with it.</b> Keeping the surplus small keeps that small.']}[goalClass()];
+    gain:['<b>0.5–1.5 kg of muscle</b> for most people past the beginner stage; 2–3 kg in a first year of lifting. Women gain about half as fast.','<b>Main lifts up 10–25%.</b>','<b>A little fat comes with it.</b> Keeping the surplus small keeps that small.']}[goalClass()];
    return '<p>Plainly, with no inflation:</p><ul class="klist" style="margin-top:10px">'+rows.map(r=>'<li>'+r+'</li>').join('')+'</ul>'
     +'<p style="margin-top:12px">Ninety-one days build the habits and the strength base. A big change in bodyweight usually takes two or three blocks. When this one ends, start the next: same plan or a new target.</p>';
  }}
@@ -3199,13 +3203,24 @@ function rxText(it){ return it.sets+' × '+repText(it); }
      stay            what you burn
      build muscle    8% over, kept between 150 and 400 kcal
    and never under 1,200 kcal a day (women) or 1,500 (men).
+   No deficit is set for anyone under 18 or under a healthy weight (BMI 18.5):
+   they are given what they burn, and told why.
    Protein per kilo by goal (2.1 / 2.0 / 1.6 / 1.8 g) on bodyweight capped at
-   BMI 27, so extra bodyweight does not inflate it. Fat is 0.8 g per kilo of
-   that same weight and at least a fifth of calories. Carbs are what is left.
+   BMI 27, so extra bodyweight does not inflate it; never more than two-fifths
+   of a rest day's calories, so carbs keep a place on a small day; never under
+   1.6 g per kilo. Fat is at least 0.8 g per kilo of that same weight and a
+   fifth of calories. Carbs are what is left.
    Rest days sit 200 kcal under the average and training days make it up, so
    the week still averages to the target, and no day goes under the floor. */
+function noDeficit(){
+  const p=S.profile;
+  if(p.goal!=='cut'&&p.goal!=='recomp') return '';
+  if(p.age<18) return 'age';
+  if(p.w/(p.h*p.h/10000)<18.5) return 'bmi';
+  return '';
+}
 function targets(){
-  const p=S.profile, w=p.w, h=p.h, a=p.age, g=p.goal;
+  const p=S.profile, w=p.w, h=p.h, a=p.age, guard=noDeficit(), g=guard?'maintain':p.goal;
   const bmr=Math.round(10*w+6.25*h-5*a+(p.sex==='f'?-161:5));
   const tdee=Math.round(bmr*p.act);
   const floor=p.sex==='f'?1200:1500;
@@ -3216,20 +3231,24 @@ function targets(){
   let kcal=Math.round((tdee+delta)/10)*10, floored=false;
   if(kcal<floor){ kcal=floor; floored=true; }
   const ref=Math.min(w, 27*h*h/10000);
-  const prot=Math.round(ref*({cut:2.1, recomp:2.0, maintain:1.6, gain:1.8}[g]||1.8)/5)*5;
-  const fat=Math.round(Math.max(ref*0.8, kcal*0.2/9));
   const nLift=variant().sessions.length, nRest=Math.max(1,7-nLift);
   const rest=Math.max(floor, Math.round((kcal-200)/10)*10);
   const train=Math.round((kcal+(kcal-rest)*nRest/nLift)/10)*10;
+  const perKg={cut:2.1, recomp:2.0, maintain:1.6, gain:1.8}[g]||1.8;
+  const prot=Math.round(Math.max(ref*1.6, Math.min(ref*perKg, rest*0.4/4))/5)*5;
+  const fat=Math.round(Math.max(ref*0.8, kcal*0.2/9));
   const carbT=Math.max(0,Math.round((train-prot*4-fat*9)/4));
   const carbR=Math.max(0,Math.round((rest-prot*4-fat*9)/4));
   // expected change: 7,700 kcal to a kilo, less a tenth for the days that do not go to plan
   const weekly=(kcal-tdee)*7/7700*0.9;
-  const target90=Math.round((w+weekly*13)*2)/2;
+  // where the block is heading, from the weight it began at (not from the weight in Settings today)
+  const inBlock=weightList().filter(x=>x[0]>=p.start), startW=inBlock.length?inBlock[0][1]:w;
+  let target90=Math.round((startW+weekly*13)*2)/2;
+  if(weekly<0) target90=Math.max(target90, Math.min(startW, Math.ceil(18.5*h*h/10000*2)/2));   // never under a healthy weight
   const hrMax=208-0.7*a;                           // Tanaka, Monahan & Seals 2001
   // litres: 35 ml per kilo plus half a litre for training, on the same capped weight, kept between 2 and 4.5
   const water=Math.max(2,Math.min(4.5,Math.round((ref*0.035+0.5)*2)/2));
-  return {bmr,tdee,kcal,cut:kcal,prot,fat,train,rest,carbT,carbR,target90,weekly,floor,floored,water,
+  return {bmr,tdee,kcal,cut:kcal,prot,fat,train,rest,carbT,carbR,target90,startW,weekly,floor,floored,guard,water,
           z2:[Math.round(hrMax*.6),Math.round(hrMax*.7)], w, goal:p.targetW};
 }
 
@@ -3279,7 +3298,7 @@ function checkList(ds){
     {k:'session', l:lifting?'Train':'Session or rest as planned', h:lifting?(i.session.name):'—'},
     {k:'sleep',   l:'Sleep 7–9 h',        h:now?'last night':'the night before'},
     {k:'creatine',l:'Creatine',           h:'3–5 g, if you take it'}
-  ];
+  ].filter(x=>x.k!=='creatine'||S.profile.age>=18);        // not a supplement for under-18s
 }
 /* Ticks the app can see for itself: protein from the day counter, steps from the step log.
    S.ui.auto remembers which of today's ticks it made (k) and which you took off by hand (off),
@@ -4124,7 +4143,7 @@ function scrollToRest(){
    RENDER — MAP
    =================================================================== */
 /* which set of advice a goal reads: losing fat, holding weight, or gaining */
-function goalClass(){ const g=S.profile.goal; return g==='gain'?'gain':g==='maintain'?'hold':'lose'; }
+function goalClass(){ const g=S.profile.goal; return g==='gain'?'gain':(g==='maintain'||noDeficit())?'hold':'lose'; }
 const GOAL_NAME={cut:'Lose fat', recomp:'Lose fat slowly, build muscle', maintain:'Stay at this weight', gain:'Build muscle'};
 function renderPlan(){
   $('#fullPunch').innerHTML=punch(0,13);
@@ -4162,7 +4181,7 @@ function dietType(){
 /* The example day for this person. It starts from the base meals and changes
    portions until the day is close enough to the day's numbers:
      calories   within 40 kcal, and never under the safe minimum
-     protein    from 5 g under to 20 g over, or up to a fifth of the day's
+     protein    from the target to 20 g over, or up to a fifth of the day's
                 calories where that is more. Ordinary food carries that much,
                 and a day forced under it stops being a day anyone would eat.
    Each step is the one that buys the most closeness for the least change to
@@ -4183,7 +4202,7 @@ function mealPlan(type){
   // how far outside "close enough" a day is; 0 when it fits
   const under=Math.max(0,Math.min(40,wantK-t.floor)), over=Math.max(20, wantK*0.2/4-wantP);
   const miss=(k,p)=>{
-    const dk=k-wantK, a=(dk<-under?-under-dk:dk>40?dk-40:0)/25, d=p-wantP, b=d<-5?(-5-d)/5:d>over?(d-over)/10:0;
+    const dk=k-wantK, a=(dk<-under?-under-dk:dk>40?dk-40:0)/25, d=p-wantP, b=d<0?-d/5:d>over?(d-over)/10:0;
     return a*a+b*b;
   };
   // every legal step of one portion; c is what it costs in distance from the base day
@@ -4237,16 +4256,22 @@ function renderFuel(){
   $('#ro-macros').innerHTML=[
     ro('Calories', kcal, isT?'training day':'rest day', true),
     ro('Protein', t.prot, 'g · every day'),
-    ro('Carbs', carb, 'g'),
-    ro('Fat', t.fat, 'g')
+    ro('Carbs', carb, 'g · about'),
+    ro('Fat', t.fat, 'g · at least')
   ].join('');
   $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===type));
-  const wk=Math.abs(t.weekly);
-  $('#fuelGoal').innerHTML='<b>'+esc(GOAL_NAME[S.profile.goal])+'.</b> '
-    +(S.profile.goal==='maintain'?'You eat what you burn: about '+t.tdee.toLocaleString()+' kcal a day.'
-      :'You burn about '+t.tdee.toLocaleString()+' kcal a day and the plan averages '+t.kcal.toLocaleString()+'. That should take the scale '
-        +(t.weekly<0?'down':'up')+' by about '+wk.toFixed(1)+' kg a week.')
-    +(t.floored?' <b>This is the lowest safe target:</b> do not eat less than this without a doctor.':'')
+  const wk=Math.abs(t.weekly), goal=S.profile.goal, losing=goal==='cut'||goal==='recomp', burn=t.tdee.toLocaleString();
+  let line;
+  if(t.guard) line='The app has not set a deficit for you: at your '+(t.guard==='age'?'age':'height and weight')
+    +', losing weight needs a doctor\'s advice. You are set to eat what you burn, about '+burn+' kcal a day.';
+  else if(losing&&t.floored&&t.kcal>=t.tdee-100) line='You burn about '+burn+' kcal a day. At your size the safe minimum is about that much, so the app cannot set a deficit. '
+    +'Fat loss here comes from the steps and the training.';
+  else if(goal==='maintain') line=t.floored?'You burn about '+burn+' kcal a day. The app does not go under '+t.floor.toLocaleString()+', so your target sits a little above that.'
+    :'You eat what you burn: about '+burn+' kcal a day.';
+  else line='You burn about '+burn+' kcal a day and the plan averages '+t.kcal.toLocaleString()+'. That should take the scale '
+    +(t.weekly<0?'down':'up')+' by about '+wk.toFixed(1)+' kg a week.';
+  $('#fuelGoal').innerHTML='<b>'+esc(GOAL_NAME[goal])+'.</b> '+esc(line)
+    +(t.floored&&!t.guard?' <b>This is the lowest safe target:</b> do not eat less than this without a doctor.':'')
     +' <span style="color:var(--text-faint)">Change your goal or your numbers in Settings.</span>';
 
   const d=mealPlan(type), gap=d.k-d.wantK;
@@ -4261,6 +4286,7 @@ function renderFuel(){
       +' (carbs '+d.c+' g, fat '+d.f+' g). Your target today is <b>'+d.wantK+' kcal</b> and <b>at least '+d.wantP+' g of protein</b>.'
       +(Math.abs(gap)<=90?'':(gap<0?' It is '+(-gap)+' kcal short: add more rice, chapati, fruit or nuts to reach your target.'
                                   :' It is '+gap+' kcal over: leave out the snack, or a chapati.'))
+      +(d.p<d.wantP-5?' It is '+(d.wantP-d.p)+' g short on protein: add a scoop of whey or another palm of chicken.':'')
       +' Portions are household measures, so judge it on your weekly trend, not on one day.</div>';
 
   renderProt();
@@ -4281,7 +4307,7 @@ function renderFuel(){
     +'<ul class="klist">'+DAWAT.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
     +'</div></details>'
     +'<details><summary><span class="idx">04</span>Swaps<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
-    +'<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:11px">Mix freely. The plan does not care which protein you pick, only that it is there.</p>'
+    +'<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:11px">Each row matches the protein or the carbs, not always the calories. Where a swap costs more, leave out that meal\'s rice or chapati.</p>'
     +SWAPS.map(s=>'<div class="swap"><div class="sw-h"><span style="color:var(--text-faint);font-size:12.5px">Instead of</span><b>'+esc(s[0])+'</b><span class="pill">'+esc(s[2])+'</span></div>'
       +'<ul class="klist">'+s[1].split(' · ').map(o=>'<li>'+esc(o)+'</li>').join('')+'</ul></div>').join('')
     +'</div></details>'
@@ -4309,9 +4335,9 @@ function renderProt(){
   const goal={k:isT?t.train:t.rest, p:t.prot, c:isT?t.carbT:t.carbR, f:t.fat};
   const tot=foodTotals();
   $('#foodDate').textContent=fmtDate(TODAY);
-  const bar=(lbl,got,want,unit,hot)=>{
+  const bar=(lbl,got,want,unit,hot)=>{            // hot = calories: the one number that can be "over"
     const pct=want?Math.min(100,Math.round(got/want*100)):0;
-    const over=got>want*1.08;
+    const over=!!hot&&got>want*1.08;
     return '<div class="mrow"><div class="mtop"><span class="ml">'+lbl+'</span>'
       +'<span class="mv num'+(hot?' hot':'')+'">'+Math.round(got)+'<span class="mu"> / '+want+' '+unit+'</span></span></div>'
       +'<div class="pbar sm"><i class="'+(over?'over':'')+'" style="width:'+pct+'%"></i></div>'
@@ -4351,8 +4377,9 @@ function rolling(list){
 }
 /* kg per week: the straight line through the last 14 days of weigh-ins. Needs five readings
    across a week; it is "firm" (worth acting on) from eight readings across ten days. */
+function staleWeighIns(list){ return !!list.length&&daysBetween(parseISO(list[list.length-1][0]),parseISO(TODAY))>7; }
 function weeklyRate(list){
-  if(!list.length) return null;
+  if(!list.length||staleWeighIns(list)) return null;           // a trend from weeks ago is not today's
   const from=iso(addDays(parseISO(list[list.length-1][0]),-13));
   const pts=list.filter(p=>p[0]>=from).map(p=>[daysBetween(parseISO(from),parseISO(p[0])),p[1]]);
   if(pts.length<5) return null;
@@ -4379,36 +4406,45 @@ function renderProg(){
   ].join('');
 
   const tr=weeklyRate(wl);
-  $('#trendPill').textContent = !tr?'need 5 readings over a week':(tr.rate>0?'+':'')+tr.rate.toFixed(2)+' kg/week'+(tr.firm?'':' · early');
+  $('#trendPill').textContent = !tr?(staleWeighIns(wl)?'no weigh-ins this week':'need 5 readings over a week'):(tr.rate>0?'+':'')+tr.rate.toFixed(2)+' kg/week'+(tr.firm?'':' · early');
 
   $('#chartBox').innerHTML=chart(wl,avg,t);
-  $('#verdictCard').innerHTML=trendVerdict(tr,t);
+  $('#verdictCard').innerHTML=trendVerdict(tr,t,staleWeighIns(wl))+ownTarget(tr,t,lastAvg);
   renderMeas();
   renderPR();
   renderHabit();
   renderBlocks();
 }
-function trendVerdict(tr,t){
-  const g=S.profile.goal, w=t.w;
+function trendVerdict(tr,t,stale){
+  const g=t.guard?'maintain':S.profile.goal, w=t.w;
+  const atFloor=t.rest-150<t.floor;          // nothing left to take off the plate
   let cls='note', title, body;
-  if(!tr){ title='Not enough data yet';
+  if(!tr&&stale){ title='No weigh-ins this week';
+    body='The trend is read from the last two weeks. Weigh yourself a few mornings this week and this panel comes back.'; }
+  else if(!tr){ title='Not enough data yet';
     body='Weigh yourself in the morning, before food and after the toilet. Five readings across a week and this panel starts telling you what to change.'; }
   else if(!tr.firm){ title='Early days';
     body='About '+(tr.rate>0?'+':'')+tr.rate.toFixed(1)+' kg a week so far, from '+tr.n+' weigh-ins. Keep weighing for two weeks before you change anything: one salty meal moves the scale more than a week of fat does.'; }
   else if(g==='cut'||g==='recomp'){
-    const r=tr.rate;
-    if(r<-w*0.01){ cls='note hot'; title='You are losing too fast';
-      body='More than 1% of your bodyweight a week takes muscle along with the fat. Add about 150 kcal a day, as carbs on training days, and hold there for two weeks.'; }
-    else if(r<=t.weekly*0.6){ title='On target — change nothing';
+    const r=tr.rate, plan=Math.min(t.weekly,-0.1);      // the pace the target sets; never "on target" for standing still
+    if(r<-w*0.01&&todayIndex()<=21){ title='A fast start';
+      body='The first two weeks of eating less take water with them, so the scale runs ahead of the fat. Change nothing yet. If it is still more than 1% of your bodyweight a week in week 4, add about 150 kcal a day.'; }
+    else if(r<-w*0.01){ cls='note hot'; title='You are losing too fast';
+      body='More than 1% of your bodyweight a week usually takes muscle along with the fat. Add about 150 kcal a day, as carbs on training days, and hold there for two weeks.'; }
+    else if(g==='recomp'&&r<plan*2.5){ title='Faster than you planned';
+      body='You chose to lose slowly so the training can build muscle. This pace is a bigger deficit than that: add 100–150 kcal a day, as carbs around training.'; }
+    else if(r<=plan*0.6){ title='On target — change nothing';
       body='This is the pace that keeps your muscle while the fat comes off. Trying to speed it up is the thing most likely to cost you the result.'; }
     else if(r<-0.05){ title='Slower than planned, but moving';
       body='Give it another week before changing anything. If it is still slow, add 1,000 steps a day rather than cutting food.'; }
     else { cls='note hot'; title='Flat or climbing';
-      body='If this lasts two to three weeks, take 150–200 kcal a day off carbs or fat, never protein, or add 1,000 steps a day. Choose one, so you know which worked. Look at the weekends first: that is usually where it hides.'; }
+      body=atFloor?'If this lasts two to three weeks, add 1,000 steps a day. Do not eat less: your target is already at the safe minimum. Look at the weekends first: that is usually where it hides.'
+        :'If this lasts two to three weeks, take 150–200 kcal a day off carbs or fat, never protein, or add 1,000 steps a day. Choose one, so you know which worked. Look at the weekends first: that is usually where it hides.'; }
   }else if(g==='maintain'){
     const r=tr.rate;
     if(Math.abs(r)<=0.25){ title='Holding steady — change nothing'; body='Your weight is stable. Keep eating as you are and let the logbook show the progress.'; }
-    else if(r>0){ title='Drifting up'; body='If this lasts two to three weeks, take about 150 kcal a day off carbs or fat.'; }
+    else if(r>0){ title='Drifting up'; body=atFloor?'If this lasts two to three weeks, add 1,000 steps a day rather than eating less: your target is already at the safe minimum.'
+      :'If this lasts two to three weeks, take about 150 kcal a day off carbs or fat.'; }
     else { title='Drifting down'; body='If this lasts two to three weeks, add about 150 kcal a day, as carbs around training.'; }
   }else{
     const r=tr.rate;
@@ -4420,6 +4456,20 @@ function trendVerdict(tr,t){
   }
   return '<div class="card"><div class="card-h"><h3>What to do about it</h3></div><div class="'+cls+'"><b>'+esc(title)+'</b><br>'+esc(body)+'</div></div>';
 }
+/* the target weight typed in Settings: how far, and how long at the pace the scale is really moving */
+function ownTarget(tr,t,lastAvg){
+  const tw=S.profile.targetW; if(tw==null) return '';
+  const now=lastAvg!=null?lastAvg:t.w, gap=now-tw, away=Math.abs(gap);
+  let msg;
+  if(away<0.3) msg='You are there.';
+  else{
+    const pace=(tr&&tr.firm)?tr.rate:t.weekly, toward=(gap>0&&pace<-0.03)||(gap<0&&pace>0.03);
+    const weeks=toward?Math.max(1,Math.round(away/Math.abs(pace))):0;
+    msg=away.toFixed(1)+' kg to go'+(toward?(weeks>104?', a long way at this pace.':': about '+weeks+(weeks===1?' week':' weeks')+' at '+((tr&&tr.firm)?'the pace the scale is moving':'the pace your plan sets')+'.')
+      :'. The scale is not moving toward it at the moment.');
+  }
+  return '<div class="card"><div class="card-h"><h3>Your target</h3><span class="pill cool">'+esc(tw)+' kg</span></div><p style="font-size:13.5px;color:var(--text-dim)">'+esc(msg)+'</p></div>';
+}
 
 /* ---- weight chart: raw dots + 7-day average + the block's target ------ */
 function chart(wl,avg,t){
@@ -4428,7 +4478,8 @@ function chart(wl,avg,t){
   const W=600,H=210,PL=34,PR=12,PT=12,PB=22;
   const xs=wl.map(p=>parseISO(p[0]).getTime());
   const x0=Math.min.apply(null,xs), x1=Math.max.apply(null,xs);
-  const vals=wl.map(p=>p[1]).concat([t.target90]);
+  const own=S.profile.targetW, near=own!=null&&Math.abs(own-wl[wl.length-1][1])<=8;
+  const vals=wl.map(p=>p[1]).concat([t.target90], near?[own]:[]);
   let lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
   const pad=Math.max(0.8,(hi-lo)*0.15); lo-=pad; hi+=pad;
   // snap the axis to a round step so the labels read as kilos, not noise (never more than about six lines)
@@ -4459,6 +4510,8 @@ function chart(wl,avg,t){
     +g
     +(goalIn?'<line class="goal-l" x1="'+PL+'" y1="'+gy+'" x2="'+(W-PR)+'" y2="'+gy+'"/>'
       +'<text class="axis-t" x="'+(W-PR)+'" y="'+(+gy-5)+'" text-anchor="end" style="fill:var(--steel)">91-day target '+t.target90.toFixed(1)+'</text>':'')
+    +(near&&Math.abs(own-t.target90)>=0.5?'<line class="goal-l" x1="'+PL+'" y1="'+Y(own).toFixed(1)+'" x2="'+(W-PR)+'" y2="'+Y(own).toFixed(1)+'"/>'
+      +'<text class="axis-t" x="'+PL+'" y="'+(Y(own)-5).toFixed(1)+'" style="fill:var(--steel)">your target '+(+own).toFixed(1)+'</text>':'')
     +'<path class="area" d="'+area+'"/>'
     +dots
     +'<path class="trend" d="'+line(avg)+'"/>'
