@@ -15,14 +15,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sheet.classList.co
 function guideSheet(){
   openSheet('Reference', GUIDE.map((g,i)=>
     '<details'+(i===0?' open':'')+'><summary><span class="idx">'+String(i+1).padStart(2,'0')+'</span>'
-    +esc(g.t)+'<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'+g.b+'</div></details>').join(''));
-  const t=targets();
-  if($('#g-bmr')){
-    $('#g-bmr').textContent=t.bmr.toLocaleString()+' kcal';
-    $('#g-act').textContent='× '+S.profile.act;
-    $('#g-tdee').textContent=t.tdee.toLocaleString()+' kcal';
-    $('#g-cut').textContent=t.kcal.toLocaleString()+' kcal';
-  }
+    +esc(g.t)+'<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'+(typeof g.b==='function'?g.b():g.b)+'</div></details>').join(''));
 }
 /* ---- exercise library ------------------------------------------- */
 const GROUPS=['Chest','Back','Shoulders','Arms','Legs','Glutes','Core'];
@@ -84,7 +77,7 @@ function settingsSheet(){
     +srow('Height (cm)','h','number',p.h)
     +srow('Age','age','number',p.age)
     +'<div class="frow"><label for="f-act">Activity outside the gym</label>'
-      +sel('act',[['1.35','Desk-bound, under 5k steps'],['1.45','Lifting + 8k steps'],['1.55','Lifting + 10k steps'],['1.65','On your feet all day']],p.act)+'</div>'
+      +sel('act',[['1.35','Mostly sitting'],['1.45','Some walking'],['1.55','A lot of walking'],['1.65','On my feet all day']],p.act)+'</div>'
     +'<div class="frow"><label for="f-goal">Goal</label>'
       +sel('goal',[['cut','Lose fat'],['recomp','Lose fat slowly, build muscle'],['maintain','Stay at this weight'],['gain','Build muscle']],p.goal)+'</div>'
     +srow('Target weight (kg), optional','targetW','number',p.targetW==null?'':p.targetW)

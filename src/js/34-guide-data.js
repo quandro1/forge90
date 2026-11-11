@@ -1,99 +1,108 @@
 const PORTIONS=[
  ['Whole egg','1 egg',75,'6 g'],
- ['Chicken breast','1 palm (~150 g)',240,'45 g'],
- ['Lean beef / qeema','1 palm (~150 g)',300,'40 g'],
- ['Cooked rice','1 cupped hand',205,'4 g'],
+ ['Chicken breast','1 palm (~100 g cooked)',165,'31 g'],
+ ['Fish, grilled','1 palm (~100 g cooked)',130,'24 g'],
+ ['Lean beef, cooked','1 palm (~100 g)',200,'28 g'],
+ ['Lean qeema, light oil','1 small bowl (~150 g)',250,'30 g'],
+ ['Cooked rice','1 cup (2 cupped hands)',205,'4 g'],
  ['Chapati','1 medium',120,'4 g'],
+ ['Oats, cooked','1 cup (40 g dry)',150,'5 g'],
  ['Daal, cooked','1 cup',220,'14 g'],
  ['Dahi','1 cup',150,'8 g'],
- ['Milk, full-fat','1 glass (250 ml)',150,'8 g'],
+ ['Milk, full-fat','1 glass (250 ml)',155,'8 g'],
  ['Whey protein','1 scoop',120,'24 g'],
- ['Cooking oil / ghee','1 thumb (tbsp)',120,'0 g'],
+ ['Cooking oil / ghee','1 thumb (1 tablespoon)',120,'0 g'],
  ['Oil a dish is cooked in','2–3 thumbs per plate',300,'0 g'],
- ['Peanut butter','1 thumb (tbsp)',95,'4 g'],
- ['Almonds','1 small handful',145,'5 g']
+ ['Peanut butter','1 thumb (1 tablespoon)',95,'4 g'],
+ ['Almonds','1 small handful (~20)',145,'5 g']
 ];
 const HUNGRY=[
- 'Add vegetables or salad — near enough free.',
+ 'Add vegetables or salad: close to free.',
  'Add protein (eggs, dahi, whey) before carbs or fat.',
- 'Drink a glass of water. Thirst imitates hunger almost exactly.',
- 'Black coffee or plain chai blunts appetite for an hour.'
+ 'Drink a glass of water. Thirst feels almost exactly like hunger.',
+ 'Black coffee or plain tea takes the edge off for an hour.'
 ];
 const DAWAT=[
- 'Pick the grilled or roast meat — tikka, seekh, roast — over the curry.',
+ 'Choose the grilled or roast meat (tikka, seekh, roast) over the curry.',
  'One portion of rice <b>or</b> naan. Not both.',
- 'Load the salad and raita, go easy on creamy gravies.',
+ 'Fill up on salad and raita; go easy on creamy gravies.',
  'Skip the sugary drink. Water, or a diet soda.',
- 'One indulgence does not derail 91 days. Back to plan at the next meal — not tomorrow.'
+ 'One big meal does not undo 91 days. Go back to the plan at the next meal, not tomorrow.'
 ];
 
-/* ---- REFERENCE GUIDE (sheet) ------------------------------------ */
+/* ---- REFERENCE GUIDE (sheet) ------------------------------------
+   An entry's body is text, or a function that returns text for this person. */
 const GUIDE=[
- {t:'Why the lower belly goes last', b:`
-  <p>This is your stated problem area, so here is the honest version. Fat is not stored evenly. In men the lower abdomen is a preferred storage depot with a higher density of <b>alpha-2 adrenergic receptors</b> — which act as a brake on fat release — and poorer blood flow. It mobilises slowly and it leans out last. That is normal physiology, not a personal failing.</p>
-  <p style="margin-top:10px">And you cannot crunch it off. In a deficit your body pulls fat from stores <b>system-wide</b> through circulating hormones; you do not get to choose the withdrawal location. Training abs builds the muscle underneath — it does not melt what sits on top of it.</p>
-  <p style="margin-top:10px">So it is two separate jobs. <b>Train the core for thickness</b>, and <b>lose the fat with the deficit, the steps and the lifting.</b> Abs show up somewhere around 10–12% body fat. Do both and they appear on schedule.</p>`},
- {t:'Where your numbers come from', b:`
-  <p>Nothing here is a guess pulled from an app. Your targets recalculate from the stats in Settings using <b>Mifflin–St Jeor</b>, the most accurate predictive formula for the general population.</p>
-  <div class="tw" style="margin-top:10px"><table><tbody>
-  <tr><td>Resting burn (BMR)</td><td class="n" id="g-bmr">—</td></tr>
-  <tr><td>× activity factor</td><td class="n" id="g-act">—</td></tr>
-  <tr><td>Maintenance (TDEE)</td><td class="n" id="g-tdee">—</td></tr>
-  <tr><td>Target — about 20% under</td><td class="n" id="g-cut">—</td></tr>
-  </tbody></table></div>
-  <p style="margin-top:10px">Why not cut harder? Because <b>recomposition is the whole point</b>. A moderate deficit is what lets you lose fat while holding — even adding — muscle. Crash deficits burn muscle, wreck your lifts and rebound. Around 500 kcal is the sweet spot at your body fat.</p>
-  <p style="margin-top:10px">These are estimates. Your real maintenance shows up after 2–3 weeks of honest logging. <b>Adjust to the trend, not the formula.</b></p>`},
+ {t:'Where your numbers come from', b:()=>{
+   const t=targets(), g=S.profile.goal;
+   const why={
+    cut:'A deficit of about a fifth is large enough to see the scale move every week and small enough to keep your muscle. Crash diets burn muscle, wreck your lifts and bounce back.',
+    recomp:'A small deficit lets you lose fat slowly while you gain or keep muscle. It works best if you are new to lifting or coming back after a break.',
+    maintain:'You eat what you burn. Your weight stays where it is while the training changes what it is made of.',
+    gain:'A small surplus is all muscle growth can use. A bigger one only adds fat that has to come off later.'}[g];
+   return '<p>Your targets are worked out from the numbers in Settings with the <b>Mifflin–St Jeor</b> equation, the most accurate simple formula for most people.</p>'
+    +'<div class="tw" style="margin-top:10px"><table><tbody>'
+    +'<tr><td>What your body burns at rest</td><td class="n">'+t.bmr.toLocaleString()+' kcal</td></tr>'
+    +'<tr><td>× activity outside the gym</td><td class="n">× '+esc(S.profile.act)+'</td></tr>'
+    +'<tr><td>What you burn in a day</td><td class="n">'+t.tdee.toLocaleString()+' kcal</td></tr>'
+    +'<tr><td>Your target ('+esc(GOAL_NAME[g].toLowerCase())+')</td><td class="n">'+t.kcal.toLocaleString()+' kcal</td></tr>'
+    +'<tr><td>Protein</td><td class="n">'+t.prot+' g</td></tr>'
+    +'</tbody></table></div>'
+    +'<p style="margin-top:10px">'+why+'</p>'
+    +(t.floored?'<p style="margin-top:10px"><b>Your target is at the safe minimum.</b> The app does not go below 1,200 kcal a day for women or 1,500 for men. Eating less than that needs a doctor.</p>':'')
+    +'<p style="margin-top:10px">Protein is set per kilo of bodyweight. If you carry a lot of extra weight, it is set on the weight a lean body of your height would carry, so the number stays realistic.</p>'
+    +'<p style="margin-top:10px">These are estimates. Your real numbers show after two or three weeks of honest logging. <b>Adjust to the trend, not the formula.</b></p>';
+ }},
  {t:'Reading the trend, and when to change something', b:`
-  <p>Judge on a <b>2–3 week trend</b>, never a single week, and never a single morning.</p>
+  <p>Judge on <b>two to three weeks</b>, never one week and never one morning.</p>
   <div class="tw" style="margin-top:10px"><table>
   <thead><tr><th>What the trend shows</th><th>What you do</th></tr></thead><tbody>
-  <tr><td>Losing 0.4–0.65 kg/wk, waist coming down</td><td>Nothing. It is working.</td></tr>
-  <tr><td>Weight and waist flat for 2–3 weeks</td><td>Cut ~150–200 kcal from carbs or fat, or add 1,000 steps. Not both.</td></tr>
-  <tr><td>Losing more than 1% of bodyweight a week</td><td>Add ~150 kcal back. You are cutting muscle.</td></tr>
+  <tr><td>Moving at the pace your goal asks for</td><td>Nothing. It is working.</td></tr>
+  <tr><td>Losing fat: weight and waist flat for 2–3 weeks</td><td>Take 150–200 kcal a day off carbs or fat, or add 1,000 steps. Not both.</td></tr>
+  <tr><td>Losing more than 1% of your bodyweight a week</td><td>Add about 150 kcal a day. You are losing muscle.</td></tr>
+  <tr><td>Building muscle: no gain for 2–3 weeks</td><td>Add about 150 kcal a day.</td></tr>
   <tr><td>Lifts dropping across the board</td><td>Cut cardio first, then eat more. Never cut protein or sleep.</td></tr>
-  <tr><td>Beaten up, sleeping badly</td><td>3–7 days at maintenance, then resume. This is a feature.</td></tr>
+  <tr><td>Worn down, sleeping badly</td><td>Eat at maintenance for 3–7 days, then go back.</td></tr>
   </tbody></table></div>`},
- {t:'Recovery is where it actually happens', b:`
+ {t:'Why stubborn fat goes last', b:`
+  <p>Fat is not stored evenly, and it does not leave evenly. Most men store it last-out around the lower belly; most women around the hips and thighs. Those areas release fat more slowly and lean out last. That is normal physiology, not a personal failing.</p>
+  <p style="margin-top:10px">You cannot train fat off one spot. When you eat less than you burn, your body takes fat from <b>all over</b>; you do not choose where. Training your abs builds the muscle underneath. It does not remove what sits on top.</p>
+  <p style="margin-top:10px">So it is two separate jobs: <b>train the muscle</b>, and <b>lose the fat with the deficit, the steps and the lifting</b>. Keep doing both and the stubborn areas follow.</p>`},
+ {t:'Recovery is where it happens', b:`
   <ul class="klist">
-  <li><b>Sleep 7–9 h at consistent times.</b> Poor sleep raises hunger hormones and cortisol and makes the whole diet feel ten times harder. It is the highest-leverage thing on this list.</li>
-  <li><b>Keep caffeine before 3 PM.</b> You train in the morning, so this one is easy — do not undo it with evening chai.</li>
-  <li><b>Protect a decompress window.</b> Chronic stress blunts fat loss and drives cravings. A walk, prayer, breathing, time off the phone.</li>
-  <li><b>5–10 min of mobility daily</b> on hips, T-spine and shoulders — the three things a desk and a phone stiffen most.</li>
-  <li><b>3.5–4 L of water.</b> Mild dehydration reads as hunger and fatigue almost exactly.</li>
+  <li><b>Sleep 7–9 hours at regular times.</b> Poor sleep raises hunger and makes everything else harder. It is the most valuable thing on this list.</li>
+  <li><b>Keep coffee and tea at least eight hours before bed.</b></li>
+  <li><b>Protect some quiet time.</b> Long-term stress slows fat loss and drives cravings. A walk, prayer, breathing, time away from the phone.</li>
+  <li><b>5–10 minutes of mobility a day</b> for the hips, upper back and shoulders: the three things sitting stiffens most.</li>
+  <li><b>Drink enough water.</b> Being a little dry feels almost exactly like hunger and tiredness.</li>
   </ul>
-  <p style="margin-top:12px">Check yourself most mornings against this. <b>Two reds means take an easy day or pull the deload forward</b> — that judgement call is what prevents the injury that ends a 90-day block.</p>
+  <p style="margin-top:12px">Check yourself most mornings against this table. <b>Two reds: take an easy day.</b> That call is what prevents the injury that ends a block.</p>
   <div class="tw" style="margin-top:10px"><table>
   <thead><tr><th>Signal</th><th>Green</th><th>Yellow</th><th>Red</th></tr></thead><tbody>
-  <tr><td>Sleep</td><td>7–9 h</td><td>6–7 h</td><td>&lt;6 h, repeatedly</td></tr>
-  <tr><td>Resting HR</td><td>baseline</td><td>+5 bpm</td><td>+10 bpm</td></tr>
-  <tr><td>Joints</td><td>pain-free</td><td>niggles</td><td>persistent ache</td></tr>
+  <tr><td>Sleep</td><td>7–9 h</td><td>6–7 h</td><td>under 6 h, repeatedly</td></tr>
+  <tr><td>Resting heart rate</td><td>your usual</td><td>+5 bpm</td><td>+10 bpm</td></tr>
+  <tr><td>Joints</td><td>pain-free</td><td>small aches</td><td>an ache that stays</td></tr>
   <tr><td>Gym</td><td>reps rising</td><td>flat</td><td>dropping</td></tr>
-  <tr><td>Drive</td><td>motivated</td><td>meh</td><td>flat, irritable</td></tr>
+  <tr><td>Drive</td><td>keen</td><td>so-so</td><td>flat, irritable</td></tr>
   </tbody></table></div>`},
- {t:'The mistakes that actually kill transformations', b:`
-  <p>Programs rarely fail. These do. Scan this list whenever progress stalls — the culprit is almost always here.</p>
+ {t:'The mistakes that stop progress', b:`
+  <p>Programs rarely fail. These do. Read this list whenever progress stalls: the cause is almost always here.</p>
   <ul class="klist" style="margin-top:10px">
-  <li><b>Weekend blowouts.</b> A 500 kcal weekday deficit erased by two big weekend days nets zero. This is the number one cause and it is invisible unless you count.</li>
-  <li><b>Program hopping.</b> Switching every two weeks prevents the overload that drives everything. Run this block to the end.</li>
-  <li><b>Ego lifting.</b> Half-reps with too much weight build very little and cost joints.</li>
-  <li><b>Too much HIIT.</b> Intervals feel productive and quietly wreck your lifts. Keep them capped.</li>
-  <li><b>Never deloading.</b> This is how intermediates stall for months and blame the program.</li>
-  <li><b>Liquid calories.</b> Sweet chai, juice and soft drinks add up completely invisibly.</li>
-  <li><b>"Healthy" calorie bombs.</b> Ghee, oil, nuts and peanut butter are fine foods and extremely dense. Eyeball them honestly.</li>
-  <li><b>Scale obsession.</b> Weight zig-zags daily. You already have the 7-day average — use it and ignore the rest.</li>
+  <li><b>Big weekends.</b> A 500 kcal deficit on weekdays, wiped out by two big weekend days, adds up to nothing. It is the most common cause, and you cannot see it unless you count.</li>
+  <li><b>Changing program too often.</b> Switching every two weeks prevents the steady increase that drives everything. Run a block to the end.</li>
+  <li><b>Too much weight, half the range.</b> Half reps build very little and cost your joints.</li>
+  <li><b>Too many intervals.</b> They feel productive and quietly wear down your lifting. Keep them capped.</li>
+  <li><b>Never taking a deload.</b> This is how people stall for months and blame the program.</li>
+  <li><b>Calories you drink.</b> Sweet tea, juice and soft drinks add up without you noticing.</li>
+  <li><b>Dense "healthy" foods.</b> Ghee, oil, nuts and peanut butter are good foods and very high in calories. Measure them honestly.</li>
+  <li><b>Watching the daily number.</b> Weight zig-zags every day. Use the 7-day average and ignore the rest.</li>
   </ul>`},
- {t:'What 90 days actually gets you', b:`
-  <p>Straight, no inflation:</p>
-  <ul class="klist" style="margin-top:10px">
-  <li><b>5–7 kg of fat lost.</b> The scale may show 6–8 once water and glycogen settle.</li>
-  <li><b>0.5–1.5 kg of muscle gained.</b> Modest as a number, dramatic in how it reshapes you.</li>
-  <li><b>Waist down 5–8 cm.</b> Upper abs and obliques start showing.</li>
-  <li><b>Main lifts up 10–20%</b>, even while dieting.</li>
-  <li><b>Conditioning transformed</b> from a sedentary baseline.</li>
-  </ul>
-  <p style="margin-top:12px">And the honest part: <b>75 kg is a 6–9 month goal, not a 90-day one.</b> You said so yourself. Chasing it in 90 days would mean sacrificing the muscle you are here to build. These 13 weeks build the habits, the strength base and the visible momentum that make the back half close to inevitable.</p>`}
+ {t:'What 91 days can do', b:()=>{
+   const rows={
+    lose:['<b>4–7 kg of fat lost</b> at a steady deficit. The scale may show a little more once water settles.','<b>Some muscle gained or all of it kept</b>, depending on how long you have trained.','<b>Waist down several centimetres.</b>','<b>Main lifts up</b>, even while eating less: 5–15% is common.'],
+    hold:['<b>The same weight, made of more muscle and less fat.</b>','<b>Main lifts up 10–20%.</b>','<b>Fitter</b>: a lower resting heart rate and easier stairs.'],
+    gain:['<b>1–3 kg of muscle</b> for most people past the beginner stage; more in a first year of lifting.','<b>Main lifts up 10–25%.</b>','<b>A little fat comes with it.</b> Keeping the surplus small keeps that small.']}[goalClass()];
+   return '<p>Plainly, with no inflation:</p><ul class="klist" style="margin-top:10px">'+rows.map(r=>'<li>'+r+'</li>').join('')+'</ul>'
+    +'<p style="margin-top:12px">Ninety-one days build the habits and the strength base. A big change in bodyweight usually takes two or three blocks. When this one ends, start the next: same plan or a new target.</p>';
+ }}
 ];
-
-/* ===================================================================
-   FORGE 90 — application
-   =================================================================== */

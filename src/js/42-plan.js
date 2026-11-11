@@ -71,26 +71,45 @@ function restText(sec){
 }
 function rxText(it){ return it.sets+' × '+repText(it); }
 
-/* ---- computed targets ------------------------------------------- */
+/* ---- computed targets -------------------------------------------
+   Energy: the Mifflin-St Jeor resting burn x activity, then the goal:
+     lose fat        a fifth under, never faster than 1% of bodyweight a week
+     lose slowly     a tenth under
+     stay            what you burn
+     build muscle    8% over, kept between 150 and 400 kcal
+   and never under 1,200 kcal a day (women) or 1,500 (men).
+   Protein per kilo by goal (2.1 / 2.0 / 1.6 / 1.8 g) on bodyweight capped at
+   BMI 27, so extra bodyweight does not inflate it. Fat is 0.8 g per kilo of
+   that same weight and at least a fifth of calories. Carbs are what is left.
+   Rest days sit 200 kcal under the average and training days make it up, so
+   the week still averages to the target, and no day goes under the floor. */
 function targets(){
-  const p=S.profile, w=p.w, h=p.h, a=p.age, act=p.act;
+  const p=S.profile, w=p.w, h=p.h, a=p.age, g=p.goal;
   const bmr=Math.round(10*w+6.25*h-5*a+(p.sex==='f'?-161:5));
-  const tdee=Math.round(bmr*act);
-  const factor={cut:0.8, recomp:0.9, maintain:1, gain:1.08}[p.goal]||1;
-  const kcal=Math.round((tdee*factor)/10)*10;
-  const prot=Math.round(w*2.1/5)*5;
-  const fat=Math.round(w*0.8);
+  const tdee=Math.round(bmr*p.act);
+  const floor=p.sex==='f'?1200:1500;
+  let delta=0;
+  if(g==='cut') delta=-Math.min(tdee*0.2, w*11);
+  else if(g==='recomp') delta=-tdee*0.1;
+  else if(g==='gain') delta=Math.max(150,Math.min(400,tdee*0.08));
+  let kcal=Math.round((tdee+delta)/10)*10, floored=false;
+  if(kcal<floor){ kcal=floor; floored=true; }
+  const ref=Math.min(w, 27*h*h/10000);
+  const prot=Math.round(ref*({cut:2.1, recomp:2.0, maintain:1.6, gain:1.8}[g]||1.8)/5)*5;
+  const fat=Math.round(Math.max(ref*0.8, kcal*0.2/9));
   const nLift=variant().sessions.length, nRest=Math.max(1,7-nLift);
-  // training days carry the extra carbs; the week still averages to `kcal`
-  const train=Math.round((kcal+80)/10)*10;
-  const rest=Math.round(((kcal*7)-(train*nLift))/nRest/10)*10;
+  const rest=Math.max(floor, Math.round((kcal-200)/10)*10);
+  const train=Math.round((kcal+(kcal-rest)*nRest/nLift)/10)*10;
   const carbT=Math.max(0,Math.round((train-prot*4-fat*9)/4));
   const carbR=Math.max(0,Math.round((rest-prot*4-fat*9)/4));
-  const shift={cut:-6, recomp:-3, maintain:0, gain:2}[p.goal]||0;
-  const target90=Math.round((w+shift)*10)/10;
-  const maxHR=220-a;
-  return {bmr,tdee,kcal,cut:kcal,prot,fat,train,rest,carbT,carbR,target90,
-          z2:[Math.round(maxHR*.6),Math.round(maxHR*.7)], w, goal:p.targetW};
+  // expected change: 7,700 kcal to a kilo, less a tenth for the days that do not go to plan
+  const weekly=(kcal-tdee)*7/7700*0.9;
+  const target90=Math.round((w+weekly*13)*2)/2;
+  const hrMax=208-0.7*a;                           // Tanaka, Monahan & Seals 2001
+  // litres: 35 ml per kilo plus half a litre for training, on the same capped weight, kept between 2 and 4.5
+  const water=Math.max(2,Math.min(4.5,Math.round((ref*0.035+0.5)*2)/2));
+  return {bmr,tdee,kcal,cut:kcal,prot,fat,train,rest,carbT,carbR,target90,weekly,floor,floored,water,
+          z2:[Math.round(hrMax*.6),Math.round(hrMax*.7)], w, goal:p.targetW};
 }
 
 /* ---- the 91-day schedule ---------------------------------------- */
@@ -129,14 +148,15 @@ function checkList(){
   const t=targets(), i=infoForDate(TODAY);
   const lifting=i&&i.type==='lift';
   const ft=foodTotals();   // live from the day counter, so the list reflects what you logged
+  const kc=dietType()==='train'?t.train:t.rest, st=i?stepsTarget(i.week):8000, walked=S.steps[TODAY];
   return [
     {k:'protein', l:'Hit protein',        h:(ft.p?Math.round(ft.p)+' / ':'')+t.prot+' g'},
-    {k:'cals',    l:'Stay near calories', h:(ft.k?Math.round(ft.k)+' / ':'')+(lifting?t.train:t.rest)+' kcal'},
-    {k:'steps',   l:'Walk',               h:'8–10k steps'},
-    {k:'water',   l:'Water',              h:'3.5–4 L'},
+    {k:'cals',    l:'Stay near calories', h:(ft.k?Math.round(ft.k)+' / ':'')+kc+' kcal'},
+    {k:'steps',   l:'Walk',               h:(walked?walked.toLocaleString()+' / ':'')+st.toLocaleString()+' steps'},
+    {k:'water',   l:'Water',              h:'about '+t.water+' L'},
     {k:'session', l:lifting?'Train':'Session or rest as planned', h:lifting?(i.session.name):'—'},
     {k:'sleep',   l:'Sleep 7–9 h',        h:'last night'},
-    {k:'creatine',l:'Creatine',           h:'5 g'}
+    {k:'creatine',l:'Creatine',           h:'3–5 g, if you take it'}
   ];
 }
 const CORE=['protein','steps','sleep'];

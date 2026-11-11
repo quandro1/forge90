@@ -210,11 +210,5 @@ document.addEventListener('click',e=>{
     const n=location.hash.slice(1);
     if(TABS.indexOf(n)>=0&&n!==currentTab) setTab(n,true);
   });
-  // restore ticked grocery boxes whenever Fuel renders
-  const mo=new MutationObserver(()=>{
-    if(!S.shop) return;
-    $$('[data-shop]').forEach(b=>{ if(S.shop[b.dataset.shop]) b.setAttribute('aria-pressed','true'); });
-  });
-  mo.observe($('#fuelExtra'),{childList:true,subtree:true});
 })();
 

@@ -128,7 +128,7 @@ document.addEventListener('click',e=>{
     return;
   }
   const dseg=T.closest('#dietSeg button');
-  if(dseg){ S.ui.diet=dseg.dataset.diet; save(); renderFuel(); return; }
+  if(dseg){ S.ui.diet=dseg.dataset.diet; S.ui.dietOn=TODAY; save(); renderFuel(); return; }   // chosen by hand, for today
 
   const fcat=T.closest('[data-fcat]');
   if(fcat){ foodCat=+fcat.dataset.fcat; renderProt(); return; }

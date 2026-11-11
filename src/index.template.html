@@ -91,7 +91,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
       <div class="sec">
         <div class="eyebrow">The other half of training</div>
         <h3 style="font-size:20px;margin-bottom:4px">Conditioning</h3>
-        <p class="lede" style="margin-bottom:12px">Cardio has three jobs here: burn extra calories, build the engine that makes you <em>look</em> athletic, and keep your heart healthy. The whole art is dosing it so it speeds fat loss without stealing recovery from your lifts.</p>
+        <p class="lede" style="margin-bottom:12px">Cardio has three jobs here: it burns extra calories, builds your fitness, and keeps your heart healthy. The dose is kept small enough that it never takes recovery away from your lifting.</p>
         <div id="condSection"></div>
       </div>
       <div class="card">
@@ -101,12 +101,12 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
           <thead><tr><th>What happened</th><th>What you do next session</th></tr></thead>
           <tbody>
             <tr><td>Hit the sets, below the top of the range</td><td>Same weight, chase one more rep</td></tr>
-            <tr><td>Top of the range on every set</td><td>+2.5 kg upper / +5 kg lower, reps reset to the bottom</td></tr>
+            <tr><td>Top of the range on every set</td><td>Add the smallest jump the equipment allows (the logbook names it); reps go back to the bottom</td></tr>
             <tr><td>Reps dropped or the bar slowed</td><td>Repeat it clean before you add anything</td></tr>
             <tr><td>Stalled 2–3 weeks</td><td>Check sleep, protein, rest between sets — then cut 10% and rebuild</td></tr>
           </tbody>
         </table></div>
-        <div class="note hot" style="margin-top:12px">In a deficit, <b>holding</b> your lifts is already a win. Weight on the bar going up while the scale goes down is the recomp working.</div>
+        <div class="note hot" style="margin-top:12px">If you are eating less to lose fat, <b>holding</b> your lifts is already a win. The bar going up while the scale goes down means you are losing fat, not muscle.</div>
       </div>
     </div>
   </section>
@@ -138,17 +138,18 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
             <tr><td>3 · Weeks 9–13</td><td class="n">9–10k</td><td>2× · 30–40 min</td><td>2×</td></tr>
           </tbody>
         </table></div>
-        <div class="note" style="margin-top:12px">Zone 2 is a pace you could hold a conversation at — roughly <b id="z2hr">118–138 bpm</b> for you. Never put hard cardio in the 24 hours before legs. If your lifts start dropping, cut HIIT first.</div>
+        <div class="note" style="margin-top:12px">Zone 2 is a pace you could hold a conversation at — roughly <b id="z2hr">118–138 bpm</b> for you. Never do hard cardio the day before a leg session. If your lifts start dropping, cut the intervals first.</div>
       </div>
     </div>
   </section>
 
   <section class="screen" id="s-fuel" aria-labelledby="h-fuel">
-    <div class="eyebrow">Halal · Pakistani · no weighing</div>
+    <div class="eyebrow">Your numbers · household portions</div>
     <h2 id="h-fuel">Fuel</h2>
-    <p class="lede">Household portions of food you already eat, timed around a 9 AM gym. No oats, no fish, no scales. Tap what you ate into the counter and it does the arithmetic — protein is still the number that matters most.</p>
+    <p class="lede">Your calories and protein, worked out from your own numbers, in household portions of everyday food. Tap what you ate into the counter and it does the arithmetic. Protein is the number that matters most.</p>
     <div class="stack">
       <div class="readout" id="ro-macros"></div>
+      <p class="fuelgoal" id="fuelGoal"></p>
       <div class="card">
         <div class="card-h"><h3>Day counter</h3><span class="pill cool" id="foodDate"></span></div>
         <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px">Tap what you ate. It works out calories, protein, carbs and fat for you — no weighing, no app.</p>
@@ -178,7 +179,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
         <div class="legend" style="margin-top:10px">
           <span><i style="background:var(--ember);border-radius:99px"></i>7-day average</span>
           <span><i style="background:var(--steel-dim);border-radius:99px"></i>Daily reading</span>
-          <span><i style="background:transparent;border-color:var(--steel);border-style:dashed"></i>90-day target</span>
+          <span><i style="background:transparent;border-color:var(--steel);border-style:dashed"></i>91-day target</span>
         </div>
       </div>
       <div id="verdictCard"></div>
@@ -197,6 +198,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
         <div id="habitGrid"></div>
         <p style="font-size:12.5px;color:var(--text-dim);margin-top:10px">Share of the daily non-negotiables you hit, week by week. Aim for 85%+ — that number predicts the result better than any single workout.</p>
       </div>
+      <div id="blocksCard"></div>
     </div>
   </section>
 

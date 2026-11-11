@@ -10,7 +10,7 @@ function renderToday(){
   $('#todaylede').textContent = !started
     ? 'Your block begins on '+fmtDate(S.profile.start)+'. Change the start date in Settings if that is wrong — everything on this page keys off it.'
     : done ? 'Ninety-one days done. Take the measurements, look at the photos, then set the next block.'
-    : info.type==='lift' ? 'Lift, then eat the big breakfast. Everything else on this page is maintenance.'
+    : info.type==='lift' ? 'Training day. Do the session and hit your protein; everything else on this page is maintenance.'
     : info.type==='cardio' ? 'No lifting today. Zone 2 and steps — the work that costs you nothing in recovery.'
     : 'Rest day. Walk, eat, sleep. This is when you actually grow.';
 
@@ -147,15 +147,21 @@ function renderCond(){
     +'<div class="pbar" style="margin:8px 0 14px"><i style="width:'+pct+'%"></i></div>'
     +'<div class="condrow"><span class="cl">Zone 2 this week</span>'+dots(z2,c.z2)
       +'<span class="ct num">'+z2+' / '+c.z2+'</span></div>'
-    +'<div class="condrow" style="margin-top:8px"><span class="cl">HIIT this week</span>'+dots(hi,c.hiit)
+    +'<div class="condrow" style="margin-top:8px"><span class="cl">Intervals this week</span>'+dots(hi,c.hiit)
       +'<span class="ct num">'+(c.hiit?hi+' / '+c.hiit:'—')+'</span></div>'
     +'<div style="display:flex;gap:8px;margin-top:13px;flex-wrap:wrap">'
       +'<button class="btn sm" data-cond="z2">+ Zone 2</button>'
-      +(c.hiit?'<button class="btn sm" data-cond="hiit">+ HIIT</button>':'')
+      +(c.hiit?'<button class="btn sm" data-cond="hiit">+ Intervals</button>':'')
       +((S.cond&&S.cond[TODAY]&&S.cond[TODAY].length)?'<button class="btn sm danger" data-uncond="1">Undo today</button>':'')
     +'</div>'
     +'<div class="note" style="margin-top:13px">'+esc(c.note)+'<br>'
       +'Zone 2 pace for you is about <b>'+t.z2[0]+'–'+t.z2[1]+' bpm</b> — a pace you could still talk at.</div>';
+}
+/* which days of this person's week carry Zone 2, and which is the check-in */
+function condDaysLine(phase){
+  const cd=cardioDays(phase).map(d=>DOWL[d]), ci=DOWL[checkinDay()];
+  return (cd.length?'Zone 2 days in your week: '+cd.join(' and ')+'. ':'You lift six days a week, so do your Zone 2 after an upper-body session. ')
+    +ci+' is full rest and the weekly check-in.';
 }
 function renderCondSection(){
   const di=todayIndex(), ph=(di>=1&&di<=BLOCK_DAYS)?dayInfo(di).phase:1;
@@ -177,10 +183,10 @@ function renderCondSection(){
       +'<td>'+(COND[p].hiit?COND[p].hiit+'×':'none')+'</td></tr>').join('')
     +'</tbody></table></div>'
     +'<ul class="klist" style="margin-top:12px">'
-    +'<li><b>Never</b> hard cardio in the 24 h before legs, in either direction.</li>'
+    +'<li><b>Never</b> do hard cardio the day before a leg session.</li>'
     +'<li>Zone 2 goes on a rest day, or <em>after</em> you lift — never before.</li>'
-    +'<li>Saturday is your conditioning day; Sunday is full rest and the weekly check-in.</li>'
-    +'<li>If strength drops week over week, <b>cut HIIT first</b>, then trim Zone 2. Never cut protein or sleep to make room for cardio.</li>'
+    +'<li>'+esc(condDaysLine(ph))+'</li>'
+    +'<li>If your lifts drop from week to week, <b>cut the intervals first</b>, then some Zone 2. Never cut protein or sleep to make room for cardio.</li>'
     +'</ul></div></details>'
     +'<details><summary><span class="idx">05</span>What these look like<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
     +'<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:11px">Not sure what a machine or an interval actually looks like? Same photo and video buttons as the lifts.</p>'
