@@ -112,7 +112,7 @@ export async function openApp(env, opts = {}) {
   page.on('console', (m) => { if (m.type() === 'error') errors.push('console.error: ' + m.text()); });
   if (opts.now !== false) await page.clock.install({ time: new Date(opts.now || NOW) });
   const seed = {};
-  if (opts.state !== undefined) seed[opts.key || 'forge90_v1'] = JSON.stringify(opts.state);
+  if (opts.state !== undefined) seed[opts.key || (opts.state && opts.state.v >= 2 ? 'forge90_v2' : 'forge90_v1')] = JSON.stringify(opts.state);
   Object.assign(seed, opts.extra || {});
   await page.addInitScript((s) => {
     try {
@@ -125,6 +125,29 @@ export async function openApp(env, opts = {}) {
   return { page, context, errors, clock: page.clock };
 }
 
+/** Go through first-run set-up with ordinary answers (the suggested plan, starting today). */
+export async function finishSetup(page) {
+  await page.locator('#setup.on').waitFor();
+  await page.locator('#su-age').fill('28');
+  await page.locator('#su-h').fill('172');
+  await page.locator('#su-w').fill('70');
+  await page.locator('#setup [data-su-next]').tap();
+  await page.locator('#setup [data-su-next]').tap();
+  await page.locator('#setup [data-su="start"][data-v="today"]').tap();
+  await page.locator('#setup [data-su-done]').tap();
+  await page.waitForFunction(() => !document.querySelector('#setup.on'));
+}
+/** A set-up user in the current shape (key forge90_v2): day 3 of a V-Taper 5-day block. Pass to openApp with key 'forge90_v2'. */
+export function v2State(over = {}) {
+  const s = {
+    v: 2,
+    profile: { sex: 'm', age: 25, h: 175, w: 75, act: 1.45, goal: 'recomp', targetW: null, program: 'vtaper', dpw: 5, days: [1, 2, 3, 4, 5], start: '2026-11-09', setup: true },
+    checks: {}, weights: {}, waist: {}, steps: {}, meas: [], logs: {}, food: {}, cond: {}, shop: {}, swaps: {}, blocks: [],
+    ui: { theme: 'dark', diet: 'train', helpSeen: 1 },
+  };
+  for (const k in over) s[k] = (s[k] && typeof s[k] === 'object' && !Array.isArray(s[k])) ? { ...s[k], ...over[k] } : over[k];
+  return s;
+}
 /** A fresh state in the shape the 2 Oct 2026 build stores (key forge90_v1). */
 export function v1State(over = {}) {
   const s = {

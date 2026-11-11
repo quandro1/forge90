@@ -1,6 +1,6 @@
 // Smoke: every tab and sheet draws, the everyday taps work, and nothing throws.
 import assert from 'node:assert/strict';
-import { v1State } from './harness.mjs';
+import { v1State, finishSetup } from './harness.mjs';
 
 const tab = (page, name) => page.locator('.tabbar button[data-tab="' + name + '"]').tap();
 
@@ -78,8 +78,9 @@ export default [
     name: 'a brand-new visitor gets a working app',
     async run({ open }) {
       const { page, errors } = await open({});
-      await page.locator('#ro-today').waitFor();
+      await finishSetup(page);
       for (const t of ['train', 'plan', 'fuel', 'prog', 'today']) await tab(page, t);
+      assert.match(await page.locator('#dayline').innerText(), /day 1 of 91/i);
       assert.deepEqual(errors, []);
     },
   },

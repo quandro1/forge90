@@ -8,7 +8,7 @@ function openSheet(title,html){
   sheet.classList.add('on');
   document.body.style.overflow='hidden';
 }
-function closeSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; }
+function closeSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; }
 sheet.addEventListener('click',e=>{ if(e.target.closest('[data-close]')) closeSheet(); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sheet.classList.contains('on')) closeSheet(); });
 
@@ -91,6 +91,7 @@ function settingsSheet(){
     +'</div>'
     +'<div class="sec"><div class="eyebrow">Plan</div>'
     +'<p style="font-size:13.5px;margin-bottom:9px"><b>'+esc(P.name)+'</b> <span style="color:var(--text-dim)">— '+esc(P.line)+'</span></p>'
+    +'<button class="btn wide" data-pickplan style="margin-bottom:9px">Choose another target, or change your days</button>'
     +(keys.length>1?'<div class="seg" id="setDpw" role="group" aria-label="Days a week">'
       +keys.map(k=>'<button data-dpw="'+k+'"'+(k===+p.dpw?' class="on"':'')+'>'+k+' days a week</button>').join('')+'</div>':'')
     +'</div>'

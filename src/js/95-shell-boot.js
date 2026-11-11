@@ -201,6 +201,7 @@ document.addEventListener('click',e=>{
   const h=location.hash.slice(1);
   if(TABS.indexOf(h)>=0) setTab(h,true); else renderToday();
   if(RT) paintRest(true);
+  if(!S.profile.setup&&!BOOT.newer) setupOpen();   // a new person: ask who they are before showing a plan
   cloudInit();
   const flush=()=>{ saveNow(); if(CLOUD.dirty||CLOUD.timer){ clearTimeout(CLOUD.timer); cloudPush(); } };
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flush(); });

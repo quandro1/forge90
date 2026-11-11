@@ -544,3 +544,28 @@ details.how>summary .how-t{flex:1}
   .card,details,.ex{border-color:#bbb; background:#fff}
   .ex-b{display:block!important}
 }
+
+/* ============ SET-UP, PLAN PICKER ============ */
+.setup{position:fixed; inset:0; z-index:70; display:none; overflow-y:auto; background:var(--ground); padding:18px 0 40px}
+.setup.on{display:block}
+.setup h2{margin:14px 0 4px}
+.su-top{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.su-err{min-height:18px; margin-top:12px; font-size:13px; color:var(--warn)}
+.su-nav{display:flex; gap:10px; margin-top:6px}
+.su-nav .btn{flex:1; padding:13px 10px; font-size:13px}
+.choice{display:flex; flex-direction:column; gap:8px}
+.choice button{display:block; width:100%; text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:11px; background:var(--surface)}
+.choice button b{display:block; font-family:var(--font-d); font-size:15px; letter-spacing:.01em}
+.choice button span{display:block; font-size:12.5px; color:var(--text-dim); margin-top:2px}
+.choice button[aria-pressed="true"]{border-color:var(--ember); background:var(--ember-wash)}
+.wdays{display:grid; grid-template-columns:repeat(7,1fr); gap:5px}
+.wdays button{padding:11px 0; border:1px solid var(--line); border-radius:9px; background:var(--surface); font-family:var(--font-d); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint)}
+.wdays button[aria-pressed="true"]{border-color:var(--ember); background:var(--ember-wash); color:var(--ember)}
+.plancard{border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:14px; cursor:pointer}
+.plancard+.plancard{margin-top:10px}
+.plancard.on{border-color:var(--ember); background:linear-gradient(180deg,var(--ember-wash),transparent 60%),var(--surface)}
+.pc-h{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.pc-n{font-family:var(--font-d); font-size:18px; letter-spacing:.01em; flex:1; min-width:0}
+.pc-l{font-size:14px; margin-top:4px}
+.pc-w{font-size:12.5px; color:var(--text-dim); margin-top:3px}
+.btn[disabled]{opacity:.45; pointer-events:none}

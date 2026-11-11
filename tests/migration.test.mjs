@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, v1State } from './harness.mjs';
+import { ROOT, v1State, v2State, finishSetup } from './harness.mjs';
 import { oldBuild } from './pwa.test.mjs';
 
 const stores = (page) => page.evaluate(() => ({ v1: localStorage.getItem('forge90_v1'), v2: localStorage.getItem('forge90_v2') }));
@@ -136,7 +136,7 @@ export default [
     async run({ open }) {
       for (const junk of ['null', '[]', '"x"', '{"v":2,"logs":{"squat":[{"d":"nope","sets":"x"},null,{"d":"2026-11-10","sets":[null,{"w":"abc","r":"9"},7]}]},"profile":{"start":"yesterday","w":"heavy","days":"all"},"meas":{"a":1},"checks":[1,2]}']) {
         const { page, errors, context } = await open({ extra: { forge90_v2: junk } });
-        await page.locator('#ro-today').waitFor();
+        await finishSetup(page);                    // unusable data means a fresh start: the first-run screen
         for (const t of ['train', 'plan', 'fuel', 'prog', 'today']) await page.locator('.tabbar button[data-tab="' + t + '"]').tap();
         assert.deepEqual(errors, [], 'threw on ' + junk.slice(0, 30));
         await context.close();
@@ -164,7 +164,7 @@ export default [
       const file = path.join(ROOT, 'tests', '.out', 'v1-backup.json');
       fs.mkdirSync(path.dirname(file), { recursive: true });
       fs.writeFileSync(file, JSON.stringify(seed, null, 2));
-      const { page } = await open({});
+      const { page } = await open({ state: v2State() });
       await page.locator('#ro-today').waitFor();
       await page.locator('#btnSet').tap();
       const chooser = page.waitForEvent('filechooser');

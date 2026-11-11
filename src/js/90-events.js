@@ -63,6 +63,8 @@ document.addEventListener('click',e=>{
     save(); return;
   }
   if(T.closest('[data-hidehelp]')){ S.ui.helpSeen=1; save(); renderHelp(); return; }
+  if(T.closest('[data-hidenew]')){ S.ui.from=2; save(); renderHelp(); return; }
+  if(T.closest('[data-newblock]')){ planSheet(true); return; }
   const cond=T.closest('[data-cond]');
   if(cond){ logCond(cond.dataset.cond); renderCond(); return; }
   if(T.closest('[data-uncond]')){

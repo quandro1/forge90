@@ -26,7 +26,10 @@ function renderToday(){
   // session card
   let sc;
   if(!started||done){
-    sc='<div class="session rest"><div class="tag">'+(done?'Finished':'Not started')+'</div><h3>'+(done?'Block complete':'Waiting to begin')+'</h3><p class="focus">'+(done?'Log your final measurements in Progress.':'Set your start date in Settings to light this up.')+'</p></div>';
+    sc='<div class="session rest"><div class="tag">'+(done?'Finished':'Not started')+'</div><h3>'+(done?'Block complete':'Waiting to begin')+'</h3><p class="focus">'
+      +(done?'Ninety-one days done. Log your final weight and measurements in Progress, then start the next block: same plan or a new target. Everything you logged stays.'
+            :'Day 1 is '+fmtDate(S.profile.start)+'. You can change that date in Settings.')+'</p>'
+      +(done?'<button class="btn primary wide" style="margin-top:13px" data-newblock>Start the next block</button>':'')+'</div>';
   }else if(info.type==='lift'){
     const s=info.session;
     sc='<div class="session"><div class="tag">'+esc('Day '+(info.idx+1)+' · '+s.tag)+(info.deload?' · DELOAD':'')+'</div>'
@@ -64,6 +67,18 @@ function renderToday(){
   $('#miniPunch').innerHTML=punch(Math.max(0,Math.min(10,Math.ceil((started&&!done?di:1)/7)-1)),3);
 }
 function renderHelp(){
+  if(S.ui.from===1){                         // came from the earlier version: say what changed, once
+    $('#helpCard').innerHTML='<div class="card help">'
+      +'<div class="card-h"><h3>The app was updated</h3><button class="btn sm" data-hidenew>Got it</button></div>'
+      +'<ol class="steps big">'
+      +'<li><b>Everything you logged is here.</b> The old copy is still on this phone as a backup.</li>'
+      +'<li><b>Choose a target.</b> Train → Change: six plans, with the days you train.</li>'
+      +'<li><b>Clearer exercise guides.</b> Each lift now shows where a rep starts and finishes, where you should feel it, and what to change if you do not.</li>'
+      +'<li><b>The rest timer always starts,</b> and today\'s target stays on screen until your last set.</li>'
+      +'<li><b>Station taken?</b> Open "How to do it" and swap to another lift for the same muscle.</li>'
+      +'</ol></div>';
+    return;
+  }
   if(S.ui.helpSeen){ $('#helpCard').innerHTML=''; return; }
   $('#helpCard').innerHTML='<div class="card help">'
     +'<div class="card-h"><h3>How to use this</h3><button class="btn sm" data-hidehelp>Got it</button></div>'

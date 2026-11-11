@@ -1,7 +1,7 @@
 // Data safety: a second copy of the app, damaged or newer data, a failed write,
 // plan changes that must not rewrite the past, the training day, session done.
 import assert from 'node:assert/strict';
-import { v1State, NOW } from './harness.mjs';
+import { v1State, NOW, finishSetup } from './harness.mjs';
 import { openCard, typeSet, tick } from './timer.test.mjs';
 
 const stored = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('forge90_v2')));
@@ -67,7 +67,7 @@ export default [
     name: 'data that cannot be read is kept aside, not overwritten',
     async run({ open }) {
       const { page, errors } = await open({ extra: { forge90_v2: '{"v":2,"logs":{"squat":[{"d":"2026-11-0' } });
-      await page.locator('#ro-today').waitFor();
+      await finishSetup(page);
       await page.locator('#checklist [data-chk="water"]').tap();
       await page.waitForTimeout(400);
       assert.equal(await page.evaluate(() => localStorage.getItem('forge90_v2_damaged')), '{"v":2,"logs":{"squat":[{"d":"2026-11-0');
