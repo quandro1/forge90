@@ -72,7 +72,7 @@ function libRender(g,q){
       return '<div class="libitem"><div class="li-h"><span class="li-n">'+esc(e.name)+'</span>'
         +'<span class="li-t">'+esc(rxText(e.typ))+'</span></div>'
         +'<div class="mtags" style="margin-top:6px">'
-        +(e.prim||[]).map(z=>'<span class="pill hot">'+esc(ZN[z]||z)+'</span>').join('')+'</div>'
+        +(e.prim||[]).map(z=>'<span class="pill hot">'+esc(ZN[z]||z)+'</span>').join('')+bandPill(e)+'</div>'
         +'<p class="li-c">'+e.cue+'</p>'
         +demoLinks(e.name,true)
         +'<details class="how" data-how="'+id+'"><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary><div class="how-b"></div></details>'

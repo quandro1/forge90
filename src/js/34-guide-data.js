@@ -54,6 +54,16 @@ const GUIDE=[
     +'<p style="margin-top:10px">Protein is set per kilo of bodyweight. If you carry a lot of extra weight, it is set on the weight a lean body of your height would carry, so the number stays realistic.</p>'
     +'<p style="margin-top:10px">These are estimates. Your real numbers show after two or three weeks of honest logging. <b>Adjust to the trend, not the formula.</b></p>';
  }},
+ {t:'Heavy, medium or light: which lift gets which', b:()=>{
+   const by={heavy:[], medium:[], light:[], body:[], hold:[]};
+   Object.keys(EX).forEach(id=>{ const e=EX[id], t=e.typ;
+     (by[e.band]||by.medium).push(esc(e.name)+' <span style="color:var(--text-faint)">'+(t.hold?t.hold[0]+'–'+t.hold[1]+' s':t.reps[0]+'–'+t.reps[1])+'</span>'); });
+   const row=(k,note)=>by[k].length?'<div class="swap"><div class="sw-h"><b>'+BAND_NAME[k]+'</b><span class="pill">'+note+'</span></div><ul class="klist">'+by[k].map(x=>'<li>'+x+'</li>').join('')+'</ul></div>':'';
+   return '<p><b>Heavy</b> means a weight you can lift about 5 to 10 times. <b>Medium</b> is 8 to 12. <b>Light</b> is 12 to 20. In every case the last two reps are hard and you stop with one or two left: light does not mean easy.</p>'
+    +'<p style="margin-top:10px">Muscle grows at any of these weights as long as the set ends hard. What differs is which weight lets a lift be done well. The more of your body a lift uses and the steadier the weight is held, the heavier it can go. The smaller the muscle and the further the weight is from the joint, the lighter it has to be, or other muscles and a swing take over.</p>'
+    +row('heavy','5–10 reps')+row('medium','8–12 reps')+row('light','12–20 reps')+row('body','your own weight')+row('hold','seconds')
+    +'<p style="margin-top:12px">On the Strength plan the big barbell lifts go heavier still, 3 to 5 reps. Each exercise card says why that lift sits where it does.</p>';
+ }},
  {t:'Reading the trend, and when to change something', b:`
   <p>Judge on <b>two to three weeks</b>, never one week and never one morning.</p>
   <div class="tw" style="margin-top:10px"><table>

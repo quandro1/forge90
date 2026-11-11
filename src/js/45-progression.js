@@ -82,8 +82,8 @@ function adviceFrom(ex,it,e,hist){
     const hit=rr[1]>rr[0]?'you reached '+rr[1]+unit+' on every set':'you got every set of '+rr[1]+unit;
     const again=rr[1]>rr[0]?' and start again at '+rr[0]+unit:'';
     if(hold) return UP(hit+'. Make it harder: a plate on your back or a harder version, and build back up from '+rr[0]+' s.');
-    if(noLoad&&ex.load==='bw'&&+ex.step>0) return UP(hit+', so add '+kg(step)+' (a dumbbell between your feet, or a belt)'+again+'.');
-    if(noLoad&&ex.load==='bw') return UP(hit+'. Move to the harder version (see "Picking the weight" below)'+again+'.');
+    // a bodyweight lift moves on in its own way, which its card names (next)
+    if(noLoad&&ex.load==='bw') return UP(hit+', so '+(ex.next||'move to the harder version (see "Picking the weight" below)')+again+'.');
     if(noLoad) return UP(hit+'. Go up one step next time'+again+', and type the weight so the app can track it.');
     return UP(hit+', so go to '+nextLoad(ex,w)+again+'.');
   }

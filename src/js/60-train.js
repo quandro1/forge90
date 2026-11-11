@@ -102,6 +102,14 @@ function howTo(id){
   if(e.safe) h+='<div class="avoid how-note"><span class="ic" aria-hidden="true">⚠</span><span><b>Safety:</b> '+e.safe+'</span></div>';
   return h;
 }
+/* How heavy this lift should go, and why. The reason names the reps of the slot it sits in. */
+const BAND_NAME={heavy:'Go heavy', medium:'Medium', light:'Go light', body:'Bodyweight', hold:'Timed hold'};
+function bandPill(e){ return '<span class="pill band'+(e.band==='heavy'?' hot':e.band==='light'?' cool':'')+'">'+esc(BAND_NAME[e.band]||'')+'</span>'; }
+function howHeavy(id,ref){
+  const e=EX[id], rr=repRange(itemFor(id,ref));
+  const reps=rr?(rr[0]===rr[1]?String(rr[0]):rr[0]+'–'+rr[1]):'';
+  return '<div class="howheavy">'+bandPill(e)+'<span class="hh-t">'+esc(String(e.why||'').split('{reps}').join(reps))+'</span></div>';
+}
 /* A heavy barbell lift that is not the first of the day (the session's warm-up covers the first)
    still needs lighter sets before its working weight. */
 function rampNote(id,ref){
@@ -133,6 +141,7 @@ function fillEx(box,id,ref){
   const known=(S.logs[id]||[]).some(x=>loggedSets(x).length>0);
   box.innerHTML='<p class="cue">'+e.cue+'</p>'
     +demoLinks(e.name)
+    +howHeavy(id,ref)
     +rampNote(id,ref)
     +logger(id,ref)
     +'<details class="how"'+(known?'':' open')+'><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary>'

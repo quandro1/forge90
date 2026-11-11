@@ -94,7 +94,7 @@ export default [
       const top = async (id) => (await page.evaluate((i) => repRange(Object.assign({ ex: i }, EX[i].typ))[1], id));
       const leg = await adv('hangraise', [{ r: await top('hangraise') }]);
       assert.doesNotMatch(leg, /dumbbell|belt/i, leg);
-      assert.match(leg, /harder/i, leg);
+      assert.match(leg, /straight legs/i, leg);
       const push = await adv('pushup', [{ r: await top('pushup') }]);
       assert.doesNotMatch(push, /dumbbell|belt|2\.5 kg/i, push);
       const press = await adv('inclineBB', [{ r: await top('inclineBB') }]);                 // a barbell lift logged with reps only

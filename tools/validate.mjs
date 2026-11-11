@@ -40,6 +40,7 @@ const SPINAL = new Set(['squat', 'rdl', 'deadlift', 'hipthrust']);
 const LOADS = new Set(['bb', 'db', 'db1', 'machine', 'cable', 'bw', 'time']);
 const KINDS = new Set(['compound', 'isolation', 'core']);
 const GROUPS = new Set(['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Glutes', 'Core']);
+const BANDS3 = new Set(['heavy', 'medium', 'light', 'body', 'hold']);
 
 /* fractional credit per muscle group for one exercise */
 function credit(id) {
@@ -76,6 +77,18 @@ for (const id of Object.keys(EX)) {
     if (![...mine].some((g) => other.includes(g))) warn(at + 'swap ' + s + ' does not train the same primary muscle');
   }
   const t = e.typ;
+  // how heavy the lift goes, and that its usual reps agree with it
+  if (!BANDS3.has(e.band)) err(at + 'band must be heavy, medium, light, body or hold');
+  if (!textOk(e.why) || /<b>/.test(e.why) || e.why.length > 330) err(at + 'why is missing, too long, or carries markup');
+  if (e.next !== undefined && (!textOk(e.next) || e.load !== 'bw')) err(at + 'next is for bodyweight lifts and must be clean text');
+  if (t && t.reps) {
+    const r = t.reps;
+    if (e.band === 'heavy' && !(r[0] <= 6 && r[1] <= 10)) err(at + 'heavy lift with a usual range of ' + r.join('-'));
+    if (e.band === 'medium' && !(r[0] >= 8 && r[0] <= 10 && r[1] <= 15)) err(at + 'medium lift with a usual range of ' + r.join('-'));
+    if (e.band === 'light' && !(r[0] >= 10 && r[1] >= 12)) err(at + 'light lift with a usual range of ' + r.join('-'));
+  }
+  if ((e.band === 'hold') !== (e.load === 'time')) err(at + 'band hold goes with a timed lift, and only with one');
+  if (e.band === 'body' && e.load !== 'bw') err(at + 'band body on a lift that is not bodyweight');
   if (!t || !(t.sets >= 1 && t.sets <= 6) || !(t.rest >= 30 && t.rest <= 300)) err(at + 'typ sets/rest');
   else if (!rxOk(t)) err(at + 'typ reps/hold');
   if ((e.load === 'time') !== !!(t && t.hold)) err(at + 'a timed hold needs load "time" and typ.hold, and only then');
@@ -127,6 +140,12 @@ for (const pid of Object.keys(PROGRAMS)) {
         if (seen[it.ex] && seen[it.ex] !== sig) err(va + it.ex + ' is prescribed two different ways in one week');
         seen[it.ex] = sig;
         if (!!it.each !== !!(e.typ && e.typ.each)) warn(sa + it.ex + ': "each side" differs from the library entry');
+        // a plan never asks for reps the lift's band rules out
+        if (it.reps) {
+          if (e.band === 'heavy' && it.reps[1] > 10) err(sa + it.ex + ' is a heavy lift at ' + it.reps.join('-') + ' reps');
+          if (e.band === 'medium' && (it.reps[0] < 6 || it.reps[1] > 15)) err(sa + it.ex + ' is a medium lift at ' + it.reps.join('-') + ' reps');
+          if (e.band === 'light' && it.reps[0] < 8) err(sa + it.ex + ' is a light lift at ' + it.reps.join('-') + ' reps');
+        }
         const floor = e.kind === 'compound' ? (it.each ? 90 : 120) : 60;
         if (it.rest < floor) warn(sa + it.ex + ' rests ' + it.rest + ' s (floor ' + floor + ')');
         if (k === 0 && e.kind !== 'compound') err(sa + 'does not open with a compound lift');
