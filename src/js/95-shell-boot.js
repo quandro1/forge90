@@ -136,7 +136,14 @@ document.addEventListener('click',e=>{
     }).catch(()=>{ e.target.disabled=false; });
     return;
   }
-  if(e.target.id==='btnExport') exportBackup(e.target);
+  if(e.target.id==='btnExport'||e.target.closest('[data-export]')) exportBackup(e.target.closest('button'));
+  if(e.target.id==='btnDmgExport'){
+    const raw=localStorage.getItem(KEY_DMG)||'';
+    try{ const blob=new Blob([raw],{type:'text/plain'}), url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download='forge90-unreadable-copy-'+TODAY+'.txt'; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },400); }catch(err){}
+  }
+  if(e.target.id==='btnDmgDrop'){ localStorage.removeItem(KEY_DMG); const n=$('#damagedNote'); if(n) n.remove(); }
   if(e.target.id==='btnImport'){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
     inp.addEventListener('change',()=>{
@@ -149,7 +156,7 @@ document.addEventListener('click',e=>{
           const p=normalize(raw); p.ui.savedAt=Date.now(); p.profile.setup=true;
           // The restored state becomes THE state before the page reloads: the save
           // that runs as a page closes would otherwise write the old one back.
-          S=p; writeNow();
+          S=p; DIRTY=true; REV=storedRev(); writeNow();      // a restore replaces what is stored: no merge
           if(!SAVE_OK) throw new Error('storage refused the write');
           cloudQueue(); SAVE_HALT=true; location.reload(); }
         catch(err){ e.target.textContent='Could not read that file'; } };
@@ -160,7 +167,7 @@ document.addEventListener('click',e=>{
   if(e.target.id==='btnWipe'){
     if(e.target.dataset.armed){
       SAVE_HALT=true;                        // nothing may write the old state back while the page closes
-      localStorage.removeItem(KEY); localStorage.removeItem(KEY_V1);
+      localStorage.removeItem(KEY); localStorage.removeItem(KEY_V1); localStorage.removeItem(KEY_DMG);
       const done=()=>location.reload();
       if(CLOUD.doc){ e.target.textContent='Erasing…'; CLOUD.doc.delete().then(done,done); } else done();
     }
@@ -174,7 +181,8 @@ document.addEventListener('click',e=>{
    =================================================================== */
 (function init(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
-  if(BOOT.write) writeNow();               // a converted or repaired state gets its own copy at once
+  if(BOOT.write){ DIRTY=true; writeNow(); }   // a converted or repaired state gets its own copy at once
+  paintSaveState();
   ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW(); requestPersistence();
   if(isStandalone()) document.documentElement.classList.add('standalone');
   $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===S.ui.diet));
@@ -184,8 +192,11 @@ document.addEventListener('click',e=>{
   else if(r){ delete S.ui.rest; save(); }
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible') return;
-    if(iso(new Date())!==TODAY){ writeNow(); location.reload(); return; }   // past midnight: today moved on
+    // a new training day began while the app was away: start it clean (never in the middle of a rest)
+    if(dayOf(new Date())!==TODAY&&!(RT&&!RT.done)){ writeNow(); location.reload(); return; }
     if(RT&&!RT.done){ tickRest(); wakeLock(true); }
+    // another copy of the app wrote while this one was away: show its data
+    if(adoptIfStale()||STALE_VIEW){ STALE_VIEW=false; const a=document.activeElement; if(!(a&&a.closest&&a.closest('.logger'))) rerenderAll(); }
   });
   const h=location.hash.slice(1);
   if(TABS.indexOf(h)>=0) setTab(h,true); else renderToday();

@@ -66,6 +66,12 @@ html.offline #offBadge{display:inline-block}
   padding:9px 10px 9px 15px; border-radius:99px; background:var(--surface); border:1px solid var(--steel);
   box-shadow:var(--shadow); font-size:12.5px; color:var(--text-dim); max-width:calc(100vw - 32px)}
 #updBar.on{display:flex}
+/* a problem the user must know about: sits under the header until it is dealt with */
+.alertbar{position:fixed; left:12px; right:12px; top:calc(62px + env(safe-area-inset-top)); z-index:59; display:none;
+  align-items:center; gap:10px; padding:10px 10px 10px 14px; border-radius:12px; background:var(--surface);
+  border:1px solid var(--warn); box-shadow:var(--shadow); font-size:12.5px; line-height:1.35; color:var(--text)}
+.alertbar.on{display:flex}
+.alertbar span{flex:1; min-width:0}
 .appbox{border:1px solid var(--line); border-radius:10px; padding:12px; background:var(--sunken)}
 .appbox .ai{display:flex; gap:11px; align-items:flex-start}
 .appbox img{width:44px; height:44px; border-radius:11px; flex:none}

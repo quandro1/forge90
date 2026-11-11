@@ -18,7 +18,12 @@ const parseISO=s=>{const p=String(s).split('-');return new Date(+p[0],+p[1]-1,+p
 const isDate=s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&iso(parseISO(s))===s;
 const addDays=(d,n)=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x;};
 const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000);
-const TODAY=iso(new Date());
+/* The training day runs from 03:00 to 03:00, so a session that crosses midnight
+   stays on the day it began. TODAY is fixed for the life of the page; the page
+   reloads when it is shown again on a later day. */
+const DAY_ROLL_H=3;
+const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));
+const TODAY=dayOf(new Date());
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const DOWL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];

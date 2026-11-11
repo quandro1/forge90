@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="7f96759bff">
+<meta name="forge-build" content="55a204fe34">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -84,6 +84,12 @@ html.offline #offBadge{display:inline-block}
   padding:9px 10px 9px 15px; border-radius:99px; background:var(--surface); border:1px solid var(--steel);
   box-shadow:var(--shadow); font-size:12.5px; color:var(--text-dim); max-width:calc(100vw - 32px)}
 #updBar.on{display:flex}
+/* a problem the user must know about: sits under the header until it is dealt with */
+.alertbar{position:fixed; left:12px; right:12px; top:calc(62px + env(safe-area-inset-top)); z-index:59; display:none;
+  align-items:center; gap:10px; padding:10px 10px 10px 14px; border-radius:12px; background:var(--surface);
+  border:1px solid var(--warn); box-shadow:var(--shadow); font-size:12.5px; line-height:1.35; color:var(--text)}
+.alertbar.on{display:flex}
+.alertbar span{flex:1; min-width:0}
 .appbox{border:1px solid var(--line); border-radius:10px; padding:12px; background:var(--sunken)}
 .appbox .ai{display:flex; gap:11px; align-items:flex-start}
 .appbox img{width:44px; height:44px; border-radius:11px; flex:none}
@@ -737,6 +743,8 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
 
 </main>
 <div id="updBar" role="status"><span>A new version is ready.</span><button class="btn sm primary" data-reload>Reload</button></div>
+<div id="saveBar" class="alertbar" role="alert"><span>Not saving: this phone's storage is full or blocked. Export a backup now.</span><button class="btn sm primary" data-export>Export</button></div>
+<div id="verBar" class="alertbar" role="alert"><span>This copy of the app is older than your saved data, so nothing you do here is saved.</span><button class="btn sm primary" data-reload>Reload</button></div>
 <div id="restPill" role="status" aria-live="polite"><button class="rp-go" data-rest-go><span class="rp-n"></span><span class="rp-t"></span></button><button class="rp-x" data-rest-stop aria-label="Stop rest timer">×</button></div>
 
 <div class="wrap foot">
@@ -2047,7 +2055,12 @@ const parseISO=s=>{const p=String(s).split('-');return new Date(+p[0],+p[1]-1,+p
 const isDate=s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&iso(parseISO(s))===s;
 const addDays=(d,n)=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x;};
 const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000);
-const TODAY=iso(new Date());
+/* The training day runs from 03:00 to 03:00, so a session that crosses midnight
+   stays on the day it began. TODAY is fixed for the life of the page; the page
+   reloads when it is shown again on a later day. */
+const DAY_ROLL_H=3;
+const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));
+const TODAY=dayOf(new Date());
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const DOWL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -2081,7 +2094,7 @@ const DEFAULTS={
   checks:{}, weights:{}, waist:{}, steps:{}, meas:[], logs:{}, food:{}, cond:{}, shop:{}, swaps:{}, blocks:[],
   ui:{theme:'', diet:'train'}
 };
-function freshState(){ const s=clone(DEFAULTS); s.profile=cleanProfile({},false); return s; }
+function freshState(){ return normalize({v:2}); }
 
 /* ---- normalize: any stored shape -> a valid v2 state --------------- */
 const numIn=(v,lo,hi,def)=>{
@@ -2146,7 +2159,7 @@ function cleanLogs(m){
   return o;
 }
 function normalize(p){
-  if(!isObj(p)) return freshState();
+  if(!isObj(p)) p={v:2};
   const legacy=!(p.v>=2);
   const s=clone(DEFAULTS);
   s.profile=cleanProfile(p.profile,legacy);
@@ -2189,7 +2202,46 @@ function normalize(p){
     s.ui.rest={id:u.rest.id, set:numIn(u.rest.set,-1,99,-1), end:+u.rest.end, total:+u.rest.total, slot:typeof u.rest.slot==='string'?u.rest.slot.slice(0,12):''};
   if(legacy) s.ui.from=1;                   // came from version 1 (shows the what-is-new note once)
   else if(u.from) s.ui.from=u.from===2?2:1;
+  if(isDate(u.autoSess)) s.ui.autoSess=u.autoSess;
+  if(isDate(u.dietOn)) s.ui.dietOn=u.dietOn;
+  // plan history: which plan was in force from which date, so a change never re-judges the past
+  s.plans=(Array.isArray(p.plans)?p.plans:[]).filter(x=>isObj(x)&&isDate(x.from)&&typeof x.program==='string'&&safeKey(x.program)
+      &&PROGRAMS[x.program]&&PROGRAMS[x.program].variants[x.dpw]&&validDays(x.days,PROGRAMS[x.program].variants[x.dpw].sessions.length))
+    .map(x=>({from:x.from, program:x.program, dpw:+x.dpw, days:x.days.slice()}))
+    .sort((a,b)=>a.from<b.from?-1:a.from>b.from?1:0);
+  const cur=s.profile, last=s.plans[s.plans.length-1];
+  if(!last) s.plans.push({from:cur.start, program:cur.program, dpw:cur.dpw, days:cur.days.slice()});
+  else if(last.program!==cur.program||last.dpw!==cur.dpw||last.days.join()!==cur.days.join())
+    s.plans.push({from:last.from>TODAY?last.from:TODAY, program:cur.program, dpw:cur.dpw, days:cur.days.slice()});
   return s;
+}
+/* Two copies of the state that both changed (the app open twice): keep everything
+   either one has. Where both hold the same day, this copy's entry stays and the
+   other fills its gaps; nothing is dropped. */
+function mergeStates(theirs,mine){
+  const out=clone(mine);
+  ['weights','waist','steps','food','cond'].forEach(k=>{ for(const d in theirs[k]) if(!(d in out[k])) out[k][d]=theirs[k][d]; });
+  for(const d in theirs.checks){
+    const a=out.checks[d];
+    if(!a) out.checks[d]=theirs.checks[d]; else theirs.checks[d].forEach(x=>{ if(a.indexOf(x)<0) a.push(x); });
+  }
+  for(const id in theirs.logs){
+    const arr=out.logs[id]||(out.logs[id]=[]);
+    theirs.logs[id].forEach(e=>{
+      const m=arr.find(x=>x.d===e.d);
+      if(!m){ arr.push(e); return; }
+      e.sets.forEach((st,i)=>{
+        if(i>=m.sets.length) m.sets.push(st);
+        else if(blankSet(m.sets[i])&&!blankSet(st)) m.sets[i]=st;
+      });
+    });
+    arr.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
+  }
+  theirs.meas.forEach(r=>{ const k=JSON.stringify(r); if(!out.meas.some(x=>JSON.stringify(x)===k)) out.meas.push(r); });
+  for(const k in theirs.shop) out.shop[k]=true;
+  for(const k in theirs.swaps) if(!(k in out.swaps)) out.swaps[k]=theirs.swaps[k];
+  theirs.blocks.forEach(b=>{ if(!out.blocks.some(x=>x.start===b.start)) out.blocks.push(b); });
+  return out;
 }
 /* A stray tap used to leave a dated-but-empty session behind, which then
    posed as "last time" forever. Past sessions with no numbers are not history. */
@@ -2202,12 +2254,25 @@ function pruneLogs(logs){
 }
 
 /* ---- load ----------------------------------------------------------- */
-let BOOT={migrated:false, write:false};
+const STATE_V=2, KEY_REV='forge90_v2_rev', KEY_DMG='forge90_v2_damaged';
+let BOOT={migrated:false, write:false, damaged:false, newer:false};
+let saveTimer=null, SAVE_OK=true;
+let SAVE_HALT=false;                       // true when this copy must not write: a wipe or restore in flight, or newer data in storage
+let DIRTY=false;                           // something changed here since the last write
+let REV=0;                                 // revision of the stored state this copy last read or wrote
 function readStore(key){
   try{ const raw=localStorage.getItem(key); return raw?JSON.parse(raw):null; }catch(e){ return null; }
 }
+function storedRev(){ try{ return +localStorage.getItem(KEY_REV)||0; }catch(e){ return 0; } }
 function load(){
-  const v2=readStore(KEY);
+  REV=storedRev();
+  let raw=null, v2=null, bad=false;
+  try{ raw=localStorage.getItem(KEY); }catch(e){}
+  if(raw){ try{ v2=JSON.parse(raw); }catch(e){ bad=true; } if(!bad&&!isObj(v2)){ bad=true; v2=null; } }
+  // Stored data that cannot be read is put aside before anything is written, so it can still be recovered by hand.
+  if(bad){ try{ localStorage.setItem(KEY_DMG,raw); }catch(e){} BOOT.damaged=true; }
+  // Data written by a newer version: show it as well as this version can, and never write over it.
+  if(isObj(v2)&&v2.v>STATE_V){ BOOT.newer=true; SAVE_HALT=true; return normalize(v2); }
   if(isObj(v2)&&v2.v>=2) return normalize(v2);
   const v1=readStore(KEY_V1);
   if(isObj(v1)){ BOOT.migrated=true; BOOT.write=true; return normalize(v1); }
@@ -2216,17 +2281,46 @@ function load(){
 }
 let S=load();
 
-/* ---- save ----------------------------------------------------------- */
-let saveTimer=null, SAVE_OK=true;
-let SAVE_HALT=false;                       // set just before a wipe or a restore reloads the page
+/* ---- save -----------------------------------------------------------
+   A copy of the app writes only when something changed in it. Before it
+   writes, it checks whether another copy (a second tab, the installed app
+   next to the browser tab) wrote in the meantime, and folds that in first:
+   a stale copy can never wipe what a newer one logged. */
 function writeNow(){
   clearTimeout(saveTimer); saveTimer=null;
-  if(SAVE_HALT) return;
-  try{ localStorage.setItem(KEY,JSON.stringify(S)); SAVE_OK=true; }
-  catch(e){ SAVE_OK=false; }
-  if(typeof paintSaveState==='function') paintSaveState();
+  if(SAVE_HALT||!DIRTY) return;
+  try{
+    const now=storedRev();
+    if(now!==REV){
+      const other=readStore(KEY);
+      if(isObj(other)&&other.v>STATE_V){ SAVE_HALT=true; BOOT.newer=true; paintSaveState(); return; }
+      if(isObj(other)&&other.v>=2){ S=mergeStates(normalize(other),S); STALE_VIEW=true; }
+    }
+    localStorage.setItem(KEY,JSON.stringify(S));
+    REV=now+1; localStorage.setItem(KEY_REV,String(REV));
+    DIRTY=false; SAVE_OK=true;
+  }catch(e){ SAVE_OK=false; }
+  paintSaveState();
+}
+/* Another copy wrote and this one has nothing unsaved: take the stored state. Returns true if S changed. */
+let STALE_VIEW=false;
+function adoptIfStale(){
+  if(SAVE_HALT||storedRev()===REV) return false;
+  if(DIRTY){ writeNow(); return true; }
+  const other=readStore(KEY);
+  if(!isObj(other)||!(other.v>=2)) return false;
+  if(other.v>STATE_V){ SAVE_HALT=true; BOOT.newer=true; paintSaveState(); return false; }
+  S=normalize(other); REV=storedRev();
+  return true;
+}
+function onStorage(e){ if(e.key===KEY||e.key===KEY_REV) STALE_VIEW=true; }
+window.addEventListener('storage',onStorage);
+function paintSaveState(){
+  const sb=$('#saveBar'); if(sb) sb.classList.toggle('on',!SAVE_OK);
+  const vb=$('#verBar'); if(vb) vb.classList.toggle('on',!!BOOT.newer);
 }
 function save(){
+  DIRTY=true;
   S.ui.savedAt=Date.now();                 // lets two copies of the state say which is newer
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{ writeNow(); cloudQueue(); },160);
@@ -2253,8 +2347,7 @@ async function cloudInit(){
     const remote=snap.exists?snap.data():null;
     const remoteAt=remote?(+(remote.ui&&remote.ui.savedAt)||0):0, localAt=+(S.ui.savedAt)||0;
     if(remote&&remoteAt>localAt){
-      S=normalize(clone(remote));
-      try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){}
+      S=normalize(clone(remote)); DIRTY=true; REV=storedRev(); writeNow();
       CLOUD.status='synced'; CLOUD.at=remoteAt; rerenderAll();
     }else{
       CLOUD.status='synced'; CLOUD.at=localAt;
@@ -2299,25 +2392,43 @@ const BLOCK_DAYS=91;
 function program(){ return PROGRAMS[S.profile.program]||PROGRAMS[DEFAULT_PROGRAM]; }
 function variantKeys(p){ return Object.keys(p.variants).map(Number).sort((a,b)=>a-b); }
 function variant(){ const p=program(); return p.variants[S.profile.dpw]||p.variants[p.def]; }
-/* the weekdays you lift on, in week order with Monday first */
+/* weekdays in week order, Monday first */
+function sortDays(d){ return d.slice().sort((a,b)=>((a+6)%7)-((b+6)%7)); }
+/* the weekdays you lift on now */
 function trainDays(){
   const v=variant(), d=S.profile.days;
-  return (validDays(d,v.sessions.length)?d:v.days).slice().sort((a,b)=>((a+6)%7)-((b+6)%7));
+  return sortDays(validDays(d,v.sessions.length)?d:v.days);
 }
 function planKey(){ return S.profile.program+'/'+variant().sessions.length; }
 function slotKey(si,k){ return planKey()+'/'+si+'/'+k; }
-/* the week's sessions, with any exercise you have swapped in applied */
-let _sess=null, _sessSig='';
-function sessions(){
-  const sig=planKey()+'|'+JSON.stringify(S.swaps||{});
-  if(_sess&&_sessSig===sig) return _sess;
-  _sess=variant().sessions.map((s,si)=>Object.assign({},s,{items:s.items.map((it,k)=>{
-    const sw=S.swaps&&S.swaps[slotKey(si,k)];
+/* The plan in force on a date. A change of plan applies from the day it is made:
+   the past keeps the plan it was trained under, so streaks and sessions done never move. */
+function planOn(ds){
+  const pl=S.plans; let cur=pl[0];
+  for(const e of pl){ if(e.from<=ds) cur=e; else break; }
+  return cur;
+}
+function setPlan(prog,dpw,days){
+  S.profile.program=prog; S.profile.dpw=dpw; S.profile.days=days.slice();
+  const from=S.profile.start>TODAY?S.profile.start:TODAY, last=S.plans[S.plans.length-1];
+  const entry={from:from, program:prog, dpw:dpw, days:days.slice()};
+  if(last&&last.from>=from) S.plans[S.plans.length-1]=entry; else S.plans.push(entry);
+}
+/* a plan's sessions in week order, with any exercise you have swapped in applied */
+const _sessCache={};
+function sessionsOf(prog,dpw){
+  const P=PROGRAMS[prog]||PROGRAMS[DEFAULT_PROGRAM], v=P.variants[dpw]||P.variants[P.def];
+  const key=(PROGRAMS[prog]?prog:DEFAULT_PROGRAM)+'/'+v.sessions.length, sig=JSON.stringify(S.swaps||{});
+  const c=_sessCache[key];
+  if(c&&c.sig===sig) return c.list;
+  const list=v.sessions.map((s,si)=>Object.assign({},s,{items:s.items.map((it,k)=>{
+    const sw=S.swaps&&S.swaps[key+'/'+si+'/'+k];
     return (sw&&EX[sw]&&sw!==it.ex)?Object.assign({},it,{ex:sw,base:it.ex}):it;
   })}));
-  _sessSig=sig;
-  return _sess;
+  _sessCache[key]={sig:sig, list:list};
+  return list;
 }
+function sessions(){ return sessionsOf(S.profile.program,S.profile.dpw); }
 /* "2.3" -> {si,k,it} for the third item of the second session */
 function slotAt(ref){
   const p=String(ref||'').split('.'), si=+p[0], k=+p[1], s=sessions()[si];
@@ -2370,14 +2481,15 @@ function targets(){
 
 /* ---- the 91-day schedule ---------------------------------------- */
 /* the weekly check-in falls on Sunday, or on your last rest day if you lift on Sundays */
-function checkinDay(){
-  const days=trainDays();
+function checkinDayFor(days){
   for(const wd of [0,6,5,4,3,2,1]) if(days.indexOf(wd)<0) return wd;
   return 0;
 }
+function checkinDay(){ return checkinDayFor(trainDays()); }
 /* rest days that carry Zone 2: the first ones of the week, as many as the phase asks for */
-function cardioDays(phase){
-  const days=trainDays(), ci=checkinDay(), want=(COND[phase]&&+COND[phase].z2)||2, out=[];
+function cardioDays(phase){ return cardioDaysFor(trainDays(),phase); }
+function cardioDaysFor(days,phase){
+  const ci=checkinDayFor(days), want=(COND[phase]&&+COND[phase].z2)||2, out=[];
   for(const wd of [1,2,3,4,5,6,0]){ if(days.indexOf(wd)<0&&wd!==ci&&out.length<want) out.push(wd); }
   return out;
 }
@@ -2385,14 +2497,14 @@ function dayInfo(i){                       // i = 1..91
   const date=addDays(parseISO(S.profile.start), i-1);
   const wd=date.getDay(), week=Math.ceil(i/7);
   const phase=week<=4?1:week<=8?2:3;
-  const li=trainDays().indexOf(wd);
+  const ds=iso(date), pe=planOn(ds), days=sortDays(pe.days), li=days.indexOf(wd);
   let type='rest', idx=-1;
   if(li>=0){ type='lift'; idx=li; }
-  else if(cardioDays(phase).indexOf(wd)>=0) type='cardio';
-  return {i, date:iso(date), wd, week, phase, type, idx,
-          deload:(week===6||week===12), checkin:(wd===checkinDay()), session:idx>=0?sessions()[idx]:null};
+  else if(cardioDaysFor(days,phase).indexOf(wd)>=0) type='cardio';
+  return {i, date:ds, wd, week, phase, type, idx,
+          deload:(week===6||week===12), checkin:(wd===checkinDayFor(days)), session:idx>=0?sessionsOf(pe.program,pe.dpw)[idx]:null};
 }
-function todayIndex(){ return daysBetween(parseISO(S.profile.start), new Date())+1; }
+function todayIndex(){ return daysBetween(parseISO(S.profile.start), parseISO(TODAY))+1; }
 function infoForDate(ds){
   const i=daysBetween(parseISO(S.profile.start), parseISO(ds))+1;
   return (i>=1&&i<=BLOCK_DAYS)?dayInfo(i):null;
@@ -2421,7 +2533,7 @@ function dayDone(ds){
   return true;
 }
 function streak(){
-  let n=0, d=new Date();
+  let n=0, d=parseISO(TODAY);
   if(!dayDone(iso(d))) d=addDays(d,-1);          // today still in progress
   for(let g=0; g<400; g++){ if(dayDone(iso(d))){n++; d=addDays(d,-1);} else break; }
   return n;
@@ -2949,6 +3061,24 @@ function logger(id,ref){
     +'<button class="btn sm primary" data-savelog>Save session</button></div>'
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';
+}
+/* The day's session is done when most of its exercises have a logged or ticked set:
+   nothing to press. A tick made by hand on Today is left alone. */
+function sessionProgress(){
+  const info=infoForDate(TODAY);
+  if(!info||info.type!=='lift'||!info.session) return null;
+  let touched=0;
+  info.session.items.forEach(it=>{ const e=todayEntry(it.ex); if(e&&e.sets.some(s=>s&&(s.r>0||s.done))) touched++; });
+  return {touched:touched, total:info.session.items.length, need:Math.ceil(info.session.items.length*0.6)};
+}
+function syncSession(){
+  const p=sessionProgress(); if(!p) return;
+  const arr=S.checks[TODAY]||[], has=arr.indexOf('session')>=0, enough=p.touched>=p.need;
+  if(enough&&!has){ (S.checks[TODAY]||(S.checks[TODAY]=[])).push('session'); S.ui.autoSess=TODAY; }
+  else if(!enough&&has&&S.ui.autoSess===TODAY){
+    arr.splice(arr.indexOf('session'),1); if(!arr.length) delete S.checks[TODAY];
+    delete S.ui.autoSess;
+  }
 }
 /* The same exercise can sit on two days of a plan, so two logbooks for it can
    be open at once. Redraw every copy (each with its own slot's prescription)
@@ -3505,6 +3635,8 @@ function settingsSheet(){
         ?'Everything you log is saved on this device and backed up privately to your Claude account, so a cleared browser or a second phone picks up where you left off.'
         :'Everything you log lives in this browser only — nothing is sent anywhere. Clearing site data or using a different device starts you fresh, so export a backup now and then.')+'</p>'
     +'<p style="margin-bottom:8px"><span id="cloudBadge" class="pill"></span></p>'
+    +(localStorage.getItem(KEY_DMG)?'<div id="damagedNote" class="note hot" style="margin-bottom:10px"><b>Some saved data could not be read.</b><br>A copy of it was put aside so it is not lost. '
+      +'<span style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" id="btnDmgExport">Save that copy as a file</button><button class="btn sm danger" id="btnDmgDrop">Discard it</button></span></div>':'')
     +'<p id="storageLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+storageLine()+'</p>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btnExport">Export a backup</button>'
     +'<button class="btn" id="btnImport">Restore</button>'
@@ -3577,7 +3709,7 @@ $('#btnTheme').addEventListener('click',()=>{
 function setDaysPerWeek(n){
   const p=program();
   if(!p.variants[n]||n===+S.profile.dpw) return false;
-  S.profile.dpw=n; S.profile.days=p.variants[n].days.slice();
+  setPlan(S.profile.program,n,p.variants[n].days);
   save(); return true;
 }
 
@@ -3591,6 +3723,7 @@ document.addEventListener('click',e=>{
     const at=arr.indexOf(k);
     if(at>=0) arr.splice(at,1); else arr.push(k);
     if(!arr.length) delete S.checks[TODAY];
+    if(k==='session') delete S.ui.autoSess;          // ticked or cleared by hand: the log no longer decides it
     save(); renderToday(); return;
   }
   const shop=T.closest('[data-shop]');
@@ -3676,7 +3809,7 @@ document.addEventListener('click',e=>{
           if(!blankSet(en.sets[i])) return;            // never touch a row that already holds something
           const o={}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;
         });
-        save(); refreshLogger(id);
+        syncSession(); save(); refreshLogger(id);
       }
       return;
     }
@@ -3697,7 +3830,7 @@ document.addEventListener('click',e=>{
       if(s.w==null&&prev&&prev.w!=null) s.w=prev.w;          // carry the bar weight forward
       s.done=1;
       if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
-      save();
+      syncSession(); save();
       // The rest starts first: nothing that happens while redrawing the logbook may stop it.
       startRest(id,i,ref);
       try{ refreshLogger(id); }catch(err){ console.error(err); }
@@ -3713,7 +3846,7 @@ document.addEventListener('click',e=>{
       // an extra row you added comes off entirely; a prescribed row just empties
       if(i===en.sets.length-1 && en.sets.length>setsWanted(it)) en.sets.pop();
       else if(en.sets[i]) en.sets[i]={};
-      save(); refreshLogger(id); return;
+      syncSession(); save(); refreshLogger(id); return;
     }
     const savelog=T.closest('[data-savelog]');
     if(savelog){
@@ -3724,11 +3857,7 @@ document.addEventListener('click',e=>{
       while(n>setsWanted(it) && blankSet(en.sets[n-1])) n--;
       en.sets.length=n;
       if(en.sets.every(blankSet)){ S.logs[id]=S.logs[id].filter(x=>x!==en); if(!S.logs[id].length) delete S.logs[id]; }
-      else{
-        const arr=S.checks[TODAY]||(S.checks[TODAY]=[]);
-        if(arr.indexOf('session')<0) arr.push('session');
-      }
-      save(); refreshLogger(id);
+      syncSession(); save(); refreshLogger(id);
       const btn=$('.logger[data-log="'+id+'"][data-ref="'+ref+'"] [data-savelog]');
       if(btn){ btn.textContent='Saved'; setTimeout(()=>{ btn.textContent='Save session'; },1400); }
       return;
@@ -3801,6 +3930,7 @@ document.addEventListener('input',e=>{
       for(let k=i-1;k>=0;k--){ if(en.sets[k]&&en.sets[k].w!=null){ en.sets[i].w=en.sets[k].w; break; } }
       if(en.sets[i].w!=null) $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="w"]').forEach(el=>{ el.value=en.sets[i].w; });
     }
+    if(f==='r') syncSession();
     // keep the other open copy of this exercise in step while typing
     $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="'+f+'"]')
       .forEach(el=>{ if(el!==T) el.value=T.value; });
@@ -3978,7 +4108,14 @@ document.addEventListener('click',e=>{
     }).catch(()=>{ e.target.disabled=false; });
     return;
   }
-  if(e.target.id==='btnExport') exportBackup(e.target);
+  if(e.target.id==='btnExport'||e.target.closest('[data-export]')) exportBackup(e.target.closest('button'));
+  if(e.target.id==='btnDmgExport'){
+    const raw=localStorage.getItem(KEY_DMG)||'';
+    try{ const blob=new Blob([raw],{type:'text/plain'}), url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download='forge90-unreadable-copy-'+TODAY+'.txt'; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },400); }catch(err){}
+  }
+  if(e.target.id==='btnDmgDrop'){ localStorage.removeItem(KEY_DMG); const n=$('#damagedNote'); if(n) n.remove(); }
   if(e.target.id==='btnImport'){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
     inp.addEventListener('change',()=>{
@@ -3991,7 +4128,7 @@ document.addEventListener('click',e=>{
           const p=normalize(raw); p.ui.savedAt=Date.now(); p.profile.setup=true;
           // The restored state becomes THE state before the page reloads: the save
           // that runs as a page closes would otherwise write the old one back.
-          S=p; writeNow();
+          S=p; DIRTY=true; REV=storedRev(); writeNow();      // a restore replaces what is stored: no merge
           if(!SAVE_OK) throw new Error('storage refused the write');
           cloudQueue(); SAVE_HALT=true; location.reload(); }
         catch(err){ e.target.textContent='Could not read that file'; } };
@@ -4002,7 +4139,7 @@ document.addEventListener('click',e=>{
   if(e.target.id==='btnWipe'){
     if(e.target.dataset.armed){
       SAVE_HALT=true;                        // nothing may write the old state back while the page closes
-      localStorage.removeItem(KEY); localStorage.removeItem(KEY_V1);
+      localStorage.removeItem(KEY); localStorage.removeItem(KEY_V1); localStorage.removeItem(KEY_DMG);
       const done=()=>location.reload();
       if(CLOUD.doc){ e.target.textContent='Erasing…'; CLOUD.doc.delete().then(done,done); } else done();
     }
@@ -4016,7 +4153,8 @@ document.addEventListener('click',e=>{
    =================================================================== */
 (function init(){
   if(S.ui.theme) document.documentElement.setAttribute('data-theme',S.ui.theme);
-  if(BOOT.write) writeNow();               // a converted or repaired state gets its own copy at once
+  if(BOOT.write){ DIRTY=true; writeNow(); }   // a converted or repaired state gets its own copy at once
+  paintSaveState();
   ensureHeadTags(); paintThemeColor(); paintOnline(); registerSW(); requestPersistence();
   if(isStandalone()) document.documentElement.classList.add('standalone');
   $$('#dietSeg button').forEach(b=>b.classList.toggle('on', b.dataset.diet===S.ui.diet));
@@ -4026,8 +4164,11 @@ document.addEventListener('click',e=>{
   else if(r){ delete S.ui.rest; save(); }
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible') return;
-    if(iso(new Date())!==TODAY){ writeNow(); location.reload(); return; }   // past midnight: today moved on
+    // a new training day began while the app was away: start it clean (never in the middle of a rest)
+    if(dayOf(new Date())!==TODAY&&!(RT&&!RT.done)){ writeNow(); location.reload(); return; }
     if(RT&&!RT.done){ tickRest(); wakeLock(true); }
+    // another copy of the app wrote while this one was away: show its data
+    if(adoptIfStale()||STALE_VIEW){ STALE_VIEW=false; const a=document.activeElement; if(!(a&&a.closest&&a.closest('.logger'))) rerenderAll(); }
   });
   const h=location.hash.slice(1);
   if(TABS.indexOf(h)>=0) setTab(h,true); else renderToday();

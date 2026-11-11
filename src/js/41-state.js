@@ -19,7 +19,7 @@ const DEFAULTS={
   checks:{}, weights:{}, waist:{}, steps:{}, meas:[], logs:{}, food:{}, cond:{}, shop:{}, swaps:{}, blocks:[],
   ui:{theme:'', diet:'train'}
 };
-function freshState(){ const s=clone(DEFAULTS); s.profile=cleanProfile({},false); return s; }
+function freshState(){ return normalize({v:2}); }
 
 /* ---- normalize: any stored shape -> a valid v2 state --------------- */
 const numIn=(v,lo,hi,def)=>{
@@ -84,7 +84,7 @@ function cleanLogs(m){
   return o;
 }
 function normalize(p){
-  if(!isObj(p)) return freshState();
+  if(!isObj(p)) p={v:2};
   const legacy=!(p.v>=2);
   const s=clone(DEFAULTS);
   s.profile=cleanProfile(p.profile,legacy);
@@ -127,7 +127,46 @@ function normalize(p){
     s.ui.rest={id:u.rest.id, set:numIn(u.rest.set,-1,99,-1), end:+u.rest.end, total:+u.rest.total, slot:typeof u.rest.slot==='string'?u.rest.slot.slice(0,12):''};
   if(legacy) s.ui.from=1;                   // came from version 1 (shows the what-is-new note once)
   else if(u.from) s.ui.from=u.from===2?2:1;
+  if(isDate(u.autoSess)) s.ui.autoSess=u.autoSess;
+  if(isDate(u.dietOn)) s.ui.dietOn=u.dietOn;
+  // plan history: which plan was in force from which date, so a change never re-judges the past
+  s.plans=(Array.isArray(p.plans)?p.plans:[]).filter(x=>isObj(x)&&isDate(x.from)&&typeof x.program==='string'&&safeKey(x.program)
+      &&PROGRAMS[x.program]&&PROGRAMS[x.program].variants[x.dpw]&&validDays(x.days,PROGRAMS[x.program].variants[x.dpw].sessions.length))
+    .map(x=>({from:x.from, program:x.program, dpw:+x.dpw, days:x.days.slice()}))
+    .sort((a,b)=>a.from<b.from?-1:a.from>b.from?1:0);
+  const cur=s.profile, last=s.plans[s.plans.length-1];
+  if(!last) s.plans.push({from:cur.start, program:cur.program, dpw:cur.dpw, days:cur.days.slice()});
+  else if(last.program!==cur.program||last.dpw!==cur.dpw||last.days.join()!==cur.days.join())
+    s.plans.push({from:last.from>TODAY?last.from:TODAY, program:cur.program, dpw:cur.dpw, days:cur.days.slice()});
   return s;
+}
+/* Two copies of the state that both changed (the app open twice): keep everything
+   either one has. Where both hold the same day, this copy's entry stays and the
+   other fills its gaps; nothing is dropped. */
+function mergeStates(theirs,mine){
+  const out=clone(mine);
+  ['weights','waist','steps','food','cond'].forEach(k=>{ for(const d in theirs[k]) if(!(d in out[k])) out[k][d]=theirs[k][d]; });
+  for(const d in theirs.checks){
+    const a=out.checks[d];
+    if(!a) out.checks[d]=theirs.checks[d]; else theirs.checks[d].forEach(x=>{ if(a.indexOf(x)<0) a.push(x); });
+  }
+  for(const id in theirs.logs){
+    const arr=out.logs[id]||(out.logs[id]=[]);
+    theirs.logs[id].forEach(e=>{
+      const m=arr.find(x=>x.d===e.d);
+      if(!m){ arr.push(e); return; }
+      e.sets.forEach((st,i)=>{
+        if(i>=m.sets.length) m.sets.push(st);
+        else if(blankSet(m.sets[i])&&!blankSet(st)) m.sets[i]=st;
+      });
+    });
+    arr.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
+  }
+  theirs.meas.forEach(r=>{ const k=JSON.stringify(r); if(!out.meas.some(x=>JSON.stringify(x)===k)) out.meas.push(r); });
+  for(const k in theirs.shop) out.shop[k]=true;
+  for(const k in theirs.swaps) if(!(k in out.swaps)) out.swaps[k]=theirs.swaps[k];
+  theirs.blocks.forEach(b=>{ if(!out.blocks.some(x=>x.start===b.start)) out.blocks.push(b); });
+  return out;
 }
 /* A stray tap used to leave a dated-but-empty session behind, which then
    posed as "last time" forever. Past sessions with no numbers are not history. */
@@ -140,12 +179,25 @@ function pruneLogs(logs){
 }
 
 /* ---- load ----------------------------------------------------------- */
-let BOOT={migrated:false, write:false};
+const STATE_V=2, KEY_REV='forge90_v2_rev', KEY_DMG='forge90_v2_damaged';
+let BOOT={migrated:false, write:false, damaged:false, newer:false};
+let saveTimer=null, SAVE_OK=true;
+let SAVE_HALT=false;                       // true when this copy must not write: a wipe or restore in flight, or newer data in storage
+let DIRTY=false;                           // something changed here since the last write
+let REV=0;                                 // revision of the stored state this copy last read or wrote
 function readStore(key){
   try{ const raw=localStorage.getItem(key); return raw?JSON.parse(raw):null; }catch(e){ return null; }
 }
+function storedRev(){ try{ return +localStorage.getItem(KEY_REV)||0; }catch(e){ return 0; } }
 function load(){
-  const v2=readStore(KEY);
+  REV=storedRev();
+  let raw=null, v2=null, bad=false;
+  try{ raw=localStorage.getItem(KEY); }catch(e){}
+  if(raw){ try{ v2=JSON.parse(raw); }catch(e){ bad=true; } if(!bad&&!isObj(v2)){ bad=true; v2=null; } }
+  // Stored data that cannot be read is put aside before anything is written, so it can still be recovered by hand.
+  if(bad){ try{ localStorage.setItem(KEY_DMG,raw); }catch(e){} BOOT.damaged=true; }
+  // Data written by a newer version: show it as well as this version can, and never write over it.
+  if(isObj(v2)&&v2.v>STATE_V){ BOOT.newer=true; SAVE_HALT=true; return normalize(v2); }
   if(isObj(v2)&&v2.v>=2) return normalize(v2);
   const v1=readStore(KEY_V1);
   if(isObj(v1)){ BOOT.migrated=true; BOOT.write=true; return normalize(v1); }
@@ -154,17 +206,46 @@ function load(){
 }
 let S=load();
 
-/* ---- save ----------------------------------------------------------- */
-let saveTimer=null, SAVE_OK=true;
-let SAVE_HALT=false;                       // set just before a wipe or a restore reloads the page
+/* ---- save -----------------------------------------------------------
+   A copy of the app writes only when something changed in it. Before it
+   writes, it checks whether another copy (a second tab, the installed app
+   next to the browser tab) wrote in the meantime, and folds that in first:
+   a stale copy can never wipe what a newer one logged. */
 function writeNow(){
   clearTimeout(saveTimer); saveTimer=null;
-  if(SAVE_HALT) return;
-  try{ localStorage.setItem(KEY,JSON.stringify(S)); SAVE_OK=true; }
-  catch(e){ SAVE_OK=false; }
-  if(typeof paintSaveState==='function') paintSaveState();
+  if(SAVE_HALT||!DIRTY) return;
+  try{
+    const now=storedRev();
+    if(now!==REV){
+      const other=readStore(KEY);
+      if(isObj(other)&&other.v>STATE_V){ SAVE_HALT=true; BOOT.newer=true; paintSaveState(); return; }
+      if(isObj(other)&&other.v>=2){ S=mergeStates(normalize(other),S); STALE_VIEW=true; }
+    }
+    localStorage.setItem(KEY,JSON.stringify(S));
+    REV=now+1; localStorage.setItem(KEY_REV,String(REV));
+    DIRTY=false; SAVE_OK=true;
+  }catch(e){ SAVE_OK=false; }
+  paintSaveState();
+}
+/* Another copy wrote and this one has nothing unsaved: take the stored state. Returns true if S changed. */
+let STALE_VIEW=false;
+function adoptIfStale(){
+  if(SAVE_HALT||storedRev()===REV) return false;
+  if(DIRTY){ writeNow(); return true; }
+  const other=readStore(KEY);
+  if(!isObj(other)||!(other.v>=2)) return false;
+  if(other.v>STATE_V){ SAVE_HALT=true; BOOT.newer=true; paintSaveState(); return false; }
+  S=normalize(other); REV=storedRev();
+  return true;
+}
+function onStorage(e){ if(e.key===KEY||e.key===KEY_REV) STALE_VIEW=true; }
+window.addEventListener('storage',onStorage);
+function paintSaveState(){
+  const sb=$('#saveBar'); if(sb) sb.classList.toggle('on',!SAVE_OK);
+  const vb=$('#verBar'); if(vb) vb.classList.toggle('on',!!BOOT.newer);
 }
 function save(){
+  DIRTY=true;
   S.ui.savedAt=Date.now();                 // lets two copies of the state say which is newer
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{ writeNow(); cloudQueue(); },160);
@@ -191,8 +272,7 @@ async function cloudInit(){
     const remote=snap.exists?snap.data():null;
     const remoteAt=remote?(+(remote.ui&&remote.ui.savedAt)||0):0, localAt=+(S.ui.savedAt)||0;
     if(remote&&remoteAt>localAt){
-      S=normalize(clone(remote));
-      try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){}
+      S=normalize(clone(remote)); DIRTY=true; REV=storedRev(); writeNow();
       CLOUD.status='synced'; CLOUD.at=remoteAt; rerenderAll();
     }else{
       CLOUD.status='synced'; CLOUD.at=localAt;

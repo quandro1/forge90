@@ -202,6 +202,8 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
 
 </main>
 <div id="updBar" role="status"><span>A new version is ready.</span><button class="btn sm primary" data-reload>Reload</button></div>
+<div id="saveBar" class="alertbar" role="alert"><span>Not saving: this phone's storage is full or blocked. Export a backup now.</span><button class="btn sm primary" data-export>Export</button></div>
+<div id="verBar" class="alertbar" role="alert"><span>This copy of the app is older than your saved data, so nothing you do here is saved.</span><button class="btn sm primary" data-reload>Reload</button></div>
 <div id="restPill" role="status" aria-live="polite"><button class="rp-go" data-rest-go><span class="rp-n"></span><span class="rp-t"></span></button><button class="rp-x" data-rest-stop aria-label="Stop rest timer">×</button></div>
 
 <div class="wrap foot">

@@ -38,7 +38,7 @@ $('#btnTheme').addEventListener('click',()=>{
 function setDaysPerWeek(n){
   const p=program();
   if(!p.variants[n]||n===+S.profile.dpw) return false;
-  S.profile.dpw=n; S.profile.days=p.variants[n].days.slice();
+  setPlan(S.profile.program,n,p.variants[n].days);
   save(); return true;
 }
 
@@ -52,6 +52,7 @@ document.addEventListener('click',e=>{
     const at=arr.indexOf(k);
     if(at>=0) arr.splice(at,1); else arr.push(k);
     if(!arr.length) delete S.checks[TODAY];
+    if(k==='session') delete S.ui.autoSess;          // ticked or cleared by hand: the log no longer decides it
     save(); renderToday(); return;
   }
   const shop=T.closest('[data-shop]');
@@ -137,7 +138,7 @@ document.addEventListener('click',e=>{
           if(!blankSet(en.sets[i])) return;            // never touch a row that already holds something
           const o={}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;
         });
-        save(); refreshLogger(id);
+        syncSession(); save(); refreshLogger(id);
       }
       return;
     }
@@ -158,7 +159,7 @@ document.addEventListener('click',e=>{
       if(s.w==null&&prev&&prev.w!=null) s.w=prev.w;          // carry the bar weight forward
       s.done=1;
       if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
-      save();
+      syncSession(); save();
       // The rest starts first: nothing that happens while redrawing the logbook may stop it.
       startRest(id,i,ref);
       try{ refreshLogger(id); }catch(err){ console.error(err); }
@@ -174,7 +175,7 @@ document.addEventListener('click',e=>{
       // an extra row you added comes off entirely; a prescribed row just empties
       if(i===en.sets.length-1 && en.sets.length>setsWanted(it)) en.sets.pop();
       else if(en.sets[i]) en.sets[i]={};
-      save(); refreshLogger(id); return;
+      syncSession(); save(); refreshLogger(id); return;
     }
     const savelog=T.closest('[data-savelog]');
     if(savelog){
@@ -185,11 +186,7 @@ document.addEventListener('click',e=>{
       while(n>setsWanted(it) && blankSet(en.sets[n-1])) n--;
       en.sets.length=n;
       if(en.sets.every(blankSet)){ S.logs[id]=S.logs[id].filter(x=>x!==en); if(!S.logs[id].length) delete S.logs[id]; }
-      else{
-        const arr=S.checks[TODAY]||(S.checks[TODAY]=[]);
-        if(arr.indexOf('session')<0) arr.push('session');
-      }
-      save(); refreshLogger(id);
+      syncSession(); save(); refreshLogger(id);
       const btn=$('.logger[data-log="'+id+'"][data-ref="'+ref+'"] [data-savelog]');
       if(btn){ btn.textContent='Saved'; setTimeout(()=>{ btn.textContent='Save session'; },1400); }
       return;
@@ -262,6 +259,7 @@ document.addEventListener('input',e=>{
       for(let k=i-1;k>=0;k--){ if(en.sets[k]&&en.sets[k].w!=null){ en.sets[i].w=en.sets[k].w; break; } }
       if(en.sets[i].w!=null) $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="w"]').forEach(el=>{ el.value=en.sets[i].w; });
     }
+    if(f==='r') syncSession();
     // keep the other open copy of this exercise in step while typing
     $$('.logger[data-log="'+id+'"] input[data-set="'+i+'"][data-f="'+f+'"]')
       .forEach(el=>{ if(el!==T) el.value=T.value; });

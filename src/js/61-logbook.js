@@ -55,6 +55,24 @@ function logger(id,ref){
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';
 }
+/* The day's session is done when most of its exercises have a logged or ticked set:
+   nothing to press. A tick made by hand on Today is left alone. */
+function sessionProgress(){
+  const info=infoForDate(TODAY);
+  if(!info||info.type!=='lift'||!info.session) return null;
+  let touched=0;
+  info.session.items.forEach(it=>{ const e=todayEntry(it.ex); if(e&&e.sets.some(s=>s&&(s.r>0||s.done))) touched++; });
+  return {touched:touched, total:info.session.items.length, need:Math.ceil(info.session.items.length*0.6)};
+}
+function syncSession(){
+  const p=sessionProgress(); if(!p) return;
+  const arr=S.checks[TODAY]||[], has=arr.indexOf('session')>=0, enough=p.touched>=p.need;
+  if(enough&&!has){ (S.checks[TODAY]||(S.checks[TODAY]=[])).push('session'); S.ui.autoSess=TODAY; }
+  else if(!enough&&has&&S.ui.autoSess===TODAY){
+    arr.splice(arr.indexOf('session'),1); if(!arr.length) delete S.checks[TODAY];
+    delete S.ui.autoSess;
+  }
+}
 /* The same exercise can sit on two days of a plan, so two logbooks for it can
    be open at once. Redraw every copy (each with its own slot's prescription)
    or the other one sits there showing stale numbers. */

@@ -101,6 +101,8 @@ function settingsSheet(){
         ?'Everything you log is saved on this device and backed up privately to your Claude account, so a cleared browser or a second phone picks up where you left off.'
         :'Everything you log lives in this browser only — nothing is sent anywhere. Clearing site data or using a different device starts you fresh, so export a backup now and then.')+'</p>'
     +'<p style="margin-bottom:8px"><span id="cloudBadge" class="pill"></span></p>'
+    +(localStorage.getItem(KEY_DMG)?'<div id="damagedNote" class="note hot" style="margin-bottom:10px"><b>Some saved data could not be read.</b><br>A copy of it was put aside so it is not lost. '
+      +'<span style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" id="btnDmgExport">Save that copy as a file</button><button class="btn sm danger" id="btnDmgDrop">Discard it</button></span></div>':'')
     +'<p id="storageLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+storageLine()+'</p>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btnExport">Export a backup</button>'
     +'<button class="btn" id="btnImport">Restore</button>'
