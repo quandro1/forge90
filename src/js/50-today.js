@@ -1,0 +1,202 @@
+function renderToday(){
+  const t=targets(), di=todayIndex(), info=infoForDate(TODAY);
+  const started=di>=1, done=di>91;
+
+  $('#dayline').textContent = !started
+    ? 'Starts '+fmtDate(S.profile.start)
+    : done ? 'Block complete · '+fmtDate(TODAY)
+    : 'Day '+di+' of 91 · Week '+info.week+' · Phase '+info.phase+(info.deload?' · deload':'');
+
+  $('#todaylede').textContent = !started
+    ? 'Your block begins on '+fmtDate(S.profile.start)+'. Change the start date in Settings if that is wrong — everything on this page keys off it.'
+    : done ? 'Ninety-one days done. Take the measurements, look at the photos, then set the next block.'
+    : info.type==='lift' ? 'Lift, then eat the big breakfast. Everything else on this page is maintenance.'
+    : info.type==='cardio' ? 'No lifting today. Zone 2 and steps — the work that costs you nothing in recovery.'
+    : 'Rest day. Walk, eat, sleep. This is when you actually grow.';
+
+  const wl=weightList(), latest=wl.length?wl[wl.length-1][1]:null;
+  const startW=wl.length?wl[0][1]:t.w;
+  $('#ro-today').innerHTML=[
+    ro('Day', started&&!done?di:(done?91:0), '/ 91', true),
+    ro('Phase', started&&!done?info.phase:'—', started&&!done?PHASES[info.phase-1].name:''),
+    ro('Weight', latest!=null?latest.toFixed(1):'—', latest!=null?(latest-startW>=0?'+':'')+(latest-startW).toFixed(1)+' kg':'log one'),
+    ro('Streak', streak(), 'days', true)
+  ].join('');
+
+  // session card
+  let sc;
+  if(!started||done){
+    sc='<div class="session rest"><div class="tag">'+(done?'Finished':'Not started')+'</div><h3>'+(done?'Block complete':'Waiting to begin')+'</h3><p class="focus">'+(done?'Log your final measurements in Progress.':'Set your start date in Settings to light this up.')+'</p></div>';
+  }else if(info.type==='lift'){
+    const s=info.session;
+    sc='<div class="session"><div class="tag">'+esc(s.tag)+(info.deload?' · DELOAD':'')+'</div>'
+      +'<h3>'+esc(s.name)+'</h3><p class="focus">'+esc(s.focus)+'</p><div class="meta">'
+      +'<span class="pill hot">'+s.ex.length+' exercises</span>'
+      +'<span class="pill">'+condToday(info)+'</span>'
+      +(info.deload?'<span class="pill warn">−10% load, drop a set</span>':'')
+      +(sessionDone(TODAY)?'<span class="pill good">Done</span>':'')
+      +'</div><button class="btn primary wide" style="margin-top:13px" data-goday="'+info.idx+'">Open the session</button></div>';
+  }else{
+    sc='<div class="session rest"><div class="tag">'+(info.type==='cardio'?'CONDITIONING':'REST')+'</div>'
+      +'<h3>'+(info.type==='cardio'?'Zone 2 & steps':'Full rest')+'</h3>'
+      +'<p class="focus">'+(info.type==='cardio'
+        ?'A pace you could hold a conversation at — '+t.z2[0]+'–'+t.z2[1]+' bpm. Incline walk or bike, low joint cost, keeps your legs fresh for tomorrow.'
+        :'Nothing to lift. Walk, hit your protein, sleep long.')+'</p>'
+      +'<div class="meta"><span class="pill cool">'+condToday(info)+'</span>'
+      +(info.checkin?'<span class="pill warn">Weekly check-in</span>':'')+'</div></div>';
+  }
+  $('#sessionCard').innerHTML=sc;
+
+  // checklist
+  const list=checkList(), c=S.checks[TODAY]||[];
+  $('#checklist').innerHTML=list.map(x=>
+    '<button class="chk" data-chk="'+x.k+'" aria-pressed="'+(c.indexOf(x.k)>=0)+'">'
+    +'<span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(x.l)+'</span><span class="hint">'+esc(x.h)+'</span></button>').join('');
+  $('#chkCount').textContent=c.length+' / '+list.length;
+
+  $('#logDate').textContent=fmtDate(TODAY);
+  $('#qWeight').value=S.weights[TODAY]!=null?S.weights[TODAY]:'';
+  $('#qWaist').value=S.waist[TODAY]!=null?S.waist[TODAY]:'';
+  $('#qSteps').value=S.steps[TODAY]!=null?S.steps[TODAY]:'';
+
+  renderHelp();
+  renderCond();
+  $('#miniPunch').innerHTML=punch(Math.max(0,Math.min(10,Math.ceil((started&&!done?di:1)/7)-1)),3);
+}
+function renderHelp(){
+  if(S.ui.helpSeen){ $('#helpCard').innerHTML=''; return; }
+  $('#helpCard').innerHTML='<div class="card help">'
+    +'<div class="card-h"><h3>How to use this</h3><button class="btn sm" data-hidehelp>Got it</button></div>'
+    +'<ol class="steps big">'
+    +'<li><b>Today</b> — the only screen you need most days. Tick the list, tap what you ate, log your weight.</li>'
+    +'<li><b>Train</b> — open today\'s session, then type the weight and reps for each set. The app reads your history and tells you what to do next time.</li>'
+    +'<li><b>Map</b> — all 91 days. Tap any square to see what that day holds.</li>'
+    +'<li><b>Fuel</b> — the meal plan and the day counter.</li>'
+    +'<li><b>Progress</b> — weigh in daily, but only ever react to the <b>orange 7-day line</b>, never one morning\'s number.</li>'
+    +'</ol>'
+    +'<p style="font-size:12.5px;color:var(--text-dim);margin-top:11px">Everything saves on this device by itself. Nothing to press.</p>'
+    +'</div>';
+}
+function ro(k,v,u,hot){
+  return '<div><div class="k">'+esc(k)+'</div><div class="v'+(hot?' hot':'')+'">'+esc(v)+'</div><div class="u">'+esc(u||'')+'</div></div>';
+}
+function condToday(info){
+  const c=COND[info.phase];
+  if(info.type==='cardio') return 'Zone 2 · '+c.z2min;
+  return c.steps+' steps';
+}
+/* ---- conditioning tracking --------------------------------------- */
+function stepsTarget(week){
+  if(week<=4) return Math.min(8000, 5000+week*1000);   // ramp ~1k a week
+  return week<=8?8500:9500;
+}
+function weekDates(week){
+  const out=[];
+  for(let k=0;k<7;k++){ const i=(week-1)*7+k+1; if(i<=91) out.push(dayInfo(i).date); }
+  return out;
+}
+function condCount(week,kind){
+  return weekDates(week).reduce((n,d)=>n+((S.cond&&S.cond[d]||[]).filter(x=>x===kind).length),0);
+}
+function logCond(kind){
+  S.cond=S.cond||{};
+  const a=S.cond[TODAY]||(S.cond[TODAY]=[]);
+  a.push(kind); save();
+}
+function unlogCond(kind){
+  if(!S.cond||!S.cond[TODAY]) return;
+  const i=S.cond[TODAY].lastIndexOf(kind);
+  if(i>=0) S.cond[TODAY].splice(i,1);
+  if(!S.cond[TODAY].length) delete S.cond[TODAY];
+  save();
+}
+function dots(done,target){
+  if(!target) return '<span class="dots none">not this phase</span>';
+  let h='<span class="dots">';
+  for(let i=0;i<Math.max(target,done);i++) h+='<i class="'+(i<done?'on':'')+'"></i>';
+  return h+'</span>';
+}
+function renderCond(){
+  const di=todayIndex();
+  if(di<1||di>91){ $('#condCard').innerHTML='<div class="card-h"><h3>Conditioning</h3></div>'
+    +'<p style="font-size:13px;color:var(--text-dim)">Starts with the block.</p>'; return; }
+  const info=dayInfo(di), c=COND[info.phase], t=targets();
+  const st=stepsTarget(info.week), today=S.steps[TODAY]||0;
+  const z2=condCount(info.week,'z2'), hi=condCount(info.week,'hiit');
+  const pct=Math.min(100,Math.round(today/st*100));
+  $('#condCard').innerHTML=
+    '<div class="card-h"><h3>Conditioning</h3><span class="pill cool">Week '+info.week+' · Phase '+info.phase+'</span></div>'
+    +'<div class="condrow"><span class="cl">Steps today</span>'
+      +'<span class="cv num">'+(today?today.toLocaleString():'—')+'</span>'
+      +'<span class="ct num">of '+st.toLocaleString()+'</span></div>'
+    +'<div class="pbar" style="margin:8px 0 14px"><i style="width:'+pct+'%"></i></div>'
+    +'<div class="condrow"><span class="cl">Zone 2 this week</span>'+dots(z2,c.z2)
+      +'<span class="ct num">'+z2+' / '+c.z2+'</span></div>'
+    +'<div class="condrow" style="margin-top:8px"><span class="cl">HIIT this week</span>'+dots(hi,c.hiit)
+      +'<span class="ct num">'+(c.hiit?hi+' / '+c.hiit:'—')+'</span></div>'
+    +'<div style="display:flex;gap:8px;margin-top:13px;flex-wrap:wrap">'
+      +'<button class="btn sm" data-cond="z2">+ Zone 2</button>'
+      +(c.hiit?'<button class="btn sm" data-cond="hiit">+ HIIT</button>':'')
+      +((S.cond&&S.cond[TODAY]&&S.cond[TODAY].length)?'<button class="btn sm danger" data-uncond="1">Undo today</button>':'')
+    +'</div>'
+    +'<div class="note" style="margin-top:13px">'+esc(c.note)+'<br>'
+      +'Zone 2 pace for you is about <b>'+t.z2[0]+'–'+t.z2[1]+' bpm</b> — a pace you could still talk at.</div>';
+}
+function renderCondSection(){
+  const di=todayIndex(), ph=(di>=1&&di<=91)?dayInfo(di).phase:1;
+  $('#condSection').innerHTML=
+    CONDTOOLS.map((x,i)=>{
+      const c=COND[ph];
+      const dose=x.k==='steps'?c.steps+' a day':x.k==='z2'?c.z2+'× a week · '+c.z2min:(c.hiit?c.hiit+'× a week · ≤20 min':'none in this phase');
+      return '<details'+(i===0?' open':'')+'><summary><span class="idx">'+String(i+1).padStart(2,'0')+'</span>'
+        +'<span style="flex:1;min-width:0"><span style="display:block">'+esc(x.n)+'</span>'
+        +'<span style="display:block;font-family:var(--font-m);font-size:10.5px;color:var(--text-faint)">'+esc(x.tag)+'</span></span>'
+        +'<span class="pill hot">'+esc(dose)+'</span><span class="chev">'+ICO.chev+'</span></summary>'
+        +'<div class="dbody"><p style="font-size:13.5px;color:var(--text-dim)">'+x.b+'</p>'
+        +'<div class="note" style="margin-top:11px"><b>In practice</b><br>'+x.how+'</div></div></details>';
+    }).join('')
+    +'<details><summary><span class="idx">04</span>Where it goes in the week<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
+    +'<div class="tw"><table><thead><tr><th>Phase</th><th class="n">Steps</th><th>Zone 2</th><th>HIIT</th></tr></thead><tbody>'
+    +[1,2,3].map(p=>'<tr'+(p===ph?' style="background:var(--ember-wash)"':'')+'><td>'+p+' · '+PHASES[p-1].name+'</td>'
+      +'<td class="n">'+COND[p].steps+'</td><td>'+COND[p].z2+'× · '+COND[p].z2min+'</td>'
+      +'<td>'+(COND[p].hiit?COND[p].hiit+'×':'none')+'</td></tr>').join('')
+    +'</tbody></table></div>'
+    +'<ul class="klist" style="margin-top:12px">'
+    +'<li><b>Never</b> hard cardio in the 24 h before legs, in either direction.</li>'
+    +'<li>Zone 2 goes on a rest day, or <em>after</em> you lift — never before.</li>'
+    +'<li>Saturday is your conditioning day; Sunday is full rest and the weekly check-in.</li>'
+    +'<li>If strength drops week over week, <b>cut HIIT first</b>, then trim Zone 2. Never cut protein or sleep to make room for cardio.</li>'
+    +'</ul></div></details>'
+    +'<details><summary><span class="idx">05</span>What these look like<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
+    +'<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:11px">Not sure what a machine or an interval actually looks like? Same photo and video buttons as the lifts.</p>'
+    +CARDIO_DEMOS.map(d=>'<div class="libitem"><div class="li-h"><span class="li-n">'+esc(d[0])+'</span></div>'
+      +'<p class="li-c">'+esc(d[1])+'</p>'+demoLinks(d[0],true)+'</div>').join('')
+    +'</div></details>';
+}
+
+/* ---- punch card -------------------------------------------------- */
+function punch(fromWeek,weeks){
+  const start=fromWeek||0, end=Math.min(13,start+(weeks||13));
+  // columns run from whatever weekday the block starts on — not from Monday
+  const w0=parseISO(S.profile.start).getDay();
+  let h='<div class="hd"></div>';
+  for(let k=0;k<7;k++) h+='<div class="hd">'+DOW[(w0+k)%7].charAt(0)+'</div>';
+  for(let w=start; w<end; w++){
+    h+='<div class="wk">'+(w+1)+'</div>';
+    for(let k=0;k<7;k++){
+      const i=w*7+k+1;
+      if(i>91){ h+='<div></div>'; continue; }
+      const d=dayInfo(i), isToday=d.date===TODAY, past=parseISO(d.date)<parseISO(TODAY);
+      const done=d.type!=='rest'&&sessionDone(d.date);
+      const cls=['day',d.type==='lift'?'lift':d.type==='cardio'?'cardio':'',
+                 done?'done':'', d.deload?'deload':'', isToday?'today':'', past&&!isToday?'past':''].filter(Boolean).join(' ');
+      const lbl=d.type==='lift'?(d.idx+1):d.type==='cardio'?'·':'';
+      h+='<button class="'+cls+'" data-day="'+i+'" title="Day '+i+' — '+fmtDate(d.date)+'" aria-label="Day '+i+'">'+lbl+'</button>';
+    }
+  }
+  return h;
+}
+
+/* ===================================================================
+   RENDER — TRAIN
+   =================================================================== */
