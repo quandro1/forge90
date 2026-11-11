@@ -12,12 +12,15 @@ const filters = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const files = fs.readdirSync(HERE).filter((f) => f.endsWith('.test.mjs'))
   .filter((f) => !filters.length || filters.some((x) => f.includes(x))).sort();
 
-const server = await serve(ROOT);
+// --root=<folder> runs the suite against another copy of the app (e.g. an old build, to see a test fail on it)
+const rootArg = (process.argv.slice(2).find((a) => a.startsWith('--root=')) || '').slice(7);
+const SERVED = rootArg ? path.resolve(rootArg) : ROOT;
+const server = await serve(SERVED);
 const { pw, browser } = await launch();
 const env = { pw, browser, base: server.url, server };
 let pass = 0, fail = 0;
 const failures = [];
-console.log('page under test: ' + PAGE + '  (' + server.url + ')');
+console.log('page under test: ' + path.join(SERVED, PAGE) + '  (' + server.url + ')');
 
 for (const f of files) {
   const mod = await import(pathToFileURL(path.join(HERE, f)).href);
@@ -42,7 +45,7 @@ for (const f of files) {
     } finally {
       for (const o of opened) { try { await o.context.close(); } catch { /* already closed */ } }
       server.up();
-      server.setRoot(ROOT);
+      server.setRoot(SERVED);
     }
   }
 }
