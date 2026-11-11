@@ -122,8 +122,8 @@ function renderFuel(){
   const wk=Math.abs(t.weekly);
   $('#fuelGoal').innerHTML='<b>'+esc(GOAL_NAME[S.profile.goal])+'.</b> '
     +(S.profile.goal==='maintain'?'You eat what you burn: about '+t.tdee.toLocaleString()+' kcal a day.'
-      :'You burn about '+t.tdee.toLocaleString()+' kcal a day; the plan averages '+t.kcal.toLocaleString()+', which should move the scale about '
-        +wk.toFixed(1)+' kg a week '+(t.weekly<0?'down':'up')+'.')
+      :'You burn about '+t.tdee.toLocaleString()+' kcal a day and the plan averages '+t.kcal.toLocaleString()+'. That should take the scale '
+        +(t.weekly<0?'down':'up')+' by about '+wk.toFixed(1)+' kg a week.')
     +(t.floored?' <b>This is the lowest safe target:</b> do not eat less than this without a doctor.':'')
     +' <span style="color:var(--text-faint)">Change your goal or your numbers in Settings.</span>';
 
@@ -133,7 +133,7 @@ function renderFuel(){
     +d.meals.map(m=>
       '<div class="meal"><div class="meal-h"><span class="nm">'+esc(m.n)+'</span>'
       +'<span class="mc">'+m.k+' kcal<br>'+m.p+' g P</span></div><ul>'
-      +m.items.map(it=>{ const x=MEALFOOD[it.id](it.q); return '<li><span class="q">'+esc(x[0])+'</span><span>'+esc(x[1])+'</span></li>'; }).join('')
+      +m.items.map(it=>{ const x=MEALFOOD[it.id](it.q); return '<li><span class="q">'+esc(x[0])+'</span><span>'+esc(x[1])+(x[2]?' <span class="g">'+esc(x[2])+'</span>':'')+'</span></li>'; }).join('')
       +'<li style="margin-top:3px;color:var(--text-faint);font-size:12.5px;display:block">'+esc(m.tip)+'</li></ul></div>').join('')
     +'<div class="note hot" style="margin-top:12px" id="mealTotal">This day adds up to <b>'+d.k+' kcal · '+d.p+' g protein</b>'
       +' (carbs '+d.c+' g, fat '+d.f+' g). Your target today is <b>'+d.wantK+' kcal</b> and <b>at least '+d.wantP+' g of protein</b>.'
@@ -160,9 +160,9 @@ function renderFuel(){
     +'</div></details>'
     +'<details><summary><span class="idx">04</span>Swaps<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
     +'<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:11px">Mix freely. The plan does not care which protein you pick, only that it is there.</p>'
-    +'<div class="tw"><table><thead><tr><th>Instead of</th><th>Any of these</th><th>Roughly</th></tr></thead><tbody>'
-    +SWAPS.map(s=>'<tr><td>'+esc(s[0])+'</td><td>'+esc(s[1])+'</td><td class="n">'+esc(s[2])+'</td></tr>').join('')
-    +'</tbody></table></div></div></details>'
+    +SWAPS.map(s=>'<div class="swap"><div class="sw-h"><span style="color:var(--text-faint);font-size:12.5px">Instead of</span><b>'+esc(s[0])+'</b><span class="pill">'+esc(s[2])+'</span></div>'
+      +'<ul class="klist">'+s[1].split(' · ').map(o=>'<li>'+esc(o)+'</li>').join('')+'</ul></div>').join('')
+    +'</div></details>'
     +'<details><summary><span class="idx">05</span>Weekly shop<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
     +GROCERY.map(g=>'<div style="margin-bottom:12px"><div class="eyebrow" style="margin-bottom:5px">'+esc(g[0])+'</div>'
       +'<div class="checks">'+g[1].map(it=>{ const k=g[0]+'|'+it[0]; return '<button class="chk" data-shop="'+esc(k)+'" aria-pressed="'+!!S.shop[k]+'"><span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(it[0])+'</span><span class="hint">'+esc(it[1])+'</span></button>'; }).join('')+'</div></div>').join('')

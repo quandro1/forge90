@@ -121,20 +121,20 @@ const LEVERS=[
  ['Snack','dates',1,0,2,2],
  ['Dinner','rice',0.5,0,2,2]
 ];
-/* how a quantity of each plan food is written: [amount, name] */
+/* how a quantity of each plan food is written: [amount, name, weight or count (optional)] */
 const MEALFOOD={
  egg:      q=>[frac(q), q===1?'Whole egg':'Whole eggs'],
  eggwhite: q=>[frac(q), q===1?'Egg white':'Egg whites'],
  chapati:  q=>[frac(q), 'Chapati'],
  milk:     q=>[frac(q)+(q===1?' glass':' glasses'), 'Milk'],
  whey:     q=>[frac(q)+(q===1?' scoop':' scoops'), 'Whey protein in water'],
- chicken:  q=>[frac(q)+(q>1?' palms':' palm')+' (~'+Math.round(100*q)+' g cooked)', 'Chicken breast'],
+ chicken:  q=>[frac(q)+(q>1?' palms':' palm'), 'Chicken breast', '~'+Math.round(100*q)+' g cooked'],
  rice:     q=>[frac(q)+(q>1?' cups':' cup'), 'Cooked rice'],
  dahi:     q=>[frac(q)+(q>1?' cups':' cup'), 'Dahi'],
  salad:    q=>['1 plate', 'Salad, as much as you like'],
  gyogurt:  q=>['~'+Math.round(200*q)+' g', 'Greek or strained yogurt'],
- almonds:  q=>[frac(q)+(q>1?' small handfuls':' small handful'), 'Almonds'],
- qeemaLean:q=>[frac(q)+(q>1?' small bowls':' small bowl')+' (~'+Math.round(150*q)+' g)', 'Lean qeema, cooked in a little oil'],
+ almonds:  q=>[frac(q)+(q>1?' handfuls':' handful'), 'Almonds', 'about '+Math.round(20*q)],
+ qeemaLean:q=>[frac(q)+(q>1?' bowls':' bowl'), 'Lean qeema, cooked in a little oil', '~'+Math.round(150*q)+' g'],
  sabzi:    q=>['1 bowl', 'Sabzi'],
  banana:   q=>[frac(q), q===1?'Banana':'Bananas'],
  dates:    q=>[String(Math.round(3*q)), 'Dates'],

@@ -121,7 +121,7 @@ export default [
     name: 'yesterday\'s list can still be ticked, from the Map',
     async run({ open }) {
       const { page } = await open({ state: v2State(), hash: 'plan' });
-      await page.locator('[data-day="2"]').first().tap();                     // 10 Nov, day 2 of the block
+      await page.locator('#s-plan [data-day="2"]').tap();                     // 10 Nov, day 2 of the block
       await page.locator('#sheet.on').waitFor();
       await page.locator('#sheet [data-daychk="water"]').tap();
       await page.locator('#sheet [data-daychk="sleep"]').tap();
@@ -130,7 +130,7 @@ export default [
       await page.locator('#sheet [data-daychk="water"]').tap();
       assert.deepEqual(await page.evaluate((d) => S.checks[d], YESTERDAY), ['sleep']);
       await page.locator('#sheet [data-close]').last().tap();
-      await page.locator('[data-day="5"]').first().tap();                     // a day that has not happened yet
+      await page.locator('#s-plan [data-day="5"]').tap();                     // a day that has not happened yet
       await page.locator('#sheet.on').waitFor();
       assert.equal(await page.locator('#sheet [data-daychk]').count(), 0, 'a future day can be ticked');
     },

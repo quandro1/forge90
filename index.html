@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="cd57a2d5b5">
+<meta name="forge-build" content="d818007d8d">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -125,11 +125,11 @@ header.top{
 .brand i{font-style:normal; color:var(--ember); font-family:var(--font-m); font-size:13px}
 .top .spacer{flex:1}
 .iconbtn{
-  width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);
+  width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line);
   border-radius:8px;color:var(--text-dim);background:var(--surface)
 }
 .iconbtn:hover{color:var(--text); border-color:var(--steel-dim)}
-.iconbtn svg{width:17px;height:17px}
+.iconbtn svg{width:18px;height:18px}
 
 /* ============ TABS ============ */
 .tabbar{
@@ -475,6 +475,8 @@ details.how>summary .how-t{flex:1}
   font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:14px; text-align:right;
 }
 .frow select{text-align:left; width:150px; font-family:var(--font-b); font-size:13px}
+.frow input[type="date"]{width:150px; text-align:left; font-size:13px}
+.frow input,.frow select{min-height:40px}
 .frow input:focus,.frow select:focus{border-color:var(--ember); outline:none}
 
 /* ============ MEALS ============ */
@@ -486,7 +488,13 @@ details.how>summary .how-t{flex:1}
 .meal-h .mc{font-family:var(--font-m); font-size:11px; color:var(--text-faint); text-align:right; white-space:nowrap}
 .meal ul{margin:0; padding:11px 13px 12px 13px; list-style:none; display:flex; flex-direction:column; gap:7px}
 .meal li{display:flex; gap:10px; font-size:13.5px; align-items:baseline}
-.meal li .q{font-family:var(--font-m); font-size:12px; color:var(--steel); flex:none; min-width:62px}
+.meal li .q{font-family:var(--font-m); font-size:12px; color:var(--steel); flex:none; width:86px}
+.meal li .g{color:var(--text-faint); font-size:12.5px}
+.swap{padding:11px 0; border-bottom:1px solid var(--line-soft)}
+.swap:last-child{border-bottom:none; padding-bottom:0}
+.swap .sw-h{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; margin-bottom:6px}
+.swap .sw-h b{font-size:14px}
+.swap .klist{margin:0}
 
 /* ============ DAY COUNTER ============ */
 .pbar{height:12px; border-radius:99px; background:var(--sunken); border:1px solid var(--line); overflow:hidden; margin:10px 0 6px}
@@ -718,7 +726,7 @@ if(s&&s.ui&&s.ui.theme)document.documentElement.setAttribute('data-theme',s.ui.t
       <div class="card">
         <div class="card-h"><h3>Conditioning by phase</h3></div>
         <div class="tw"><table>
-          <thead><tr><th>Phase</th><th class="n">Steps/day</th><th>Zone 2</th><th>HIIT</th></tr></thead>
+          <thead><tr><th>Phase</th><th class="n">Steps/day</th><th>Zone 2</th><th>Intervals</th></tr></thead>
           <tbody>
             <tr><td>1 · Weeks 1–4</td><td class="n">build to 8k</td><td>2× · 25–30 min</td><td>none</td></tr>
             <tr><td>2 · Weeks 5–8</td><td class="n">8–9k</td><td>2–3× · 30–35 min</td><td>1×</td></tr>
@@ -2542,20 +2550,20 @@ const LEVERS=[
  ['Snack','dates',1,0,2,2],
  ['Dinner','rice',0.5,0,2,2]
 ];
-/* how a quantity of each plan food is written: [amount, name] */
+/* how a quantity of each plan food is written: [amount, name, weight or count (optional)] */
 const MEALFOOD={
  egg:      q=>[frac(q), q===1?'Whole egg':'Whole eggs'],
  eggwhite: q=>[frac(q), q===1?'Egg white':'Egg whites'],
  chapati:  q=>[frac(q), 'Chapati'],
  milk:     q=>[frac(q)+(q===1?' glass':' glasses'), 'Milk'],
  whey:     q=>[frac(q)+(q===1?' scoop':' scoops'), 'Whey protein in water'],
- chicken:  q=>[frac(q)+(q>1?' palms':' palm')+' (~'+Math.round(100*q)+' g cooked)', 'Chicken breast'],
+ chicken:  q=>[frac(q)+(q>1?' palms':' palm'), 'Chicken breast', '~'+Math.round(100*q)+' g cooked'],
  rice:     q=>[frac(q)+(q>1?' cups':' cup'), 'Cooked rice'],
  dahi:     q=>[frac(q)+(q>1?' cups':' cup'), 'Dahi'],
  salad:    q=>['1 plate', 'Salad, as much as you like'],
  gyogurt:  q=>['~'+Math.round(200*q)+' g', 'Greek or strained yogurt'],
- almonds:  q=>[frac(q)+(q>1?' small handfuls':' small handful'), 'Almonds'],
- qeemaLean:q=>[frac(q)+(q>1?' small bowls':' small bowl')+' (~'+Math.round(150*q)+' g)', 'Lean qeema, cooked in a little oil'],
+ almonds:  q=>[frac(q)+(q>1?' handfuls':' handful'), 'Almonds', 'about '+Math.round(20*q)],
+ qeemaLean:q=>[frac(q)+(q>1?' bowls':' bowl'), 'Lean qeema, cooked in a little oil', '~'+Math.round(150*q)+' g'],
  sabzi:    q=>['1 bowl', 'Sabzi'],
  banana:   q=>[frac(q), q===1?'Banana':'Bananas'],
  dates:    q=>[String(Math.round(3*q)), 'Dates'],
@@ -3581,7 +3589,7 @@ function renderCondSection(){
         +'<div class="note" style="margin-top:11px"><b>In practice</b><br>'+x.how+'</div></div></details>';
     }).join('')
     +'<details><summary><span class="idx">04</span>Where it goes in the week<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
-    +'<div class="tw"><table><thead><tr><th>Phase</th><th class="n">Steps</th><th>Zone 2</th><th>HIIT</th></tr></thead><tbody>'
+    +'<div class="tw"><table><thead><tr><th>Phase</th><th class="n">Steps</th><th>Zone 2</th><th>Intervals</th></tr></thead><tbody>'
     +[1,2,3].map(p=>'<tr'+(p===ph?' style="background:var(--ember-wash)"':'')+'><td>'+p+' · '+PHASES[p-1].name+'</td>'
       +'<td class="n">'+COND[p].steps+'</td><td>'+COND[p].z2+'× · '+COND[p].z2min+'</td>'
       +'<td>'+(COND[p].hiit?COND[p].hiit+'×':'none')+'</td></tr>').join('')
@@ -3886,7 +3894,7 @@ function restPanel(id,ref){
 function restLabel(){
   const n=RT.set+1, tgt=setsWanted(itemFor(RT.id,RT.ref));
   if(RT.done) return n>=tgt?'Go — rest done. All '+tgt+' sets in, save the session':'Go — set '+(n+1);
-  return n>=tgt?'Rest · last set done · next exercise':'Rest · set '+n+' done · next: set '+(n+1);
+  return n>=tgt?'Rest · then the next exercise':'Rest · then set '+(n+1);
 }
 function restPct(){ return Math.max(0,Math.min(100,(RT.end-Date.now())/RT.total*100)); }
 function keepRest(){ S.ui.rest={id:RT.id,set:RT.set,end:RT.end,total:RT.total,slot:RT.ref}; save(); }
@@ -4124,8 +4132,8 @@ function renderFuel(){
   const wk=Math.abs(t.weekly);
   $('#fuelGoal').innerHTML='<b>'+esc(GOAL_NAME[S.profile.goal])+'.</b> '
     +(S.profile.goal==='maintain'?'You eat what you burn: about '+t.tdee.toLocaleString()+' kcal a day.'
-      :'You burn about '+t.tdee.toLocaleString()+' kcal a day; the plan averages '+t.kcal.toLocaleString()+', which should move the scale about '
-        +wk.toFixed(1)+' kg a week '+(t.weekly<0?'down':'up')+'.')
+      :'You burn about '+t.tdee.toLocaleString()+' kcal a day and the plan averages '+t.kcal.toLocaleString()+'. That should take the scale '
+        +(t.weekly<0?'down':'up')+' by about '+wk.toFixed(1)+' kg a week.')
     +(t.floored?' <b>This is the lowest safe target:</b> do not eat less than this without a doctor.':'')
     +' <span style="color:var(--text-faint)">Change your goal or your numbers in Settings.</span>';
 
@@ -4135,7 +4143,7 @@ function renderFuel(){
     +d.meals.map(m=>
       '<div class="meal"><div class="meal-h"><span class="nm">'+esc(m.n)+'</span>'
       +'<span class="mc">'+m.k+' kcal<br>'+m.p+' g P</span></div><ul>'
-      +m.items.map(it=>{ const x=MEALFOOD[it.id](it.q); return '<li><span class="q">'+esc(x[0])+'</span><span>'+esc(x[1])+'</span></li>'; }).join('')
+      +m.items.map(it=>{ const x=MEALFOOD[it.id](it.q); return '<li><span class="q">'+esc(x[0])+'</span><span>'+esc(x[1])+(x[2]?' <span class="g">'+esc(x[2])+'</span>':'')+'</span></li>'; }).join('')
       +'<li style="margin-top:3px;color:var(--text-faint);font-size:12.5px;display:block">'+esc(m.tip)+'</li></ul></div>').join('')
     +'<div class="note hot" style="margin-top:12px" id="mealTotal">This day adds up to <b>'+d.k+' kcal · '+d.p+' g protein</b>'
       +' (carbs '+d.c+' g, fat '+d.f+' g). Your target today is <b>'+d.wantK+' kcal</b> and <b>at least '+d.wantP+' g of protein</b>.'
@@ -4162,9 +4170,9 @@ function renderFuel(){
     +'</div></details>'
     +'<details><summary><span class="idx">04</span>Swaps<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
     +'<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:11px">Mix freely. The plan does not care which protein you pick, only that it is there.</p>'
-    +'<div class="tw"><table><thead><tr><th>Instead of</th><th>Any of these</th><th>Roughly</th></tr></thead><tbody>'
-    +SWAPS.map(s=>'<tr><td>'+esc(s[0])+'</td><td>'+esc(s[1])+'</td><td class="n">'+esc(s[2])+'</td></tr>').join('')
-    +'</tbody></table></div></div></details>'
+    +SWAPS.map(s=>'<div class="swap"><div class="sw-h"><span style="color:var(--text-faint);font-size:12.5px">Instead of</span><b>'+esc(s[0])+'</b><span class="pill">'+esc(s[2])+'</span></div>'
+      +'<ul class="klist">'+s[1].split(' · ').map(o=>'<li>'+esc(o)+'</li>').join('')+'</ul></div>').join('')
+    +'</div></details>'
     +'<details><summary><span class="idx">05</span>Weekly shop<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
     +GROCERY.map(g=>'<div style="margin-bottom:12px"><div class="eyebrow" style="margin-bottom:5px">'+esc(g[0])+'</div>'
       +'<div class="checks">'+g[1].map(it=>{ const k=g[0]+'|'+it[0]; return '<button class="chk" data-shop="'+esc(k)+'" aria-pressed="'+!!S.shop[k]+'"><span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(it[0])+'</span><span class="hint">'+esc(it[1])+'</span></button>'; }).join('')+'</div></div>').join('')

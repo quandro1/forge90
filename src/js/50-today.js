@@ -182,7 +182,7 @@ function renderCondSection(){
         +'<div class="note" style="margin-top:11px"><b>In practice</b><br>'+x.how+'</div></div></details>';
     }).join('')
     +'<details><summary><span class="idx">04</span>Where it goes in the week<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'
-    +'<div class="tw"><table><thead><tr><th>Phase</th><th class="n">Steps</th><th>Zone 2</th><th>HIIT</th></tr></thead><tbody>'
+    +'<div class="tw"><table><thead><tr><th>Phase</th><th class="n">Steps</th><th>Zone 2</th><th>Intervals</th></tr></thead><tbody>'
     +[1,2,3].map(p=>'<tr'+(p===ph?' style="background:var(--ember-wash)"':'')+'><td>'+p+' · '+PHASES[p-1].name+'</td>'
       +'<td class="n">'+COND[p].steps+'</td><td>'+COND[p].z2+'× · '+COND[p].z2min+'</td>'
       +'<td>'+(COND[p].hiit?COND[p].hiit+'×':'none')+'</td></tr>').join('')

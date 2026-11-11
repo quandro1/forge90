@@ -23,7 +23,7 @@ function restPanel(id,ref){
 function restLabel(){
   const n=RT.set+1, tgt=setsWanted(itemFor(RT.id,RT.ref));
   if(RT.done) return n>=tgt?'Go — rest done. All '+tgt+' sets in, save the session':'Go — set '+(n+1);
-  return n>=tgt?'Rest · last set done · next exercise':'Rest · set '+n+' done · next: set '+(n+1);
+  return n>=tgt?'Rest · then the next exercise':'Rest · then set '+(n+1);
 }
 function restPct(){ return Math.max(0,Math.min(100,(RT.end-Date.now())/RT.total*100)); }
 function keepRest(){ S.ui.rest={id:RT.id,set:RT.set,end:RT.end,total:RT.total,slot:RT.ref}; save(); }

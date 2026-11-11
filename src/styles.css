@@ -107,11 +107,11 @@ header.top{
 .brand i{font-style:normal; color:var(--ember); font-family:var(--font-m); font-size:13px}
 .top .spacer{flex:1}
 .iconbtn{
-  width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);
+  width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line);
   border-radius:8px;color:var(--text-dim);background:var(--surface)
 }
 .iconbtn:hover{color:var(--text); border-color:var(--steel-dim)}
-.iconbtn svg{width:17px;height:17px}
+.iconbtn svg{width:18px;height:18px}
 
 /* ============ TABS ============ */
 .tabbar{
@@ -457,6 +457,8 @@ details.how>summary .how-t{flex:1}
   font-family:var(--font-m); font-variant-numeric:tabular-nums; font-size:14px; text-align:right;
 }
 .frow select{text-align:left; width:150px; font-family:var(--font-b); font-size:13px}
+.frow input[type="date"]{width:150px; text-align:left; font-size:13px}
+.frow input,.frow select{min-height:40px}
 .frow input:focus,.frow select:focus{border-color:var(--ember); outline:none}
 
 /* ============ MEALS ============ */
@@ -468,7 +470,13 @@ details.how>summary .how-t{flex:1}
 .meal-h .mc{font-family:var(--font-m); font-size:11px; color:var(--text-faint); text-align:right; white-space:nowrap}
 .meal ul{margin:0; padding:11px 13px 12px 13px; list-style:none; display:flex; flex-direction:column; gap:7px}
 .meal li{display:flex; gap:10px; font-size:13.5px; align-items:baseline}
-.meal li .q{font-family:var(--font-m); font-size:12px; color:var(--steel); flex:none; min-width:62px}
+.meal li .q{font-family:var(--font-m); font-size:12px; color:var(--steel); flex:none; width:86px}
+.meal li .g{color:var(--text-faint); font-size:12.5px}
+.swap{padding:11px 0; border-bottom:1px solid var(--line-soft)}
+.swap:last-child{border-bottom:none; padding-bottom:0}
+.swap .sw-h{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; margin-bottom:6px}
+.swap .sw-h b{font-size:14px}
+.swap .klist{margin:0}
 
 /* ============ DAY COUNTER ============ */
 .pbar{height:12px; border-radius:99px; background:var(--sunken); border:1px solid var(--line); overflow:hidden; margin:10px 0 6px}
