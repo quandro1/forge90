@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="d818007d8d">
+<meta name="forge-build" content="d02fa1c301">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2704,6 +2704,14 @@ const GUIDE=[
  }}
 ];
 /* ===================================================================
+   The lookup tables answer only for their own keys.
+   Saved data names exercises and programs. A name such as "toString" is
+   found on every ordinary object, so without this a hand-edited or damaged
+   save could pass for a real exercise and stop the app from opening.
+   =================================================================== */
+[EX, PROGRAMS, WARM, WARMSETS, FOOD, COND, ZN, MEALFOOD, MEALPLAN].forEach(t=>Object.setPrototypeOf(t,null));
+for(const k in PROGRAMS) Object.setPrototypeOf(PROGRAMS[k].variants,null);
+/* ===================================================================
    CORE — DOM helpers, dates, icons
    =================================================================== */
 const $=(s,r)=>(r||document).querySelector(s);
@@ -2726,6 +2734,7 @@ const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000
 /* The training day runs from 03:00 to 03:00, so a session that crosses midnight
    stays on the day it began. TODAY is fixed for the life of the page; the page
    reloads when it is shown again on a later day. */
+const BLOCK_DAYS=91;                        // a block is thirteen weeks
 const DAY_ROLL_H=3;
 const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));
 const TODAY=dayOf(new Date());
@@ -2845,6 +2854,13 @@ function normalize(p){
     return o;
   });
   s.logs=pruneLogs(cleanLogs(p.logs));
+  if(legacy){        // version 1 prescribed a lighter week in weeks 6 and 12 but did not mark those sessions
+    const st=parseISO(s.profile.start);
+    for(const id in s.logs) s.logs[id].forEach(e=>{
+      const n=daysBetween(st,parseISO(e.d)), wk=Math.floor(n/7)+1;
+      if(n>=0&&n<BLOCK_DAYS&&(wk===6||wk===12)) e.dl=1;
+    });
+  }
   s.food=dateMap(p.food,a=>{
     if(!Array.isArray(a)) return undefined;
     const out=a.filter(isObj).map(x=>({n:String(x.n==null?'':x.n).slice(0,80), k:numIn(x.k,0,20000,0), p:numIn(x.p,0,2000,0), c:numIn(x.c,0,5000,0), f:numIn(x.f,0,2000,0)}));
@@ -2866,6 +2882,7 @@ function normalize(p){
   s.ui.diet=u.diet==='rest'?'rest':'train';
   if(u.helpSeen) s.ui.helpSeen=1;
   if(numIn(u.savedAt,1,1e15,null)!=null) s.ui.savedAt=+u.savedAt;
+  if(numIn(u.v1At,1,1e15,null)!=null) s.ui.v1At=+u.v1At;     // how much of the version 1 copy is already in here
   if(isObj(u.rest)&&typeof u.rest.id==='string'&&EX[u.rest.id]&&numIn(u.rest.end,1,1e15,null)!=null&&numIn(u.rest.total,1,1e8,null)!=null)
     s.ui.rest={id:u.rest.id, set:numIn(u.rest.set,-1,99,-1), end:+u.rest.end, total:+u.rest.total, slot:typeof u.rest.slot==='string'?u.rest.slot.slice(0,12):''};
   if(legacy) s.ui.from=1;                   // came from version 1 (shows the what-is-new note once)
@@ -2888,9 +2905,9 @@ function normalize(p){
     s.plans.push({from:last.from>TODAY?last.from:TODAY, program:cur.program, dpw:cur.dpw, days:cur.days.slice()});
   return s;
 }
-/* Two copies of the state that both changed (the app open twice): keep everything
+/* Two copies of the state that both changed (the app open twice): keep what
    either one has. Where both hold the same day, this copy's entry stays and the
-   other fills its gaps; nothing is dropped. */
+   other fills its gaps. */
 function mergeStates(theirs,mine){
   const out=clone(mine);
   ['weights','waist','steps','food','cond'].forEach(k=>{ for(const d in theirs[k]) if(!(d in out[k])) out[k][d]=theirs[k][d]; });
@@ -2937,6 +2954,10 @@ function readStore(key){
   try{ const raw=localStorage.getItem(key); return raw?JSON.parse(raw):null; }catch(e){ return null; }
 }
 function storedRev(){ try{ return +localStorage.getItem(KEY_REV)||0; }catch(e){ return 0; } }
+function lsGet(key){ try{ return localStorage.getItem(key); }catch(e){ return null; } }
+function lsDrop(key){ try{ localStorage.removeItem(key); }catch(e){} }
+/* when the version 1 copy on this phone was last saved (0 if there is none) */
+function v1Stamp(v1){ return (isObj(v1)&&isObj(v1.ui))?numIn(v1.ui.savedAt,1,1e15,0):0; }
 function load(){
   REV=storedRev();
   let raw=null, v2=null, bad=false;
@@ -2946,9 +2967,15 @@ function load(){
   if(bad){ try{ localStorage.setItem(KEY_DMG,raw); }catch(e){} BOOT.damaged=true; }
   // Data written by a newer version: show it as well as this version can, and never write over it.
   if(isObj(v2)&&v2.v>STATE_V){ BOOT.newer=true; SAVE_HALT=true; return normalize(v2); }
-  if(isObj(v2)&&v2.v>=2) return normalize(v2);
-  const v1=readStore(KEY_V1);
-  if(isObj(v1)){ BOOT.migrated=true; BOOT.write=true; return normalize(v1); }
+  const v1=readStore(KEY_V1), at=v1Stamp(v1);
+  if(isObj(v2)&&v2.v>=2){
+    const s=normalize(v2);
+    // A copy of the earlier version that was still open kept saving under its own key.
+    // Whatever it logged after the conversion is folded in here, once.
+    if(at>(+s.ui.v1At||0)){ const m=mergeStates(normalize(v1),s); m.ui.v1At=at; BOOT.write=true; return m; }
+    return s;
+  }
+  if(isObj(v1)){ BOOT.migrated=true; BOOT.write=true; const s=normalize(v1); if(at) s.ui.v1At=at; return s; }
   if(isObj(v2)){ BOOT.write=true; return normalize(v2); }
   return freshState();
 }
@@ -2959,9 +2986,18 @@ let S=load();
    writes, it checks whether another copy (a second tab, the installed app
    next to the browser tab) wrote in the meantime, and folds that in first:
    a stale copy can never wipe what a newer one logged. */
+/* The stored state is gone although this copy has read or written one: it was erased in
+   another copy of the app. This copy must not write its old data back; it starts again too. */
+function erasedElsewhere(){
+  if(SAVE_HALT||REV<1) return false;
+  let raw='x'; try{ raw=localStorage.getItem(KEY); }catch(e){}
+  if(raw!==null) return false;
+  SAVE_HALT=true; location.reload(); return true;
+}
 function writeNow(){
   clearTimeout(saveTimer); saveTimer=null;
   if(SAVE_HALT||!DIRTY) return;
+  if(erasedElsewhere()) return;
   try{
     const now=storedRev();
     if(now!==REV){
@@ -2978,6 +3014,7 @@ function writeNow(){
 /* Another copy wrote and this one has nothing unsaved: take the stored state. Returns true if S changed. */
 let STALE_VIEW=false;
 function adoptIfStale(){
+  if(erasedElsewhere()) return false;
   if(SAVE_HALT||storedRev()===REV) return false;
   if(DIRTY){ writeNow(); return true; }
   const other=readStore(KEY);
@@ -2986,15 +3023,21 @@ function adoptIfStale(){
   S=normalize(other); REV=storedRev();
   return true;
 }
-function onStorage(e){ if(e.key===KEY||e.key===KEY_REV) STALE_VIEW=true; }
+function onStorage(e){
+  // erased in another copy of the app (or all site data cleared): let go of the old data at once
+  if((e.key===KEY&&e.newValue===null)||e.key===null){ if(!SAVE_HALT){ SAVE_HALT=true; location.reload(); } return; }
+  if(e.key===KEY||e.key===KEY_REV) STALE_VIEW=true;
+}
 window.addEventListener('storage',onStorage);
 function paintSaveState(){
   const sb=$('#saveBar'); if(sb) sb.classList.toggle('on',!SAVE_OK);
   const vb=$('#verBar'); if(vb) vb.classList.toggle('on',!!BOOT.newer);
 }
-function save(){
+/* quiet: housekeeping the app does by itself (dropping a finished rest, a tick it can see).
+   It is written, but it does not make this copy look newer than one the user has changed since. */
+function save(quiet){
   DIRTY=true;
-  S.ui.savedAt=Date.now();                 // lets two copies of the state say which is newer
+  if(!quiet) S.ui.savedAt=Date.now();      // lets two copies of the state say which is newer
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{ writeNow(); cloudQueue(); },160);
 }
@@ -3015,13 +3058,16 @@ async function cloudInit(){
     const db=await claude.use('db'), user=db?await claude.use('user'):null;
     const uid=user?await user.id():null;
     if(!db||!uid){ CLOUD.status='local'; cloudBadge(); return; }
-    CLOUD.doc=db.doc('data/users/'+uid+'/state');
-    const snap=await CLOUD.doc.get();
+    const doc=db.doc('data/users/'+uid+'/state');
+    const snap=await doc.get();
     const remote=snap.exists?snap.data():null;
     const remoteAt=remote?(+(remote.ui&&remote.ui.savedAt)||0):0, localAt=+(S.ui.savedAt)||0;
+    CLOUD.doc=doc;                           // only now: nothing may upload before the two copies are compared
     if(remote&&remoteAt>localAt){
       S=normalize(clone(remote)); DIRTY=true; REV=storedRev(); writeNow();
-      CLOUD.status='synced'; CLOUD.at=remoteAt; rerenderAll();
+      CLOUD.status='synced'; CLOUD.at=remoteAt;
+      if(S.profile.setup&&SU) setupClose();  // the data arrived: no need to ask who this is
+      rerenderAll();
     }else{
       CLOUD.status='synced'; CLOUD.at=localAt;
       if(localAt>remoteAt) cloudPush();      // this device has the newer log
@@ -3030,12 +3076,12 @@ async function cloudInit(){
   cloudBadge();
 }
 function cloudQueue(){
-  if(!CLOUD.doc) return;
+  if(!CLOUD.doc||SAVE_HALT) return;       // a copy that must not write locally must not upload either
   CLOUD.dirty=true; clearTimeout(CLOUD.timer);
   CLOUD.timer=setTimeout(cloudPush,1500);   // a burst of typing becomes one write
 }
 async function cloudPush(){
-  if(!CLOUD.doc||CLOUD.busy) return;
+  if(!CLOUD.doc||CLOUD.busy||SAVE_HALT) return;
   CLOUD.busy=true; CLOUD.dirty=false; clearTimeout(CLOUD.timer);
   try{ await CLOUD.doc.set(clone(S)); CLOUD.status='synced'; CLOUD.at=+(S.ui.savedAt)||Date.now(); }
   catch(e){ CLOUD.status='error'; }
@@ -3059,8 +3105,6 @@ function rerenderAll(){
 /* ===================================================================
    THE PLAN — which program, which days, what each day holds
    =================================================================== */
-const BLOCK_DAYS=91;
-
 function program(){ return PROGRAMS[S.profile.program]||PROGRAMS[DEFAULT_PROGRAM]; }
 function variantKeys(p){ return Object.keys(p.variants).map(Number).sort((a,b)=>a-b); }
 function variant(){ const p=program(); return p.variants[S.profile.dpw]||p.variants[p.def]; }
@@ -3250,7 +3294,9 @@ const CORE=['protein','steps','sleep'];
 function dayDone(ds){
   const c=S.checks[ds]||[], i=infoForDate(ds);
   if(!CORE.every(k=>c.indexOf(k)>=0)) return false;
-  if(i&&i.type==='lift'&&c.indexOf('session')<0) return false;
+  // a lifting day also needs its session: of this block, or of a block that came before it
+  const lift=i?i.type==='lift':(S.blocks.some(b=>b.start<=ds&&ds<=b.end)&&planOn(ds).days.indexOf(parseISO(ds).getDay())>=0);
+  if(lift&&c.indexOf('session')<0) return false;
   return true;
 }
 function streak(){
@@ -3406,7 +3452,7 @@ function safeVerdict(id,it){
   catch(err){ return {cls:'none', ic:ICO.dot, txt:'Log this session and the next one gets a target.'}; }
 }
 function renderToday(){
-  if(syncAuto()) save();                       // ticks the logs already prove
+  if(syncAuto()) save(true);                   // ticks the logs already prove
   const t=targets(), di=todayIndex(), info=infoForDate(TODAY);
   const started=di>=1, done=di>BLOCK_DAYS;
 
@@ -3484,6 +3530,7 @@ function renderHelp(){
       +'<div class="card-h"><h3>The app was updated</h3><button class="btn sm" data-hidenew>Got it</button></div>'
       +'<ol class="steps big">'
       +'<li><b>Everything you logged is here.</b> The old copy is still on this phone as a backup.</li>'
+      +'<li><b>Your sessions were revised.</b> Some exercises, set counts and rep ranges changed. Open Train to see this week; the history of every lift is kept.</li>'
       +'<li><b>Choose a target.</b> Train → Change: six plans, with the days you train.</li>'
       +'<li><b>Clearer exercise guides.</b> Each lift now shows where a rep starts and finishes, where you should feel it, and what to change if you do not.</li>'
       +'<li><b>The rest timer always starts,</b> and today\'s target stays on screen until your last set.</li>'
@@ -4534,7 +4581,7 @@ function settingsSheet(){
         ?'Everything you log is saved on this device and backed up privately to your Claude account, so a cleared browser or a second phone picks up where you left off.'
         :'Everything you log lives in this browser only — nothing is sent anywhere. Clearing site data or using a different device starts you fresh, so export a backup now and then.')+'</p>'
     +'<p style="margin-bottom:8px"><span id="cloudBadge" class="pill"></span></p>'
-    +(localStorage.getItem(KEY_DMG)?'<div id="damagedNote" class="note hot" style="margin-bottom:10px"><b>Some saved data could not be read.</b><br>A copy of it was put aside so it is not lost. '
+    +(lsGet(KEY_DMG)?'<div id="damagedNote" class="note hot" style="margin-bottom:10px"><b>Some saved data could not be read.</b><br>A copy of it was put aside so it is not lost. '
       +'<span style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" id="btnDmgExport">Save that copy as a file</button><button class="btn sm danger" id="btnDmgDrop">Discard it</button></span></div>':'')
     +'<p id="storageLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+storageLine()+'</p>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btnExport">Export a backup</button>'
@@ -5128,7 +5175,12 @@ document.addEventListener('input',e=>{
     else{ if(raw==='') return; next[k]=+raw; }
     const ok=cleanProfile(next,false);
     if(k!=='start'&&k!=='sex'&&k!=='goal'&&next[k]!=null&&ok[k]!==next[k]) return;      // out of range
-    S.profile=ok; save(); refreshTab(); return;        // the screen under the sheet follows at once
+    S.profile=ok;
+    if(k==='start'){           // the newest plan begins with the block, not on the date the block used to start
+      const from=ok.start>TODAY?ok.start:TODAY, last=S.plans[S.plans.length-1];
+      if(last&&last.from>from){ last.from=from; S.plans=S.plans.filter((e,i,a)=>i===a.length-1||e.from<from); }
+    }
+    save(); refreshTab(); return;                      // the screen under the sheet follows at once
   }
 });
 function setNum(obj,v,lo,hi){
@@ -5298,28 +5350,34 @@ document.addEventListener('click',e=>{
   }
   if(e.target.id==='btnExport'||e.target.closest('[data-export]')) exportBackup(e.target.closest('button'));
   if(e.target.id==='btnDmgExport'){
-    const raw=localStorage.getItem(KEY_DMG)||'';
+    const raw=lsGet(KEY_DMG)||'';
     try{ const blob=new Blob([raw],{type:'text/plain'}), url=URL.createObjectURL(blob), a=document.createElement('a');
       a.href=url; a.download='forge90-unreadable-copy-'+TODAY+'.txt'; document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },400); }catch(err){}
   }
-  if(e.target.id==='btnDmgDrop'){ localStorage.removeItem(KEY_DMG); const n=$('#damagedNote'); if(n) n.remove(); }
+  if(e.target.id==='btnDmgDrop'){ lsDrop(KEY_DMG); const n=$('#damagedNote'); if(n) n.remove(); }
   if(e.target.id==='btnImport'){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
     inp.addEventListener('change',()=>{
       const f=inp.files[0]; if(!f) return;
       const r=new FileReader();
-      r.onload=()=>{ try{
+      r.onload=()=>{
+        let p;
+        try{
           const raw=JSON.parse(r.result);
           // only something that looks like a backup may replace what is on the device
           if(!isObj(raw)||!(isObj(raw.profile)||isObj(raw.logs)||isObj(raw.weights))) throw new Error('not a backup');
-          const p=normalize(raw); p.ui.savedAt=Date.now(); p.profile.setup=true;
-          // The restored state becomes THE state before the page reloads: the save
-          // that runs as a page closes would otherwise write the old one back.
-          S=p; DIRTY=true; REV=storedRev(); writeNow();      // a restore replaces what is stored: no merge
-          if(!SAVE_OK) throw new Error('storage refused the write');
-          cloudQueue(); SAVE_HALT=true; location.reload(); }
-        catch(err){ e.target.textContent='Could not read that file'; } };
+          p=normalize(raw);
+        }catch(err){ e.target.textContent='Could not read that file'; return; }
+        p.ui.savedAt=Date.now(); p.profile.setup=true;
+        const at=v1Stamp(readStore(KEY_V1)); if(at) p.ui.v1At=at;      // a restore is not topped up from the old copy on this phone
+        // The restored state becomes THE state before the page reloads: the save
+        // that runs as a page closes would otherwise write the old one back.
+        const before=S, wasDirty=DIRTY;
+        S=p; DIRTY=true; REV=storedRev(); writeNow();      // a restore replaces what is stored: no merge
+        if(!SAVE_OK){ S=before; DIRTY=wasDirty; e.target.textContent='Could not save it: storage is full or blocked'; return; }
+        cloudQueue(); SAVE_HALT=true; location.reload();
+      };
       r.readAsText(f);
     });
     inp.click();
@@ -5327,7 +5385,7 @@ document.addEventListener('click',e=>{
   if(e.target.id==='btnWipe'){
     if(e.target.dataset.armed){
       SAVE_HALT=true;                        // nothing may write the old state back while the page closes
-      localStorage.removeItem(KEY); localStorage.removeItem(KEY_V1); localStorage.removeItem(KEY_DMG);
+      lsDrop(KEY); lsDrop(KEY_V1); lsDrop(KEY_DMG); lsDrop(KEY_REV);     // the revision goes too: the next copy starts from nothing
       const done=()=>location.reload();
       if(CLOUD.doc){ e.target.textContent='Erasing…'; CLOUD.doc.delete().then(done,done); } else done();
     }
@@ -5349,11 +5407,12 @@ document.addEventListener('click',e=>{
   // a rest timer that was running when the page closed picks up where it was
   const r=S.ui.rest;
   if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); }
-  else if(r){ delete S.ui.rest; save(); }
+  else if(r){ delete S.ui.rest; save(true); }
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible') return;
     // a new training day began while the app was away: start it clean (never in the middle of a rest)
-    if(dayOf(new Date())!==TODAY&&!(RT&&!RT.done)){ writeNow(); location.reload(); return; }
+    const resting=RT&&!RT.done&&RT.end>Date.now();           // only a rest still counting down may hold the day
+    if(dayOf(new Date())!==TODAY&&!resting){ writeNow(); location.reload(); return; }
     if(RT&&!RT.done){ tickRest(); wakeLock(true); }
     // another copy of the app wrote while this one was away: show its data
     if(adoptIfStale()||STALE_VIEW){ STALE_VIEW=false; const a=document.activeElement; if(!(a&&a.closest&&a.closest('.logger'))) rerenderAll(); }

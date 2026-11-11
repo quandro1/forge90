@@ -1,8 +1,6 @@
 /* ===================================================================
    THE PLAN — which program, which days, what each day holds
    =================================================================== */
-const BLOCK_DAYS=91;
-
 function program(){ return PROGRAMS[S.profile.program]||PROGRAMS[DEFAULT_PROGRAM]; }
 function variantKeys(p){ return Object.keys(p.variants).map(Number).sort((a,b)=>a-b); }
 function variant(){ const p=program(); return p.variants[S.profile.dpw]||p.variants[p.def]; }
@@ -192,7 +190,9 @@ const CORE=['protein','steps','sleep'];
 function dayDone(ds){
   const c=S.checks[ds]||[], i=infoForDate(ds);
   if(!CORE.every(k=>c.indexOf(k)>=0)) return false;
-  if(i&&i.type==='lift'&&c.indexOf('session')<0) return false;
+  // a lifting day also needs its session: of this block, or of a block that came before it
+  const lift=i?i.type==='lift':(S.blocks.some(b=>b.start<=ds&&ds<=b.end)&&planOn(ds).days.indexOf(parseISO(ds).getDay())>=0);
+  if(lift&&c.indexOf('session')<0) return false;
   return true;
 }
 function streak(){

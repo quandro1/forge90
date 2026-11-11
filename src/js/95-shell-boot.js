@@ -138,28 +138,34 @@ document.addEventListener('click',e=>{
   }
   if(e.target.id==='btnExport'||e.target.closest('[data-export]')) exportBackup(e.target.closest('button'));
   if(e.target.id==='btnDmgExport'){
-    const raw=localStorage.getItem(KEY_DMG)||'';
+    const raw=lsGet(KEY_DMG)||'';
     try{ const blob=new Blob([raw],{type:'text/plain'}), url=URL.createObjectURL(blob), a=document.createElement('a');
       a.href=url; a.download='forge90-unreadable-copy-'+TODAY+'.txt'; document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },400); }catch(err){}
   }
-  if(e.target.id==='btnDmgDrop'){ localStorage.removeItem(KEY_DMG); const n=$('#damagedNote'); if(n) n.remove(); }
+  if(e.target.id==='btnDmgDrop'){ lsDrop(KEY_DMG); const n=$('#damagedNote'); if(n) n.remove(); }
   if(e.target.id==='btnImport'){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
     inp.addEventListener('change',()=>{
       const f=inp.files[0]; if(!f) return;
       const r=new FileReader();
-      r.onload=()=>{ try{
+      r.onload=()=>{
+        let p;
+        try{
           const raw=JSON.parse(r.result);
           // only something that looks like a backup may replace what is on the device
           if(!isObj(raw)||!(isObj(raw.profile)||isObj(raw.logs)||isObj(raw.weights))) throw new Error('not a backup');
-          const p=normalize(raw); p.ui.savedAt=Date.now(); p.profile.setup=true;
-          // The restored state becomes THE state before the page reloads: the save
-          // that runs as a page closes would otherwise write the old one back.
-          S=p; DIRTY=true; REV=storedRev(); writeNow();      // a restore replaces what is stored: no merge
-          if(!SAVE_OK) throw new Error('storage refused the write');
-          cloudQueue(); SAVE_HALT=true; location.reload(); }
-        catch(err){ e.target.textContent='Could not read that file'; } };
+          p=normalize(raw);
+        }catch(err){ e.target.textContent='Could not read that file'; return; }
+        p.ui.savedAt=Date.now(); p.profile.setup=true;
+        const at=v1Stamp(readStore(KEY_V1)); if(at) p.ui.v1At=at;      // a restore is not topped up from the old copy on this phone
+        // The restored state becomes THE state before the page reloads: the save
+        // that runs as a page closes would otherwise write the old one back.
+        const before=S, wasDirty=DIRTY;
+        S=p; DIRTY=true; REV=storedRev(); writeNow();      // a restore replaces what is stored: no merge
+        if(!SAVE_OK){ S=before; DIRTY=wasDirty; e.target.textContent='Could not save it: storage is full or blocked'; return; }
+        cloudQueue(); SAVE_HALT=true; location.reload();
+      };
       r.readAsText(f);
     });
     inp.click();
@@ -167,7 +173,7 @@ document.addEventListener('click',e=>{
   if(e.target.id==='btnWipe'){
     if(e.target.dataset.armed){
       SAVE_HALT=true;                        // nothing may write the old state back while the page closes
-      localStorage.removeItem(KEY); localStorage.removeItem(KEY_V1); localStorage.removeItem(KEY_DMG);
+      lsDrop(KEY); lsDrop(KEY_V1); lsDrop(KEY_DMG); lsDrop(KEY_REV);     // the revision goes too: the next copy starts from nothing
       const done=()=>location.reload();
       if(CLOUD.doc){ e.target.textContent='Erasing…'; CLOUD.doc.delete().then(done,done); } else done();
     }
@@ -189,11 +195,12 @@ document.addEventListener('click',e=>{
   // a rest timer that was running when the page closed picks up where it was
   const r=S.ui.rest;
   if(r&&EX[r.id]&&r.end>Date.now()){ RT={id:r.id,ref:r.slot||'',set:r.set,end:r.end,total:r.total,done:false,warned:r.end-Date.now()<=10000}; rtTick=setInterval(tickRest,250); }
-  else if(r){ delete S.ui.rest; save(); }
+  else if(r){ delete S.ui.rest; save(true); }
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible') return;
     // a new training day began while the app was away: start it clean (never in the middle of a rest)
-    if(dayOf(new Date())!==TODAY&&!(RT&&!RT.done)){ writeNow(); location.reload(); return; }
+    const resting=RT&&!RT.done&&RT.end>Date.now();           // only a rest still counting down may hold the day
+    if(dayOf(new Date())!==TODAY&&!resting){ writeNow(); location.reload(); return; }
     if(RT&&!RT.done){ tickRest(); wakeLock(true); }
     // another copy of the app wrote while this one was away: show its data
     if(adoptIfStale()||STALE_VIEW){ STALE_VIEW=false; const a=document.activeElement; if(!(a&&a.closest&&a.closest('.logger'))) rerenderAll(); }

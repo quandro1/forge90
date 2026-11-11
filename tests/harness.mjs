@@ -47,12 +47,17 @@ const MIME = {
 };
 
 /** Static file server on a free loopback port. `down()` makes every request fail, to test offline;
+ *  `stall()` accepts requests and never answers (a signal too weak to carry anything); `status(n)` answers
+ *  everything with that HTTP status (a server having a bad day); `up()` puts it back to normal;
  *  `setRoot(dir)` swaps the folder being served, to test a new deployment reaching an open app. */
 export function serve(root = ROOT) {
+  root = path.resolve(root);
   return new Promise((resolve) => {
-    let dead = false;
+    let dead = false, stalled = false, forced = 0;
     const srv = http.createServer((req, res) => {
       if (dead) { req.socket.destroy(); return; }
+      if (stalled) return;
+      if (forced) { res.writeHead(forced, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }); res.end('<h1>' + forced + '</h1>'); return; }
       let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
       if (p.endsWith('/')) p += PAGE;
       const file = path.join(root, p);
@@ -69,7 +74,9 @@ export function serve(root = ROOT) {
     srv.listen(0, '127.0.0.1', () => resolve({
       url: 'http://localhost:' + srv.address().port + '/',
       down: () => { dead = true; },
-      up: () => { dead = false; },
+      stall: () => { stalled = true; },
+      status: (n) => { forced = n; },
+      up: () => { dead = false; stalled = false; forced = 0; },
       setRoot: (dir) => { root = path.resolve(dir); },
       close: () => new Promise((r) => { srv.closeAllConnections?.(); srv.close(r); }),
     }));
@@ -95,6 +102,7 @@ export async function launch() {
  *   now     pretend date-time (default NOW); false = real clock
  *   sw      true to allow the service worker (default blocked, so a cached old build can never answer)
  *   device  playwright device name (default 'Pixel 7')
+ *   init    JavaScript source run in the page before the app boots (for example a stand-in for a host runtime)
  * Returns { page, context, errors, clock }. `errors` collects uncaught page errors and console.error lines.
  */
 export async function openApp(env, opts = {}) {
@@ -121,6 +129,7 @@ export async function openApp(env, opts = {}) {
       for (const k in s) localStorage.setItem(k, s[k]);
     } catch (e) { /* storage blocked */ }
   }, seed);
+  if (opts.init) await page.addInitScript(opts.init);
   await page.goto(base + (opts.hash ? '#' + opts.hash : ''), { waitUntil: 'load' });
   return { page, context, errors, clock: page.clock };
 }

@@ -7,6 +7,8 @@ import path from 'node:path';
 import { ROOT, v1State, v2State, finishSetup } from './harness.mjs';
 import { oldBuild } from './pwa.test.mjs';
 
+// the same logs without the deload marker version 2 adds to sessions of weeks 6 and 12
+const plain = (logs) => JSON.parse(JSON.stringify(logs, (k, v) => (k === 'dl' ? undefined : v)));
 const stores = (page) => page.evaluate(() => ({ v1: localStorage.getItem('forge90_v1'), v2: localStorage.getItem('forge90_v2') }));
 const rich = () => v1State({
   profile: { start: '2026-08-17', w: 88, h: 180, age: 23, act: 1.45, goal: 75, split: 'five' },
@@ -48,7 +50,10 @@ export default [
       assert.equal(s.profile.targetW, 75);
       assert.equal(s.profile.sex, 'm');
       assert.equal(s.profile.goal, 'cut');
-      for (const k of ['weights', 'waist', 'steps', 'checks', 'logs', 'food', 'cond', 'shop']) assert.deepEqual(s[k], seed[k], k + ' changed');
+      for (const k of ['weights', 'waist', 'steps', 'checks', 'food', 'cond', 'shop']) assert.deepEqual(s[k], seed[k], k + ' changed');
+      assert.deepEqual(plain(s.logs), seed.logs, 'a logged number changed');
+      // 2 Nov falls in week 12 of a block that began on 17 Aug: a deload week, and now marked as one
+      assert.deepEqual(s.logs.inclineBB.map((e) => !!e.dl), [true, false]);
       assert.equal(s.meas.length, 1);
       assert.equal(+s.meas[0].waist, 96);
       assert.match(await page.locator('#dayline').innerText(), /day 87 of 91/i);
@@ -171,7 +176,7 @@ export default [
       await page.locator('#btnImport').tap();
       await (await chooser).setFiles(file);
       await page.waitForFunction(() => typeof S === 'object' && S.logs && S.logs.pullup);
-      assert.deepEqual(await page.evaluate(() => S.logs.inclineBB), seed.logs.inclineBB);
+      assert.deepEqual(plain(await page.evaluate(() => S.logs.inclineBB)), seed.logs.inclineBB);
       assert.equal(await page.evaluate(() => S.profile.start), '2026-08-17');
       assert.equal(await page.evaluate(() => S.v), 2);
     },

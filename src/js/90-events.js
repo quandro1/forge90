@@ -327,7 +327,12 @@ document.addEventListener('input',e=>{
     else{ if(raw==='') return; next[k]=+raw; }
     const ok=cleanProfile(next,false);
     if(k!=='start'&&k!=='sex'&&k!=='goal'&&next[k]!=null&&ok[k]!==next[k]) return;      // out of range
-    S.profile=ok; save(); refreshTab(); return;        // the screen under the sheet follows at once
+    S.profile=ok;
+    if(k==='start'){           // the newest plan begins with the block, not on the date the block used to start
+      const from=ok.start>TODAY?ok.start:TODAY, last=S.plans[S.plans.length-1];
+      if(last&&last.from>from){ last.from=from; S.plans=S.plans.filter((e,i,a)=>i===a.length-1||e.from<from); }
+    }
+    save(); refreshTab(); return;                      // the screen under the sheet follows at once
   }
 });
 function setNum(obj,v,lo,hi){

@@ -1,5 +1,5 @@
 function renderToday(){
-  if(syncAuto()) save();                       // ticks the logs already prove
+  if(syncAuto()) save(true);                   // ticks the logs already prove
   const t=targets(), di=todayIndex(), info=infoForDate(TODAY);
   const started=di>=1, done=di>BLOCK_DAYS;
 
@@ -77,6 +77,7 @@ function renderHelp(){
       +'<div class="card-h"><h3>The app was updated</h3><button class="btn sm" data-hidenew>Got it</button></div>'
       +'<ol class="steps big">'
       +'<li><b>Everything you logged is here.</b> The old copy is still on this phone as a backup.</li>'
+      +'<li><b>Your sessions were revised.</b> Some exercises, set counts and rep ranges changed. Open Train to see this week; the history of every lift is kept.</li>'
       +'<li><b>Choose a target.</b> Train → Change: six plans, with the days you train.</li>'
       +'<li><b>Clearer exercise guides.</b> Each lift now shows where a rep starts and finishes, where you should feel it, and what to change if you do not.</li>'
       +'<li><b>The rest timer always starts,</b> and today\'s target stays on screen until your last set.</li>'

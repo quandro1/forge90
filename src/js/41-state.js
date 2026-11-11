@@ -102,6 +102,13 @@ function normalize(p){
     return o;
   });
   s.logs=pruneLogs(cleanLogs(p.logs));
+  if(legacy){        // version 1 prescribed a lighter week in weeks 6 and 12 but did not mark those sessions
+    const st=parseISO(s.profile.start);
+    for(const id in s.logs) s.logs[id].forEach(e=>{
+      const n=daysBetween(st,parseISO(e.d)), wk=Math.floor(n/7)+1;
+      if(n>=0&&n<BLOCK_DAYS&&(wk===6||wk===12)) e.dl=1;
+    });
+  }
   s.food=dateMap(p.food,a=>{
     if(!Array.isArray(a)) return undefined;
     const out=a.filter(isObj).map(x=>({n:String(x.n==null?'':x.n).slice(0,80), k:numIn(x.k,0,20000,0), p:numIn(x.p,0,2000,0), c:numIn(x.c,0,5000,0), f:numIn(x.f,0,2000,0)}));
@@ -123,6 +130,7 @@ function normalize(p){
   s.ui.diet=u.diet==='rest'?'rest':'train';
   if(u.helpSeen) s.ui.helpSeen=1;
   if(numIn(u.savedAt,1,1e15,null)!=null) s.ui.savedAt=+u.savedAt;
+  if(numIn(u.v1At,1,1e15,null)!=null) s.ui.v1At=+u.v1At;     // how much of the version 1 copy is already in here
   if(isObj(u.rest)&&typeof u.rest.id==='string'&&EX[u.rest.id]&&numIn(u.rest.end,1,1e15,null)!=null&&numIn(u.rest.total,1,1e8,null)!=null)
     s.ui.rest={id:u.rest.id, set:numIn(u.rest.set,-1,99,-1), end:+u.rest.end, total:+u.rest.total, slot:typeof u.rest.slot==='string'?u.rest.slot.slice(0,12):''};
   if(legacy) s.ui.from=1;                   // came from version 1 (shows the what-is-new note once)
@@ -145,9 +153,9 @@ function normalize(p){
     s.plans.push({from:last.from>TODAY?last.from:TODAY, program:cur.program, dpw:cur.dpw, days:cur.days.slice()});
   return s;
 }
-/* Two copies of the state that both changed (the app open twice): keep everything
+/* Two copies of the state that both changed (the app open twice): keep what
    either one has. Where both hold the same day, this copy's entry stays and the
-   other fills its gaps; nothing is dropped. */
+   other fills its gaps. */
 function mergeStates(theirs,mine){
   const out=clone(mine);
   ['weights','waist','steps','food','cond'].forEach(k=>{ for(const d in theirs[k]) if(!(d in out[k])) out[k][d]=theirs[k][d]; });
@@ -194,6 +202,10 @@ function readStore(key){
   try{ const raw=localStorage.getItem(key); return raw?JSON.parse(raw):null; }catch(e){ return null; }
 }
 function storedRev(){ try{ return +localStorage.getItem(KEY_REV)||0; }catch(e){ return 0; } }
+function lsGet(key){ try{ return localStorage.getItem(key); }catch(e){ return null; } }
+function lsDrop(key){ try{ localStorage.removeItem(key); }catch(e){} }
+/* when the version 1 copy on this phone was last saved (0 if there is none) */
+function v1Stamp(v1){ return (isObj(v1)&&isObj(v1.ui))?numIn(v1.ui.savedAt,1,1e15,0):0; }
 function load(){
   REV=storedRev();
   let raw=null, v2=null, bad=false;
@@ -203,9 +215,15 @@ function load(){
   if(bad){ try{ localStorage.setItem(KEY_DMG,raw); }catch(e){} BOOT.damaged=true; }
   // Data written by a newer version: show it as well as this version can, and never write over it.
   if(isObj(v2)&&v2.v>STATE_V){ BOOT.newer=true; SAVE_HALT=true; return normalize(v2); }
-  if(isObj(v2)&&v2.v>=2) return normalize(v2);
-  const v1=readStore(KEY_V1);
-  if(isObj(v1)){ BOOT.migrated=true; BOOT.write=true; return normalize(v1); }
+  const v1=readStore(KEY_V1), at=v1Stamp(v1);
+  if(isObj(v2)&&v2.v>=2){
+    const s=normalize(v2);
+    // A copy of the earlier version that was still open kept saving under its own key.
+    // Whatever it logged after the conversion is folded in here, once.
+    if(at>(+s.ui.v1At||0)){ const m=mergeStates(normalize(v1),s); m.ui.v1At=at; BOOT.write=true; return m; }
+    return s;
+  }
+  if(isObj(v1)){ BOOT.migrated=true; BOOT.write=true; const s=normalize(v1); if(at) s.ui.v1At=at; return s; }
   if(isObj(v2)){ BOOT.write=true; return normalize(v2); }
   return freshState();
 }
@@ -216,9 +234,18 @@ let S=load();
    writes, it checks whether another copy (a second tab, the installed app
    next to the browser tab) wrote in the meantime, and folds that in first:
    a stale copy can never wipe what a newer one logged. */
+/* The stored state is gone although this copy has read or written one: it was erased in
+   another copy of the app. This copy must not write its old data back; it starts again too. */
+function erasedElsewhere(){
+  if(SAVE_HALT||REV<1) return false;
+  let raw='x'; try{ raw=localStorage.getItem(KEY); }catch(e){}
+  if(raw!==null) return false;
+  SAVE_HALT=true; location.reload(); return true;
+}
 function writeNow(){
   clearTimeout(saveTimer); saveTimer=null;
   if(SAVE_HALT||!DIRTY) return;
+  if(erasedElsewhere()) return;
   try{
     const now=storedRev();
     if(now!==REV){
@@ -235,6 +262,7 @@ function writeNow(){
 /* Another copy wrote and this one has nothing unsaved: take the stored state. Returns true if S changed. */
 let STALE_VIEW=false;
 function adoptIfStale(){
+  if(erasedElsewhere()) return false;
   if(SAVE_HALT||storedRev()===REV) return false;
   if(DIRTY){ writeNow(); return true; }
   const other=readStore(KEY);
@@ -243,15 +271,21 @@ function adoptIfStale(){
   S=normalize(other); REV=storedRev();
   return true;
 }
-function onStorage(e){ if(e.key===KEY||e.key===KEY_REV) STALE_VIEW=true; }
+function onStorage(e){
+  // erased in another copy of the app (or all site data cleared): let go of the old data at once
+  if((e.key===KEY&&e.newValue===null)||e.key===null){ if(!SAVE_HALT){ SAVE_HALT=true; location.reload(); } return; }
+  if(e.key===KEY||e.key===KEY_REV) STALE_VIEW=true;
+}
 window.addEventListener('storage',onStorage);
 function paintSaveState(){
   const sb=$('#saveBar'); if(sb) sb.classList.toggle('on',!SAVE_OK);
   const vb=$('#verBar'); if(vb) vb.classList.toggle('on',!!BOOT.newer);
 }
-function save(){
+/* quiet: housekeeping the app does by itself (dropping a finished rest, a tick it can see).
+   It is written, but it does not make this copy look newer than one the user has changed since. */
+function save(quiet){
   DIRTY=true;
-  S.ui.savedAt=Date.now();                 // lets two copies of the state say which is newer
+  if(!quiet) S.ui.savedAt=Date.now();      // lets two copies of the state say which is newer
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{ writeNow(); cloudQueue(); },160);
 }
@@ -272,13 +306,16 @@ async function cloudInit(){
     const db=await claude.use('db'), user=db?await claude.use('user'):null;
     const uid=user?await user.id():null;
     if(!db||!uid){ CLOUD.status='local'; cloudBadge(); return; }
-    CLOUD.doc=db.doc('data/users/'+uid+'/state');
-    const snap=await CLOUD.doc.get();
+    const doc=db.doc('data/users/'+uid+'/state');
+    const snap=await doc.get();
     const remote=snap.exists?snap.data():null;
     const remoteAt=remote?(+(remote.ui&&remote.ui.savedAt)||0):0, localAt=+(S.ui.savedAt)||0;
+    CLOUD.doc=doc;                           // only now: nothing may upload before the two copies are compared
     if(remote&&remoteAt>localAt){
       S=normalize(clone(remote)); DIRTY=true; REV=storedRev(); writeNow();
-      CLOUD.status='synced'; CLOUD.at=remoteAt; rerenderAll();
+      CLOUD.status='synced'; CLOUD.at=remoteAt;
+      if(S.profile.setup&&SU) setupClose();  // the data arrived: no need to ask who this is
+      rerenderAll();
     }else{
       CLOUD.status='synced'; CLOUD.at=localAt;
       if(localAt>remoteAt) cloudPush();      // this device has the newer log
@@ -287,12 +324,12 @@ async function cloudInit(){
   cloudBadge();
 }
 function cloudQueue(){
-  if(!CLOUD.doc) return;
+  if(!CLOUD.doc||SAVE_HALT) return;       // a copy that must not write locally must not upload either
   CLOUD.dirty=true; clearTimeout(CLOUD.timer);
   CLOUD.timer=setTimeout(cloudPush,1500);   // a burst of typing becomes one write
 }
 async function cloudPush(){
-  if(!CLOUD.doc||CLOUD.busy) return;
+  if(!CLOUD.doc||CLOUD.busy||SAVE_HALT) return;
   CLOUD.busy=true; CLOUD.dirty=false; clearTimeout(CLOUD.timer);
   try{ await CLOUD.doc.set(clone(S)); CLOUD.status='synced'; CLOUD.at=+(S.ui.savedAt)||Date.now(); }
   catch(e){ CLOUD.status='error'; }
