@@ -10,7 +10,7 @@ function openSheet(title,html){
   // an open sheet is one step of history, so the phone's Back button closes it instead of leaving the app
   if(!(history.state&&history.state.sheet)){ try{ history.pushState({sheet:1},''); }catch(e){} }
 }
-function hideSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; }
+function hideSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; tiltStop(); }   // a closed sheet is not measuring a bench any more
 let sheetBack=0;                 // history steps this code is taking back itself
 function closeSheet(){
   hideSheet();

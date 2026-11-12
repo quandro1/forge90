@@ -22,6 +22,8 @@
                       an optional sixth entry { not: 60 } draws the common mistake as a grey line with a cross.
                       Only where the plain words of the row already name that mistake, and at least 15° away
                       from the right position. The number is not printed: it shows the direction of the mistake.
+                      { phone: 1 } in the same entry offers "Measure with phone": for an angle that is set on
+                      equipment (a bench, a seat back) and is of kind up or lean, so a phone lying on the pad reads it.
               grip    hands and wrists (feet: where the feet or the leg pads go)
               range   where the rep starts and where it ends (the hold is in the tempo line, shown under it)
               like    one comparison with something from everyday life, and what it tells you
@@ -54,7 +56,7 @@ EX.inclineDB = {
   cue: "Press up and slightly in; lower until the dumbbells are level with your chest.",
   form: {
     angles: [
-      ["Bench", "up", 30, "up from flat", "The first or second position up from flat. Up to 45° still trains the upper chest. Steeper than 45° and the shoulders take over.", { not: 60 }],
+      ["Bench", "up", 30, "up from flat", "The first or second position up from flat. Up to 45° still trains the upper chest. Steeper than 45° and the shoulders take over.", { not: 60, phone: 1 }],
       ["Elbows", "out", 45, "out from your sides", "Halfway between touching your ribs and pointing straight out to the sides."],
     ],
     grip: "Palms face your feet, or turned in a little if your shoulders feel better that way. Each dumbbell stays right above its elbow.",
@@ -92,7 +94,7 @@ EX.inclineBB = {
   cue: "Bar down to the top of your chest, then press it back up over your shoulders.",
   form: {
     angles: [
-      ["Bench", "up", 30, "up from flat", "The first or second position up from flat. A fixed bench of up to 45° is fine. Steeper than 45° and the shoulders take over.", { not: 60 }],
+      ["Bench", "up", 30, "up from flat", "The first or second position up from flat. A fixed bench of up to 45° is fine. Steeper than 45° and the shoulders take over.", { not: 60, phone: 1 }],
       ["Elbows", "out", [45, 60], "out from your sides", "Halfway between your ribs and straight out, or a little wider. Never straight out to the sides.", { not: 90 }],
     ],
     grip: "Each hand one hand-width outside your shoulder, thumbs wrapped round the bar. Forearms straight up and down at the bottom.",
@@ -324,7 +326,7 @@ EX.dbPress = {
   cue: "Press the dumbbells from ear height to straight arms, without arching your back.",
   form: {
     angles: [
-      ["Bench back", "up", [75, 85], "up from flat", "One position lower than fully upright, so your whole back can stay on the pad."],
+      ["Bench back", "up", [75, 85], "up from flat", "One position lower than fully upright, so your whole back can stay on the pad.", { phone: 1 }],
       ["Elbows, seen from above", "fwd", [20, 30], "in front of straight out to the sides", "A little forward, where you can just see them at the edge of your view. Not straight out to the sides.", { not: 0 }],
     ],
     grip: "Palms forward, or turned in a little. Wrists straight, each dumbbell right above its elbow.",
@@ -1172,7 +1174,7 @@ EX.legext = {
   form: {
     angles: [
       ["Knees", "bend", [100, 0, "move"], "of bend", "From the deepest bend the machine allows to fully straight, with a squeeze at the top."],
-      ["Seat back", "lean", [20, 40], "back from upright", "If the seat back tilts, set it one or two positions back. That stretches the front of the thigh more."],
+      ["Seat back", "lean", [20, 40], "back from upright", "If the seat back tilts, set it one or two positions back. That stretches the front of the thigh more.", { phone: 1 }],
     ],
     grip: "Hold the handles beside the seat and pull yourself down, so your hips stay on the seat.",
     feet: "Ankle pad on the lower shin, just above your feet. Knees beside the point where the machine arm turns, toes pointing up.",

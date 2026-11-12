@@ -2,7 +2,7 @@
 // The Fuel numbers for a range of people, to read with a human eye.
 //   node tools/fuel-table.mjs [--days]     targets for each person; --days also prints the example day
 // Nothing real is read or written: it runs the built app on a made-up state.
-import { launch, serve, openApp, v2State, ROOT } from '../tests/harness.mjs';
+import { launch, serve, openApp, v2State, ROOT, closeBrowser, closeServer } from '../tests/harness.mjs';
 
 const PEOPLE = [
   ['man 88 kg, lose fat',          { sex: 'm', age: 23, h: 180, w: 88, act: 1.45, goal: 'cut' }],
@@ -43,6 +43,6 @@ try {
   }
   if (errors.length) console.log('PAGE ERRORS:\n' + errors.join('\n'));
 } finally {
-  await browser.close();
-  await server.close();
+  await closeBrowser(browser);
+  await closeServer(server);
 }

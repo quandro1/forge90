@@ -4,7 +4,7 @@
 // Uses made-up states. Nothing real is read or written.
 import fs from 'node:fs';
 import path from 'node:path';
-import { launch, serve, openApp, v2State, ROOT } from '../tests/harness.mjs';
+import { launch, serve, openApp, v2State, ROOT, closeBrowser, closeServer } from '../tests/harness.mjs';
 
 const theme = process.argv[2] === 'light' ? 'light' : 'dark';
 const device = process.argv[3] || 'Pixel 7';
@@ -124,8 +124,8 @@ try {
     await context.close();
   }
 } finally {
-  await browser.close();
-  await server.close();
+  await closeBrowser(browser);
+  await closeServer(server);
 }
 console.log(names.map((n) => path.basename(n)).join('  '));
 console.log(out);

@@ -61,7 +61,7 @@ export default [
         for (const id in EX) for (const a of EX[id].form.angles) {
           const at = id + ' ' + a[0] + ': ', opt = a[5], g = DIAL[a[1]];
           const host = D.draw(a[1], a[2], opt), lines = host.querySelectorAll('line.d-not'), cross = host.querySelectorAll('.d-x');
-          if (opt === undefined) {
+          if (opt === undefined || !('not' in opt)) {         // a sixth entry may also only say that a phone can measure the angle
             without++;
             if (lines.length || cross.length) out.push(at + 'a mistake is drawn but the row names none');
           } else {

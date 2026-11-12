@@ -1,0 +1,146 @@
+[
+ {
+  "name": "a bench 6 degrees off still counts as right",
+  "file": "src/js/66-tilt.js",
+  "find": "lo=typeof d==='number'?d-3:Math.min(d[0],d[1])-1, hi=typeof d==='number'?d+3:Math.max(d[0],d[1])+1;",
+  "put": "lo=typeof d==='number'?d-6:Math.min(d[0],d[1])-1, hi=typeof d==='number'?d+6:Math.max(d[0],d[1])+1;",
+  "tests": "tilt",
+  "expect": "only inside the target"
+ },
+ {
+  "name": "a seat back is read from flat like a bench",
+  "file": "src/js/66-tilt.js",
+  "find": "function tiltValue(kind,deg){ return kind==='lean'?90-deg:deg; }",
+  "put": "function tiltValue(kind,deg){ return deg; }",
+  "tests": "tilt",
+  "expect": "counted from upright"
+ },
+ {
+  "name": "a phone lying face down reads wrong",
+  "file": "src/js/66-tilt.js",
+  "find": "c=Math.abs(Math.cos((+beta||0)*r)*Math.cos((+gamma||0)*r));",
+  "put": "c=Math.cos((+beta||0)*r)*Math.cos((+gamma||0)*r);",
+  "tests": "tilt",
+  "expect": "whichever way round"
+ },
+ {
+  "name": "the sideways tilt is ignored",
+  "file": "src/js/66-tilt.js",
+  "find": "c=Math.abs(Math.cos((+beta||0)*r)*Math.cos((+gamma||0)*r));",
+  "put": "c=Math.abs(Math.cos((+beta||0)*r));",
+  "tests": "tilt",
+  "expect": "whichever way round"
+ },
+ {
+  "name": "a phone that sends nothing is left waiting",
+  "file": "src/js/66-tilt.js",
+  "find": "t.timer=setTimeout(()=>{ if(TILT===t&&!t.heard) tiltSay(",
+  "put": "t.timer=setTimeout(()=>{ if(false) tiltSay(",
+  "tests": "tilt",
+  "expect": "sends none is told so"
+ },
+ {
+  "name": "a closed sheet goes on measuring",
+  "file": "src/js/80-sheets.js",
+  "find": "PICK=null; tiltStop(); }",
+  "put": "PICK=null; }",
+  "tests": "tilt",
+  "expect": "closing the sheet"
+ },
+ {
+  "name": "a phone that said no is still read",
+  "file": "src/js/66-tilt.js",
+  "find": "      window.removeEventListener('deviceorientation',tiltOn);\n      t.v=null; tiltPaint();",
+  "put": "      t.v=null; tiltPaint();",
+  "tests": "tilt",
+  "expect": "a \"no\" is explained"
+ },
+ {
+  "name": "every angle row offers the phone",
+  "file": "src/js/66-tilt.js",
+  "find": "if(!(a[5]&&a[5].phone)||typeof DeviceOrientationEvent==='undefined') return '';",
+  "put": "if(typeof DeviceOrientationEvent==='undefined') return '';",
+  "tests": "tilt",
+  "expect": "no other row does"
+ },
+ {
+  "name": "\"2–3 s\" is played as 2",
+  "file": "src/js/67-tempo.js",
+  "find": "out.push({label:m[3], secs:+(m[2]||m[1])});",
+  "put": "out.push({label:m[3], secs:+m[1]});",
+  "tests": "tempo",
+  "expect": "understood in full"
+ },
+ {
+  "name": "of two equal parts the first is the slow one",
+  "file": "src/js/67-tempo.js",
+  "find": "p.secs>=out[slow].secs)) slow=i;",
+  "put": "p.secs>out[slow].secs)) slow=i;",
+  "tests": "tempo",
+  "expect": "understood in full"
+ },
+ {
+  "name": "a hold sounds like a fast part",
+  "file": "src/js/67-tempo.js",
+  "find": "p.pitch=p.hold?'mid':i===slow?'low':'high';",
+  "put": "p.pitch=i===slow?'low':'high';",
+  "tests": "tempo",
+  "expect": "understood in full"
+ },
+ {
+  "name": "a second tap starts again and never stops",
+  "file": "src/js/90-events.js",
+  "find": "if(tp){ if(TEMPO&&TEMPO.id===tp.dataset.tempo) tempoStop(); else tempoStart(tp.dataset.tempo); return; }",
+  "put": "if(tp){ tempoStart(tp.dataset.tempo); return; }",
+  "tests": "tempo",
+  "expect": "stop on Stop"
+ },
+ {
+  "name": "a new start leaves the old beat running",
+  "file": "src/js/67-tempo.js",
+  "find": "  tempoStop();\n  audioUnlock();",
+  "put": "  audioUnlock();",
+  "tests": "tempo",
+  "expect": "only one lift beeps"
+ },
+ {
+  "name": "a ticked set does not stop the beeps",
+  "file": "src/js/90-events.js",
+  "find": "      tempoStop();                                                        // the set is done: its beat ends with it\n",
+  "put": "",
+  "tests": "tempo",
+  "expect": "ticking a set stops"
+ },
+ {
+  "name": "the beat never stops by itself",
+  "file": "src/js/67-tempo.js",
+  "find": "if(ms>=TEMPO_MAX){ tempoStop(); return; }",
+  "put": "",
+  "tests": "tempo",
+  "expect": "three minutes"
+ },
+ {
+  "name": "no tick on the seconds inside a part",
+  "file": "src/js/67-tempo.js",
+  "find": "key=at.cyc+'/'+at.i+'/'+at.sec;",
+  "put": "key=at.cyc+'/'+at.i;",
+  "tests": "tempo",
+  "expect": "round and round"
+ },
+ {
+  "name": "an unknown part of a tempo line is skipped instead of refusing the line",
+  "file": "src/js/67-tempo.js",
+  "find": "    else return null;\n  }",
+  "put": "    else continue;\n  }",
+  "tests": "tempo",
+  "expect": "understood in full"
+ },
+ {
+  "name": "a line with one part gets a beat",
+  "file": "src/js/67-tempo.js",
+  "find": "if(out.length<2||out.some(p=>!(p.secs>=1&&p.secs<=3))) return null;",
+  "put": "if(out.some(p=>!(p.secs>=1&&p.secs<=3))) return null;",
+  "tests": "tempo",
+  "expect": "understood in full"
+ }
+]

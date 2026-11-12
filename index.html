@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="66e53172ab">
+<meta name="forge-build" content="f7c7ec96e5">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -487,6 +487,21 @@ details.formnotes>summary .how-t{flex:1}
 .pbline .was{color:var(--text-dim); margin-left:8px; white-space:nowrap}
 .pbline.fresh{animation:pbpop .9s ease-out 1}
 @keyframes pbpop{0%{transform:scale(.96); box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent)}45%{transform:scale(1.015)}100%{transform:none; box-shadow:0 0 0 10px transparent}}
+/* tempo beeps: the button beside the tempo line, and the part of the rep that is sounding */
+.pos .tempo{display:inline-block; min-height:32px; padding:5px 0; margin-left:6px; white-space:nowrap; font-size:13px}
+.pos .tempo[aria-pressed="true"]{color:var(--ember)}
+.tempo-now{margin-left:8px; font-family:var(--font-m); font-size:12.5px; font-weight:700; color:var(--ember)}
+/* "Measure with phone": the link under a bench or seat angle, and its sheet */
+.ang-t .tilt{display:block; min-height:34px; padding:6px 0 4px; font-size:13px; text-align:left}
+.tilt-how{font-size:14px; line-height:1.5}
+.tilt-box{margin-top:14px; padding:18px 14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--sunken); text-align:center}
+.tilt-n{font-size:72px; font-weight:600; line-height:1; letter-spacing:-.02em; color:var(--text)}
+.tilt-n.ok{color:var(--good)}
+.tilt-t{margin-top:10px; font-size:13.5px; color:var(--text-dim)}
+.tilt-t b{color:var(--ember); font-family:var(--font-m)}
+.tilt-s{margin-top:12px; font-size:15px; line-height:1.4; font-weight:600; color:var(--warn); min-height:42px}
+.tilt-s.ok{color:var(--good)} .tilt-s.wait{color:var(--text-faint); font-weight:400}
+.tilt-note{font-size:12px; color:var(--text-faint); margin-top:12px; line-height:1.45}
 /* the history sheet of a lift */
 .hist-s{font-size:14px; line-height:1.5; margin-bottom:6px}
 .hist-s.dim{font-size:13px; color:var(--text-dim)}
@@ -1124,6 +1139,8 @@ const ZN={uchest:'Upper chest',chest:'Chest',fdelt:'Front delts',sdelt:'Side del
                       an optional sixth entry { not: 60 } draws the common mistake as a grey line with a cross.
                       Only where the plain words of the row already name that mistake, and at least 15° away
                       from the right position. The number is not printed: it shows the direction of the mistake.
+                      { phone: 1 } in the same entry offers "Measure with phone": for an angle that is set on
+                      equipment (a bench, a seat back) and is of kind up or lean, so a phone lying on the pad reads it.
               grip    hands and wrists (feet: where the feet or the leg pads go)
               range   where the rep starts and where it ends (the hold is in the tempo line, shown under it)
               like    one comparison with something from everyday life, and what it tells you
@@ -1156,7 +1173,7 @@ EX.inclineDB = {
   cue: "Press up and slightly in; lower until the dumbbells are level with your chest.",
   form: {
     angles: [
-      ["Bench", "up", 30, "up from flat", "The first or second position up from flat. Up to 45° still trains the upper chest. Steeper than 45° and the shoulders take over.", { not: 60 }],
+      ["Bench", "up", 30, "up from flat", "The first or second position up from flat. Up to 45° still trains the upper chest. Steeper than 45° and the shoulders take over.", { not: 60, phone: 1 }],
       ["Elbows", "out", 45, "out from your sides", "Halfway between touching your ribs and pointing straight out to the sides."],
     ],
     grip: "Palms face your feet, or turned in a little if your shoulders feel better that way. Each dumbbell stays right above its elbow.",
@@ -1194,7 +1211,7 @@ EX.inclineBB = {
   cue: "Bar down to the top of your chest, then press it back up over your shoulders.",
   form: {
     angles: [
-      ["Bench", "up", 30, "up from flat", "The first or second position up from flat. A fixed bench of up to 45° is fine. Steeper than 45° and the shoulders take over.", { not: 60 }],
+      ["Bench", "up", 30, "up from flat", "The first or second position up from flat. A fixed bench of up to 45° is fine. Steeper than 45° and the shoulders take over.", { not: 60, phone: 1 }],
       ["Elbows", "out", [45, 60], "out from your sides", "Halfway between your ribs and straight out, or a little wider. Never straight out to the sides.", { not: 90 }],
     ],
     grip: "Each hand one hand-width outside your shoulder, thumbs wrapped round the bar. Forearms straight up and down at the bottom.",
@@ -1426,7 +1443,7 @@ EX.dbPress = {
   cue: "Press the dumbbells from ear height to straight arms, without arching your back.",
   form: {
     angles: [
-      ["Bench back", "up", [75, 85], "up from flat", "One position lower than fully upright, so your whole back can stay on the pad."],
+      ["Bench back", "up", [75, 85], "up from flat", "One position lower than fully upright, so your whole back can stay on the pad.", { phone: 1 }],
       ["Elbows, seen from above", "fwd", [20, 30], "in front of straight out to the sides", "A little forward, where you can just see them at the edge of your view. Not straight out to the sides.", { not: 0 }],
     ],
     grip: "Palms forward, or turned in a little. Wrists straight, each dumbbell right above its elbow.",
@@ -2274,7 +2291,7 @@ EX.legext = {
   form: {
     angles: [
       ["Knees", "bend", [100, 0, "move"], "of bend", "From the deepest bend the machine allows to fully straight, with a squeeze at the top."],
-      ["Seat back", "lean", [20, 40], "back from upright", "If the seat back tilts, set it one or two positions back. That stretches the front of the thigh more."],
+      ["Seat back", "lean", [20, 40], "back from upright", "If the seat back tilts, set it one or two positions back. That stretches the front of the thigh more.", { phone: 1 }],
     ],
     grip: "Hold the handles beside the seat and pull yourself down, so your hips stay on the seat.",
     feet: "Ankle pad on the lower shin, just above your feet. Knees beside the point where the machine arm turns, toes pointing up.",
@@ -3406,6 +3423,7 @@ const GUIDE=[
     +row('bend',[100,0,'move'],['A shaded band','A range: either anywhere between two numbers, or how far the joint travels during the rep. When the joint travels, the solid line swings from the start to the finish a few times, then stays at the finish.'])
     +row('up',30,['A grey line with a cross','A common mistake, shown next to the right position. Here the bench is set too steep.'],{not:60})
     +'</div>'
+    +'<p style="margin-top:12px">Two helpers sit in the same block. On a bench or seat angle, <b>Measure with phone</b> shows the angle of the pad when you lay the phone on it. Beside <b>Tempo</b>, <b>Beeps</b> plays the pace of a rep: a low note for the slow part, a high note for the fast part, and a tick for each second. Tap it again to stop.</p>'
     +'<p style="margin-top:12px">The numbers are guides, not strict rules. Bodies differ: if a position hurts, stop before you reach it. The line under each number says the same thing in plain words, and <b>Like</b> compares the movement with something you already know.</p>';
  }},
  {t:'Deload weeks: what they are and why', b:()=>deloadText()},
@@ -3497,7 +3515,7 @@ const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000
 function segSync(){ $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('on')))); }
 const BLOCK_DAYS=91;                        // a block is thirteen weeks
 const DELOAD_WEEKS=[6,12];                  // the two planned easy weeks of a block
-const NEWS=3;                             // the number of the latest "what changed" note on Today (raise it when one is added to NEWS_NOTES)
+const NEWS=4;                           // the number of the latest "what changed" note on Today (raise it when one is added to NEWS_NOTES)
 const DAY_ROLL_H=3;
 const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));
 const TODAY=dayOf(new Date());
@@ -4486,6 +4504,10 @@ const NEWS_NOTES={
     '<b>Back up in one tap.</b> Your log is stored on this phone only. In Settings (the cog at the top), "Back up now" sends a copy to WhatsApp, Gmail or Drive, and Restore reads it back.',
     '<b>A history for every lift.</b> In a logbook, tap History beside last time\'s sets: your best set, a graph and every session. When a set beats your best, the logbook says "New best".',
     '<b>Muscles this week.</b> Progress shows how many sets each muscle has had this week, on the body, and which muscles are still to come.'
+  ],
+  4:[
+    '<b>Measure a bench with the phone.</b> On the incline presses, the seated shoulder press and the leg extension, tap "Measure with phone" under the angle and lay the phone on the pad. The number turns green at the right angle.',
+    '<b>Tempo beeps.</b> Beside a lift\'s Tempo line, tap Beeps: a low note for the slow part of the rep and a high note for the fast part. Tap it again to stop.'
   ]
 };
 function renderHelp(){
@@ -4828,14 +4850,14 @@ function formNotes(id,plain){
   const f=EX[id]&&EX[id].form; if(!f) return '';
   // a short "measured from" ("of bend") stays on one line with its number
   const from=t=>t.length<=12?esc(t).replace(/ /g,'&nbsp;'):esc(t);
-  const rows=(f.angles||[]).map(a=>'<div class="ang">'+dial(a[1],a[2],a[5])
+  const rows=(f.angles||[]).map((a,i)=>'<div class="ang">'+dial(a[1],a[2],a[5])
     +'<div class="ang-t"><span class="ang-h"><b>'+esc(a[0])+'</b> <span class="ang-v">'+esc(degText(a[2]))+'</span>'+(a[3].length<=12?'&nbsp;':' ')+'<span class="ang-r">'+from(a[3])+'</span></span>'
-    +'<span class="ang-w">'+a[4]+'</span></div></div>').join('');
+    +'<span class="ang-w">'+a[4]+'</span>'+tiltLink(id,i,a)+'</div></div>').join('');
   const body='<div class="angs">'+rows+'</div><dl class="pos">'
     +(f.grip?'<dt>Grip</dt><dd>'+f.grip+'</dd>':'')
     +(f.feet?'<dt>Feet</dt><dd>'+f.feet+'</dd>':'')
     +'<dt>Range</dt><dd>'+f.range+'</dd>'
-    +(EX[id].tempo?'<dt>Tempo</dt><dd>'+EX[id].tempo+'</dd>':'')
+    +(EX[id].tempo?'<dt>Tempo</dt><dd>'+EX[id].tempo+tempoLink(id)+'</dd>':'')
     +'<dt>Like</dt><dd class="sim">'+esc(f.like)+'</dd></dl>';
   if(plain) return '<div class="formnotes plain"><div class="eyebrow">Angles, grip and range</div>'+body+'</div>';
   return '<details class="formnotes"'+(S.ui.formOff?'':' open')+'><summary><span class="how-t">Angles, grip and range</span><span class="chev">'+ICO.chev+'</span></summary>'
@@ -5347,6 +5369,176 @@ function renderMuscleWeek(){
     +'</div>';
 }
 /* ===================================================================
+   MEASURE WITH PHONE
+   On the angle rows that are set on equipment (an incline bench, a seat back) the phone can measure the
+   slope itself: it lies on the pad and the sheet shows the angle, in the same terms as the row.
+   An angle row opts in with {phone: 1} as part of its sixth entry (10-exercises.js); only "up" (from flat)
+   and "lean" (from upright) rows can.
+
+   The slope comes from the phone's own tilt sensor (the deviceorientation event): beta is the tilt front to
+   back, gamma the tilt side to side. The angle between the screen and level ground is
+   acos(|cos beta x cos gamma|), which is the same whichever way round the phone lies, face up or face down.
+   iPhones ask before sharing movement, and only from a tap, so the question is asked when the link is tapped.
+   Nothing is stored and nothing leaves the phone.
+   =================================================================== */
+let TILT=null;                               // the measuring in progress: {row, v, heard, timer}
+function tiltAngle(beta,gamma){
+  const r=Math.PI/180, c=Math.abs(Math.cos((+beta||0)*r)*Math.cos((+gamma||0)*r));
+  return Math.acos(Math.min(1,c))/r;
+}
+function tiltLink(id,i,a){
+  if(!(a[5]&&a[5].phone)||typeof DeviceOrientationEvent==='undefined') return '';
+  return '<button class="lkbtn tilt" data-tilt="'+id+'|'+i+'">Measure with phone</button>';
+}
+/* the reading, in the row's own terms: up from flat, or back from upright */
+function tiltValue(kind,deg){ return kind==='lean'?90-deg:deg; }
+function tiltJudge(row,v){
+  const d=row[2], lo=typeof d==='number'?d-3:Math.min(d[0],d[1])-1, hi=typeof d==='number'?d+3:Math.max(d[0],d[1])+1;
+  if(v>=lo&&v<=hi) return {ok:true, txt:'Right. Leave it there.'};
+  if(row[1]==='lean') return {ok:false, txt:v<lo?'Too upright. Tilt it further back.':'Too far back. Bring it more upright.'};
+  return {ok:false, txt:v<lo?'Too flat. Raise it.':'Too steep. Lower it.'};
+}
+function tiltPaint(){
+  const num=$('#tiltNum'), st=$('#tiltState'); if(!TILT||!num||!st) return;
+  if(TILT.v==null){ num.textContent='—'; return; }
+  const v=Math.round(tiltValue(TILT.row[1],TILT.v)), j=tiltJudge(TILT.row,v);
+  num.textContent=v+'°';
+  st.textContent=j.txt; st.className='tilt-s '+(j.ok?'ok':'off');
+  num.className='tilt-n num'+(j.ok?' ok':'');
+}
+function tiltOn(e){
+  if(!TILT||e.beta==null||e.gamma==null) return;
+  const now=tiltAngle(e.beta,e.gamma);
+  // the first reading and any big move are taken as they are; small changes are smoothed so the number holds still
+  TILT.v=(TILT.v==null||Math.abs(now-TILT.v)>8)?now:TILT.v+(now-TILT.v)*0.35;
+  TILT.heard=true;
+  tiltPaint();
+}
+function tiltStop(){
+  if(!TILT) return;
+  window.removeEventListener('deviceorientation',tiltOn);
+  clearTimeout(TILT.timer);
+  TILT=null;
+}
+function tiltSay(txt){ const st=$('#tiltState'); if(st){ st.textContent=txt; st.className='tilt-s off'; } }
+function tiltOpen(id,i){
+  const row=EX[id]&&EX[id].form&&EX[id].form.angles[i]; if(!row) return;
+  tiltStop();
+  const lean=row[1]==='lean', what=row[0].toLowerCase();
+  openSheet('Measure the '+what,
+    '<p class="tilt-how">'+(lean?'Hold the phone flat against the '+esc(what)+', with its back on the pad.'
+        :'Lay the phone flat on the pad your back rests on, screen up. It can lie any way round.')+'</p>'
+    +'<div class="tilt-box"><div class="tilt-n num" id="tiltNum">—</div>'
+    +'<div class="tilt-t" id="tiltTarget">Target <b>'+esc(degText(row[2]))+'</b> '+esc(row[3])+'</div>'
+    +'<div class="tilt-s wait" id="tiltState" role="status">Waiting for the phone to report its tilt.</div></div>'
+    +'<p class="tilt-note">Good to about two degrees. A thick case or a camera bump can add a degree or two. Nothing is saved.</p>');
+  const t=TILT={row:row, v:null, heard:false, timer:null, ready:false};
+  // Listening starts at once. A phone that asks first sends nothing until it has said yes.
+  window.addEventListener('deviceorientation',tiltOn);
+  // Once the phone has answered (or never asks), three seconds without a reading means there is no sensor to read.
+  const wait=()=>{
+    if(TILT!==t) return;
+    t.ready=true; clearTimeout(t.timer);
+    t.timer=setTimeout(()=>{ if(TILT===t&&!t.heard) tiltSay('No reading from this phone. Its browser does not report tilt, so set the angle by the notches on the bench.'); },3000);
+  };
+  // iPhones (and newer Chrome) ask before sharing movement, and only from a tap: this runs inside the tap on the link
+  const ask=typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission;
+  if(typeof ask!=='function'){ wait(); return; }
+  t.timer=setTimeout(wait,10000);             // a question that is never answered does not leave the sheet waiting for ever
+  Promise.resolve().then(()=>ask.call(DeviceOrientationEvent)).then(ans=>{
+    if(TILT!==t) return;
+    if(ans==='denied'){                       // a clear "no": stop listening and say what to change
+      t.ready=true; clearTimeout(t.timer);
+      window.removeEventListener('deviceorientation',tiltOn);
+      t.v=null; tiltPaint();
+      tiltSay('Not allowed: the phone did not let the app read its movement. In the phone\'s settings for this site, allow "Motion and Orientation", then try again.');
+    }else wait();
+  },()=>wait());                              // the question could not be asked: readings may still arrive
+}
+/* ===================================================================
+   TEMPO BEEPS
+   "Beeps" beside a lift's tempo line plays the pace of one rep, round and round, like a metronome: start it,
+   put the phone down, and move with it. A note marks the start of each part of the rep (low for the slow
+   part, high for the fast part, in between for a hold or a squeeze) and a soft tick marks each further second.
+
+   The beat is read from the tempo line itself (EX[id].tempo), so the sound and the words on the card cannot
+   disagree. A line is understood part by part, up to its first full stop:
+     "<b>3 s</b> down"                    3 seconds, called "down"   ("<b>2–3 s</b>" counts as 3: slower is the safe side)
+     "<b>1–2 s</b> pause at the bottom"   2 seconds, called "pause"
+     "press up" / "pull up" / "then stand up strongly" / "then press up without bouncing"    1 second, called "up"
+     "a short hold" / "a short squeeze"   1 second
+   A line with any other part (the deadlift, the walking lunge, a timed hold) gets no Beeps button.
+   The beeps stop on a second tap, when a set is ticked, when the app is left, or after three minutes.
+   =================================================================== */
+const TEMPO_HZ={low:440, mid:660, high:880}, TEMPO_MAX=180000;
+function tempoPlan(id){
+  const e=EX[id]; if(!e||typeof e.tempo!=='string') return null;
+  const out=[];
+  for(const part of e.tempo.split('.')[0].split(', ')){
+    let m;
+    if((m=/^(?:then )?<b>(\d+)(?:–(\d+))? s<\/b> ([a-z]+)(?: at the bottom)?$/.exec(part))) out.push({label:m[3], secs:+(m[2]||m[1])});
+    else if(/^(?:then )?(?:press|pull|stand) up(?: strongly| without bouncing)?$/i.test(part)) out.push({label:'up', secs:1});
+    else if((m=/^a short (hold|squeeze)$/.exec(part))) out.push({label:m[1], secs:1});
+    else return null;
+  }
+  if(out.length<2||out.some(p=>!(p.secs>=1&&p.secs<=3))) return null;
+  // the slow part of the rep is the longest part that is not a hold; when two are as long, the later one
+  let slow=-1;
+  out.forEach((p,i)=>{ p.hold=/^(hold|squeeze|pause)$/.test(p.label); if(!p.hold&&(slow<0||p.secs>=out[slow].secs)) slow=i; });
+  out.forEach((p,i)=>{ p.pitch=p.hold?'mid':i===slow?'low':'high'; delete p.hold; });
+  return out;
+}
+function tempoLink(id){
+  return tempoPlan(id)?' <button class="lkbtn tempo" data-tempo="'+id+'" aria-pressed="false">▶ Beeps</button><span class="tempo-now" data-tempo-now="'+id+'" aria-hidden="true"></span>':'';
+}
+/* one short note; every beep of the tempo goes through here */
+function tone(hz,dur,gain){
+  if(!AC) return;
+  try{
+    const o=AC.createOscillator(), g=AC.createGain(), t=AC.currentTime;
+    o.type='sine'; o.frequency.value=hz;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(gain,t+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+dur+0.02);
+  }catch(e){}
+}
+let TEMPO=null;                              // the beat in progress: {id, plan, t0, key, timer}
+/* which part of the rep, and which second of that part, `ms` after the start */
+function tempoAt(plan,ms){
+  const total=plan.reduce((a,p)=>a+p.secs,0)*1000, cyc=Math.floor(ms/total); let t=ms-cyc*total;
+  for(let i=0;i<plan.length;i++){ const d=plan[i].secs*1000; if(t<d) return {cyc:cyc, i:i, sec:Math.floor(t/1000)}; t-=d; }
+  return {cyc:cyc, i:plan.length-1, sec:plan[plan.length-1].secs-1};
+}
+function tempoPaint(id,on,label){
+  $$('[data-tempo="'+id+'"]').forEach(b=>{ b.textContent=on?'■ Stop beeps':'▶ Beeps'; b.setAttribute('aria-pressed',String(!!on)); });
+  $$('[data-tempo-now="'+id+'"]').forEach(s=>{ s.textContent=on&&label?label:''; });
+}
+function tempoTick(){
+  const T=TEMPO; if(!T) return;
+  const ms=Date.now()-T.t0;
+  if(ms>=TEMPO_MAX){ tempoStop(); return; }
+  const at=tempoAt(T.plan,ms), key=at.cyc+'/'+at.i+'/'+at.sec;
+  if(key===T.key) return;
+  T.key=key;
+  const p=T.plan[at.i], first=at.sec===0;
+  tone(TEMPO_HZ[p.pitch], first?0.17:0.06, first?0.5:0.14);
+  if(first) tempoPaint(T.id,true,p.label);
+}
+function tempoStart(id){
+  const plan=tempoPlan(id); if(!plan) return;
+  tempoStop();
+  audioUnlock();
+  TEMPO={id:id, plan:plan, t0:Date.now(), key:'', timer:setInterval(tempoTick,50)};
+  wakeLock(true);                            // the screen stays on while the beat runs
+  tempoTick();
+}
+function tempoStop(){
+  const T=TEMPO; if(!T) return;
+  clearInterval(T.timer); TEMPO=null;
+  tempoPaint(T.id,false);
+  if(!(RT&&!RT.done)) wakeLock(false);       // a rest that is counting down keeps the screen on by itself
+}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState!=='visible') tempoStop(); });
+/* ===================================================================
    RENDER — MAP
    =================================================================== */
 /* which set of advice a goal reads: losing fat, holding weight, or gaining */
@@ -5808,7 +6000,7 @@ function openSheet(title,html){
   // an open sheet is one step of history, so the phone's Back button closes it instead of leaving the app
   if(!(history.state&&history.state.sheet)){ try{ history.pushState({sheet:1},''); }catch(e){} }
 }
-function hideSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; }
+function hideSheet(){ sheet.classList.remove('on'); document.body.style.overflow=''; PICK=null; tiltStop(); }   // a closed sheet is not measuring a bench any more
 let sheetBack=0;                 // history steps this code is taking back itself
 function closeSheet(){
   hideSheet();
@@ -6215,6 +6407,7 @@ const TABS=['today','train','plan','fuel','prog'];
 let currentTab='today';
 function setTab(name,skipHash){
   if(TABS.indexOf(name)<0) name='today';
+  if(name!==currentTab) tempoStop();          // tempo beeps belong to the lift on screen
   currentTab=name;
   if(!skipHash&&location.hash.slice(1)!==name){
     try{ history.replaceState(null,'','#'+name); }catch(e){}
@@ -6403,6 +6596,12 @@ document.addEventListener('click',e=>{
   if(hist){ historySheet(hist.dataset.hist); return; }
   const pt=T.closest('[data-pt]');
   if(pt){ histRead(+pt.dataset.pt); return; }
+  /* ---- a bench or seat angle, measured by laying the phone on it ---- */
+  const tl=T.closest('[data-tilt]');
+  if(tl){ const p=tl.dataset.tilt.split('|'); tiltOpen(p[0],+p[1]); return; }
+  /* ---- the tempo of a rep, as beeps: a second tap stops them ---- */
+  const tp=T.closest('[data-tempo]');
+  if(tp){ if(TEMPO&&TEMPO.id===tp.dataset.tempo) tempoStop(); else tempoStart(tp.dataset.tempo); return; }
 
   /* ---- the logbook ---- */
   const box=T.closest('.logger');
@@ -6449,6 +6648,7 @@ document.addEventListener('click',e=>{
       while(en.sets.length<=i) en.sets.push({});
       // the cross was hit by mistake and now the tick, as meant: the set comes back and is done
       if(UNDO&&UNDO.id===id&&UNDO.i===i&&UNDO.d===TODAY&&!UNDO.popped&&blankSet(en.sets[i])){ en.sets[i]=UNDO.set; UNDO=null; }
+      tempoStop();                                                        // the set is done: its beat ends with it
       const s=en.sets[i], prev=i>0?en.sets[i-1]:null, pbWas=pbKey(id);
       if(s.w==null&&prev&&prev.w!=null&&EX[id].load!=='bw') s.w=prev.w;   // carry the bar weight forward
       s.done=1; delete s.pre;

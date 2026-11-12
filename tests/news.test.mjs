@@ -37,7 +37,37 @@ export default [
       assert.match(text, /history/i); assert.match(text, /new best/i);
       assert.match(text, /muscles this week/i); assert.match(text, /progress/i);
       assert.doesNotMatch(text, /real body/i, 'a note that was already read is shown again');
-      assert.ok((await card(page).locator('li').count()) <= 4, 'the note is long');
+    },
+  },
+  {
+    name: 'every update note is short: at most three points, each a few lines on a phone',
+    async run({ open }) {
+      const { page } = await open({ state: v2State({ logs, ui: { helpSeen: 1, news: 99 } }) });
+      await page.locator('#ro-today').waitFor();
+      const notes = await page.evaluate(() => ({ latest: NEWS, notes: Object.keys(NEWS_NOTES).map((k) => ({ n: +k, items: NEWS_NOTES[k].map((t) => t.replace(/<\/?b>/g, '').length) })) }));
+      assert.equal(Math.max(...notes.notes.map((x) => x.n)), notes.latest, 'NEWS is not the number of the newest note');
+      for (const x of notes.notes) {
+        assert.ok(x.items.length >= 1 && x.items.length <= 3, 'note ' + x.n + ' has ' + x.items.length + ' points');
+        if (x.n >= 2) assert.ok(x.items.every((len) => len <= 240), 'note ' + x.n + ' has a point of ' + Math.max(...x.items) + ' characters');
+      }
+    },
+  },
+  {
+    name: 'the note for the phone measuring and the tempo beeps says where each one is, and the guide explains them',
+    async run({ open }) {
+      const { page } = await open({ state: v2State({ logs, ui: { helpSeen: 1, news: 3 } }) });
+      await page.locator('#ro-today').waitFor();
+      const text = await card(page).innerText();
+      assert.match(text, /measure with phone/i); assert.match(text, /lay the phone/i);
+      assert.match(text, /beeps/i); assert.match(text, /tempo/i);
+      assert.doesNotMatch(text, /back up in one tap/i, 'a note that was already read is shown again');
+      assert.ok((await card(page).locator('li').count()) <= 3, 'the note is long');
+      await page.locator('#btnGuide').tap();
+      const sec = page.locator('#sheetBody details', { hasText: 'Reading the angles' });
+      await sec.locator('summary').click();
+      const guide = await sec.innerText();
+      assert.match(guide, /measure with phone/i); assert.match(guide, /beeps/i);
+      assert.match(guide, /low note/i); assert.match(guide, /tap it again to stop/i);
     },
   },
   {

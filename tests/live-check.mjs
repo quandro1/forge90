@@ -7,7 +7,7 @@
 //   3. after one visit, the app opens with the network off
 import fs from 'node:fs';
 import path from 'node:path';
-import { launch, openApp, v1State, finishSetup, precached, ROOT, TODAY } from './harness.mjs';
+import { launch, openApp, v1State, finishSetup, precached, closeBrowser, ROOT, TODAY } from './harness.mjs';
 
 const url = process.argv[2] || 'https://quandro1.github.io/forge90/';
 const stampOf = (html) => (html.match(/<meta name="forge-build" content="([0-9a-f]+)">/) || [])[1] || null;
@@ -103,7 +103,7 @@ try {
     await context.close();
   }
 } finally {
-  await browser.close();
+  await closeBrowser(browser);                 // never waits for good: see harness.mjs
 }
 out.today = TODAY;
 out.ok = out.same && !!(out.update && out.update.ok) && !!(out.newVisitor && out.newVisitor.ok) && !!(out.offline && out.offline.ok);

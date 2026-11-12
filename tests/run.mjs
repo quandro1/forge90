@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
-import { launch, serve, openApp, ROOT, PAGE } from './harness.mjs';
+import { launch, serve, openApp, closeBrowser, closeServer, ROOT, PAGE } from './harness.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const filters = process.argv.slice(2).filter((a) => !a.startsWith('--'));
@@ -50,7 +50,8 @@ for (const f of files) {
   }
 }
 
-await browser.close();
-await server.close();
+// The result is printed before anything is closed: a browser that will not close must not swallow it.
 console.log('\n' + pass + ' passed, ' + fail + ' failed' + (fail ? '\n  ' + failures.join('\n  ') : ''));
+if (!(await closeBrowser(browser))) console.log('(the browser did not close when asked; it was stopped)');
+await closeServer(server);
 process.exit(fail ? 1 : 0);

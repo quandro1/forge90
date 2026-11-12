@@ -26,6 +26,11 @@ The body drawing in "How to do it"
                             text travels inside that file into index.html.
   tools/map-sheet.mjs       pictures of every exercise's muscle map
 
+Checking that the tests are watching
+  tools/mutate.mjs          breaks one rule at a time (lists in
+                            tests/mutations/), runs the tests named for it,
+                            names the test that catches it, restores the source
+
 Publish: build, run the tests, commit, push to main. Phones pick the new
 build up the next time they open the app with a connection.
 

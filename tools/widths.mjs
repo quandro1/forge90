@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Where the width goes on a narrow phone: the box of every ancestor of a set row.
 //   node tools/widths.mjs [device]
-import { launch, serve, openApp, v2State, ROOT } from '../tests/harness.mjs';
+import { launch, serve, openApp, v2State, ROOT, closeBrowser, closeServer } from '../tests/harness.mjs';
 const device = process.argv[2] || 'iPhone SE';
 const server = await serve(ROOT);
 const { pw, browser } = await launch();
@@ -22,6 +22,6 @@ try {
   console.log(device + '  viewport ' + (await page.evaluate(() => innerWidth)) + ' px');
   rows.forEach((r) => console.log('  ' + r));
 } finally {
-  await browser.close();
-  await server.close();
+  await closeBrowser(browser);
+  await closeServer(server);
 }

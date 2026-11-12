@@ -26,8 +26,13 @@ export default [
           if (!Array.isArray(f.angles) || f.angles.length < 1 || f.angles.length > 3) { out.push(id + ': needs 1 to 3 angles'); continue; }
           f.angles.forEach((a, i) => {
             const at = id + ' angle ' + (i + 1) + ': ';
-            if (!Array.isArray(a) || (a.length !== 5 && a.length !== 6)) { out.push(at + 'must be [what, kind, degrees, measured from, plain words] with an optional {not: degrees}'); return; }
-            if (a.length === 6 && (!a[5] || typeof a[5] !== 'object' || Object.keys(a[5]).join() !== 'not' || typeof a[5].not !== 'number')) out.push(at + 'the sixth entry must be {not: degrees}');
+            if (!Array.isArray(a) || (a.length !== 5 && a.length !== 6)) { out.push(at + 'must be [what, kind, degrees, measured from, plain words] with an optional {not: degrees, phone: 1}'); return; }
+            if (a.length === 6) {
+              const o = a[5], keys = o && typeof o === 'object' ? Object.keys(o) : [];
+              if (!keys.length || keys.some((k) => k !== 'not' && k !== 'phone')) out.push(at + 'the sixth entry may only hold not and phone');
+              if (keys.includes('not') && typeof o.not !== 'number') out.push(at + 'not must be a number of degrees');
+              if (keys.includes('phone') && o.phone !== 1) out.push(at + 'phone must be 1');
+            }
             if (!clean(a[0], 2, 24) || /<b>/.test(a[0])) out.push(at + 'label');
             if (KINDS.indexOf(a[1]) < 0) out.push(at + 'kind ' + a[1]);
             const d = a[2], num = (x) => typeof x === 'number' && x >= 0 && x <= (LIMIT[a[1]] || 0);

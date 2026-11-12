@@ -108,13 +108,19 @@ function formOk(f, at) {
   if (!Array.isArray(f.angles) || f.angles.length < 1 || f.angles.length > 3) { err(at + 'form.angles needs 1 to 3 entries'); return; }
   f.angles.forEach((a, i) => {
     const aa = at + 'form angle ' + (i + 1) + ': ';
-    if (!Array.isArray(a) || (a.length !== 5 && a.length !== 6)) { err(aa + 'must be [what, kind, degrees, measured from, plain words] with an optional {not: degrees}'); return; }
+    if (!Array.isArray(a) || (a.length !== 5 && a.length !== 6)) { err(aa + 'must be [what, kind, degrees, measured from, plain words] with an optional {not: degrees, phone: 1}'); return; }
     if (a.length === 6) {
-      // the common mistake, drawn as a grey line with a cross: only where the plain words name it, and well away from the right position
       const o = a[5], d = a[2], lo = typeof d === 'number' ? d : Math.min(d[0], d[1]), hi = typeof d === 'number' ? d : Math.max(d[0], d[1]);
-      if (!o || typeof o !== 'object' || Array.isArray(o) || Object.keys(o).some((k) => k !== 'not')) err(aa + 'the sixth entry may only be {not: degrees}');
-      else if (typeof o.not !== 'number' || o.not < 0 || o.not > (NOT_LIMIT[a[1]] || 0)) err(aa + 'not: ' + o.not + ' cannot be drawn on a ' + a[1] + ' drawing');
-      else if (o.not > lo - 15 && o.not < hi + 15) err(aa + 'not: ' + o.not + ' is within 15° of the right position ' + lo + '–' + hi);
+      if (!o || typeof o !== 'object' || Array.isArray(o) || !Object.keys(o).length || Object.keys(o).some((k) => k !== 'not' && k !== 'phone')) err(aa + 'the sixth entry may only hold not and phone');
+      else {
+        // the common mistake, drawn as a grey line with a cross: only where the plain words name it, and well away from the right position
+        if ('not' in o) {
+          if (typeof o.not !== 'number' || o.not < 0 || o.not > (NOT_LIMIT[a[1]] || 0)) err(aa + 'not: ' + o.not + ' cannot be drawn on a ' + a[1] + ' drawing');
+          else if (o.not > lo - 15 && o.not < hi + 15) err(aa + 'not: ' + o.not + ' is within 15° of the right position ' + lo + '–' + hi);
+        }
+        // "Measure with phone": only an angle set on equipment, of a kind a phone lying on the pad can read
+        if ('phone' in o && (o.phone !== 1 || (a[1] !== 'up' && a[1] !== 'lean') || Array.isArray(d) && d.length === 3)) err(aa + 'phone: 1 is for a fixed up or lean angle');
+      }
     }
     if (!plain(a[0], 2, 24) || /<b>/.test(a[0])) err(aa + 'label');
     if (!(a[1] in LIMIT)) { err(aa + 'unknown kind ' + a[1]); return; }

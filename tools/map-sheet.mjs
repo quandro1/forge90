@@ -5,7 +5,7 @@
 //   node tools/map-sheet.mjs [dark|light] squat,rdl  -> only those lifts, drawn large (maps-close-<theme>.png)
 import fs from 'node:fs';
 import path from 'node:path';
-import { launch, serve, openApp, v2State, ROOT } from '../tests/harness.mjs';
+import { launch, serve, openApp, v2State, ROOT, closeBrowser, closeServer } from '../tests/harness.mjs';
 
 const theme = process.argv[2] === 'light' ? 'light' : 'dark';
 const only = (process.argv[3] || '').split(',').filter(Boolean);
@@ -40,6 +40,6 @@ try {
   console.log(names.join('  '));
   console.log(out);
 } finally {
-  await browser.close();
-  await server.close();
+  await closeBrowser(browser);
+  await closeServer(server);
 }

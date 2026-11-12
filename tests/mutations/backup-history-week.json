@@ -1,0 +1,138 @@
+[
+ {
+  "name": "a shared backup is not remembered",
+  "file": "src/js/95-shell-boot.js",
+  "find": "markBackedUp(); flash(btn,'Backed up'); return;",
+  "put": "flash(btn,'Backed up'); return;",
+  "tests": "backup",
+  "expect": "the app remembers it"
+ },
+ {
+  "name": "a closed share sheet counts as a backup (falls through to a saved file)",
+  "file": "src/js/95-shell-boot.js",
+  "find": "if(err&&err.name==='AbortError'){ flash(btn,'Cancelled'); return; }",
+  "put": "",
+  "tests": "backup",
+  "expect": "closing the share sheet"
+ },
+ {
+  "name": "the restore picker offers .json only",
+  "file": "src/js/95-shell-boot.js",
+  "find": "inp.accept='.json,.txt,application/json,text/plain';",
+  "put": "inp.accept='application/json';",
+  "tests": "backup",
+  "expect": "restores the log on another phone"
+ },
+ {
+  "name": "the backup time is dropped when the state is read back",
+  "file": "src/js/41-state.js",
+  "find": "if(numIn(u.bk,1,1e15,null)!=null) s.ui.bk=+u.bk;",
+  "put": "",
+  "tests": "backup",
+  "expect": "the app remembers it"
+ },
+ {
+  "name": "Later does not keep the reminder away",
+  "file": "src/js/50-today.js",
+  "find": "<BK_LATER) return false;",
+  "put": "<0) return false;",
+  "tests": "backup",
+  "expect": "Today reminds"
+ },
+ {
+  "name": "the reminder ignores how old the last backup is",
+  "file": "src/js/50-today.js",
+  "find": "if(age!=null&&age<BK_EVERY) return false;",
+  "put": "if(age!=null) return false;",
+  "tests": "backup",
+  "expect": "Today reminds"
+ },
+ {
+  "name": "the reminder shows in the first week of use",
+  "file": "src/js/50-today.js",
+  "find": "<BK_AFTER) return false;",
+  "put": "<0) return false;",
+  "tests": "backup",
+  "expect": "Today reminds"
+ },
+ {
+  "name": "equalling the best counts as a new best",
+  "file": "src/js/64-history.js",
+  "find": "function betterSet(a,b){ return !b||a.w>b.w||(a.w===b.w&&a.r>b.r); }",
+  "put": "function betterSet(a,b){ return !b||a.w>b.w||(a.w===b.w&&a.r>=b.r); }",
+  "tests": "history",
+  "expect": "beats every earlier session"
+ },
+ {
+  "name": "more reps at a lighter weight counts as a new best",
+  "file": "src/js/64-history.js",
+  "find": "function betterSet(a,b){ return !b||a.w>b.w||(a.w===b.w&&a.r>b.r); }",
+  "put": "function betterSet(a,b){ return !b||a.w>b.w||a.r>b.r; }",
+  "tests": "history",
+  "expect": "beats every earlier session"
+ },
+ {
+  "name": "a first session is a new best",
+  "file": "src/js/64-history.js",
+  "find": "if(!now||!past.length) return null;",
+  "put": "if(!now) return null; if(!past.length) return {now:now.best, was:now.best};",
+  "tests": "history",
+  "expect": "a first session"
+ },
+ {
+  "name": "the estimate is given for sets of more than 10 reps",
+  "file": "src/js/64-history.js",
+  "find": "b.r>=1&&b.r<=10)",
+  "put": "b.r>=1&&b.r<=30)",
+  "tests": "history",
+  "expect": "one session shows the sheet without a graph"
+ },
+ {
+  "name": "the logbook header cannot wrap on a small phone",
+  "file": "src/styles.css",
+  "find": ".logger .lh button.last{min-height:30px; padding:3px 0; line-height:1.45}",
+  "put": ".logger .lh button.last{min-height:30px; padding:3px 0; line-height:1.45; white-space:nowrap}",
+  "tests": "history",
+  "expect": "on a small phone"
+ },
+ {
+  "name": "a helper muscle counts a whole set",
+  "file": "src/js/65-muscleweek.js",
+  "find": "tally[z]=(tally[z]||0)+n*0.5; });",
+  "put": "tally[z]=(tally[z]||0)+n; });",
+  "tests": "muscleweek",
+  "expect": "a helper half"
+ },
+ {
+  "name": "last week's sets are counted too",
+  "file": "src/js/65-muscleweek.js",
+  "find": "S.logs[id].forEach(e=>{ if(on[e.d]) setCredit(t,id,loggedSets(e).length); });",
+  "put": "S.logs[id].forEach(e=>{ setCredit(t,id,loggedSets(e).length); });",
+  "tests": "muscleweek",
+  "expect": "last week not at all"
+ },
+ {
+  "name": "a deload week plans the full number of sets",
+  "file": "src/js/65-muscleweek.js",
+  "find": "setCredit(t,it.ex,info.deload?deloadSets(n):n);",
+  "put": "setCredit(t,it.ex,n);",
+  "tests": "muscleweek",
+  "expect": "one set fewer in a deload week"
+ },
+ {
+  "name": "5 sets is still the first step",
+  "file": "src/js/65-muscleweek.js",
+  "find": "v<5?1:v<10?2:3",
+  "put": "v<6?1:v<10?2:3",
+  "tests": "muscleweek",
+  "expect": "three steps"
+ },
+ {
+  "name": "a trained muscle is listed as not trained",
+  "file": "src/js/65-muscleweek.js",
+  "find": "const todo=zones.filter(z=>plan[z]>0&&!(done[z]>0)).map(z=>ZN[z]);",
+  "put": "const todo=zones.filter(z=>plan[z]>0).map(z=>ZN[z]);",
+  "tests": "muscleweek",
+  "expect": "has no set yet is named"
+ }
+]

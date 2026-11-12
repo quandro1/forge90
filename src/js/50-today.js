@@ -152,6 +152,10 @@ const NEWS_NOTES={
     '<b>Back up in one tap.</b> Your log is stored on this phone only. In Settings (the cog at the top), "Back up now" sends a copy to WhatsApp, Gmail or Drive, and Restore reads it back.',
     '<b>A history for every lift.</b> In a logbook, tap History beside last time\'s sets: your best set, a graph and every session. When a set beats your best, the logbook says "New best".',
     '<b>Muscles this week.</b> Progress shows how many sets each muscle has had this week, on the body, and which muscles are still to come.'
+  ],
+  4:[
+    '<b>Measure a bench with the phone.</b> On the incline presses, the seated shoulder press and the leg extension, tap "Measure with phone" under the angle and lay the phone on the pad. The number turns green at the right angle.',
+    '<b>Tempo beeps.</b> Beside a lift\'s Tempo line, tap Beeps: a low note for the slow part of the rep and a high note for the fast part. Tap it again to stop.'
   ]
 };
 function renderHelp(){

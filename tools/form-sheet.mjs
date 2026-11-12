@@ -4,7 +4,7 @@
 //   node tools/form-sheet.mjs [dark|light]      -> tests/.out/form/form-<n>-<theme>.png
 import fs from 'node:fs';
 import path from 'node:path';
-import { launch, serve, openApp, v2State, ROOT } from '../tests/harness.mjs';
+import { launch, serve, openApp, v2State, ROOT, closeBrowser, closeServer } from '../tests/harness.mjs';
 
 const theme = process.argv[2] === 'light' ? 'light' : 'dark';
 const out = path.join(ROOT, 'tests', '.out', 'form');
@@ -36,6 +36,6 @@ try {
   console.log(names.join('  '));
   console.log(out);
 } finally {
-  await browser.close();
-  await server.close();
+  await closeBrowser(browser);
+  await closeServer(server);
 }

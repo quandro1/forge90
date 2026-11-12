@@ -80,6 +80,7 @@ const GUIDE=[
     +row('bend',[100,0,'move'],['A shaded band','A range: either anywhere between two numbers, or how far the joint travels during the rep. When the joint travels, the solid line swings from the start to the finish a few times, then stays at the finish.'])
     +row('up',30,['A grey line with a cross','A common mistake, shown next to the right position. Here the bench is set too steep.'],{not:60})
     +'</div>'
+    +'<p style="margin-top:12px">Two helpers sit in the same block. On a bench or seat angle, <b>Measure with phone</b> shows the angle of the pad when you lay the phone on it. Beside <b>Tempo</b>, <b>Beeps</b> plays the pace of a rep: a low note for the slow part, a high note for the fast part, and a tick for each second. Tap it again to stop.</p>'
     +'<p style="margin-top:12px">The numbers are guides, not strict rules. Bodies differ: if a position hurts, stop before you reach it. The line under each number says the same thing in plain words, and <b>Like</b> compares the movement with something you already know.</p>';
  }},
  {t:'Deload weeks: what they are and why', b:()=>deloadText()},

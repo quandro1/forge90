@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { createRequire } from 'node:module';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -92,6 +93,29 @@ export async function launch() {
   });
   return { pw, browser };
 }
+
+/**
+ * Close the browser without ever waiting for it for good. On 12 Nov 2026 headless Chrome on this laptop
+ * stopped answering close() for a while (also with no page open), and every run hung after its last test with
+ * its result unprinted. If the browser has not closed within `ms`, the Chrome processes this run started are
+ * stopped by force (Windows) and the run goes on. Returns true when the browser closed by itself.
+ */
+export async function closeBrowser(browser, ms = 8000) {
+  let done = false;
+  const mark = () => { done = true; };
+  await Promise.race([browser.close().then(mark, mark), new Promise((r) => setTimeout(r, ms))]);
+  if (done) return true;
+  if (process.platform === 'win32') {
+    try {
+      execFileSync('powershell', ['-NoProfile', '-NonInteractive', '-Command',
+        'Get-CimInstance Win32_Process -Filter "ParentProcessId=' + process.pid + ' AND Name=\'chrome.exe\'" | ForEach-Object { taskkill /PID $_.ProcessId /T /F | Out-Null }',
+      ], { stdio: 'ignore', timeout: 20000 });
+    } catch { /* nothing more to try: the run still ends */ }
+  }
+  return false;
+}
+/** Close a test server, giving up after a few seconds if a connection will not let go. */
+export const closeServer = (server, ms = 3000) => Promise.race([server.close(), new Promise((r) => setTimeout(r, ms))]);
 
 /**
  * Open the app on an emulated phone.

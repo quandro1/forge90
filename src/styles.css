@@ -469,6 +469,21 @@ details.formnotes>summary .how-t{flex:1}
 .pbline .was{color:var(--text-dim); margin-left:8px; white-space:nowrap}
 .pbline.fresh{animation:pbpop .9s ease-out 1}
 @keyframes pbpop{0%{transform:scale(.96); box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent)}45%{transform:scale(1.015)}100%{transform:none; box-shadow:0 0 0 10px transparent}}
+/* tempo beeps: the button beside the tempo line, and the part of the rep that is sounding */
+.pos .tempo{display:inline-block; min-height:32px; padding:5px 0; margin-left:6px; white-space:nowrap; font-size:13px}
+.pos .tempo[aria-pressed="true"]{color:var(--ember)}
+.tempo-now{margin-left:8px; font-family:var(--font-m); font-size:12.5px; font-weight:700; color:var(--ember)}
+/* "Measure with phone": the link under a bench or seat angle, and its sheet */
+.ang-t .tilt{display:block; min-height:34px; padding:6px 0 4px; font-size:13px; text-align:left}
+.tilt-how{font-size:14px; line-height:1.5}
+.tilt-box{margin-top:14px; padding:18px 14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--sunken); text-align:center}
+.tilt-n{font-size:72px; font-weight:600; line-height:1; letter-spacing:-.02em; color:var(--text)}
+.tilt-n.ok{color:var(--good)}
+.tilt-t{margin-top:10px; font-size:13.5px; color:var(--text-dim)}
+.tilt-t b{color:var(--ember); font-family:var(--font-m)}
+.tilt-s{margin-top:12px; font-size:15px; line-height:1.4; font-weight:600; color:var(--warn); min-height:42px}
+.tilt-s.ok{color:var(--good)} .tilt-s.wait{color:var(--text-faint); font-weight:400}
+.tilt-note{font-size:12px; color:var(--text-faint); margin-top:12px; line-height:1.45}
 /* the history sheet of a lift */
 .hist-s{font-size:14px; line-height:1.5; margin-bottom:6px}
 .hist-s.dim{font-size:13px; color:var(--text-dim)}

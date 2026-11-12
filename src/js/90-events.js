@@ -5,6 +5,7 @@ const TABS=['today','train','plan','fuel','prog'];
 let currentTab='today';
 function setTab(name,skipHash){
   if(TABS.indexOf(name)<0) name='today';
+  if(name!==currentTab) tempoStop();          // tempo beeps belong to the lift on screen
   currentTab=name;
   if(!skipHash&&location.hash.slice(1)!==name){
     try{ history.replaceState(null,'','#'+name); }catch(e){}
@@ -193,6 +194,12 @@ document.addEventListener('click',e=>{
   if(hist){ historySheet(hist.dataset.hist); return; }
   const pt=T.closest('[data-pt]');
   if(pt){ histRead(+pt.dataset.pt); return; }
+  /* ---- a bench or seat angle, measured by laying the phone on it ---- */
+  const tl=T.closest('[data-tilt]');
+  if(tl){ const p=tl.dataset.tilt.split('|'); tiltOpen(p[0],+p[1]); return; }
+  /* ---- the tempo of a rep, as beeps: a second tap stops them ---- */
+  const tp=T.closest('[data-tempo]');
+  if(tp){ if(TEMPO&&TEMPO.id===tp.dataset.tempo) tempoStop(); else tempoStart(tp.dataset.tempo); return; }
 
   /* ---- the logbook ---- */
   const box=T.closest('.logger');
@@ -239,6 +246,7 @@ document.addEventListener('click',e=>{
       while(en.sets.length<=i) en.sets.push({});
       // the cross was hit by mistake and now the tick, as meant: the set comes back and is done
       if(UNDO&&UNDO.id===id&&UNDO.i===i&&UNDO.d===TODAY&&!UNDO.popped&&blankSet(en.sets[i])){ en.sets[i]=UNDO.set; UNDO=null; }
+      tempoStop();                                                        // the set is done: its beat ends with it
       const s=en.sets[i], prev=i>0?en.sets[i-1]:null, pbWas=pbKey(id);
       if(s.w==null&&prev&&prev.w!=null&&EX[id].load!=='bw') s.w=prev.w;   // carry the bar weight forward
       s.done=1; delete s.pre;

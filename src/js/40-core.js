@@ -25,7 +25,7 @@ const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000
 function segSync(){ $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('on')))); }
 const BLOCK_DAYS=91;                        // a block is thirteen weeks
 const DELOAD_WEEKS=[6,12];                  // the two planned easy weeks of a block
-const NEWS=3;                             // the number of the latest "what changed" note on Today (raise it when one is added to NEWS_NOTES)
+const NEWS=4;                           // the number of the latest "what changed" note on Today (raise it when one is added to NEWS_NOTES)
 const DAY_ROLL_H=3;
 const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));
 const TODAY=dayOf(new Date());
