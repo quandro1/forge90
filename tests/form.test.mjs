@@ -18,7 +18,8 @@ export default [
       await page.locator('#ro-today').waitFor();
       const bad = await page.evaluate(() => {
         const out = [], KINDS = ['up', 'lean', 'turn', 'out', 'bend', 'fwd'];
-        const clean = (s, lo, hi) => typeof s === 'string' && s.trim().length >= lo && s.length <= hi && !/<(?!\/?b>)/.test(s) && !/&[a-z]+;/.test(s) && !/undefined|\{|\}/.test(s);
+        const LIMIT = { up: 90, fwd: 90, lean: 90, turn: 90, out: 100, bend: 150 };          // what each drawing can show
+        const clean = (s, lo, hi) => typeof s === 'string' && s.trim().length >= lo && s.length <= hi && !/<(?!\/?b>)/.test(s) && !/&[a-z]+;/.test(s) && !/undefined|\{|\}|—/.test(s);
         for (const id in EX) {
           const f = EX[id].form;
           if (!f || typeof f !== 'object') { out.push(id + ': no form notes'); continue; }
@@ -28,7 +29,7 @@ export default [
             if (!Array.isArray(a) || a.length !== 5) { out.push(at + 'must be [what, kind, degrees, measured from, plain words]'); return; }
             if (!clean(a[0], 2, 24) || /<b>/.test(a[0])) out.push(at + 'label');
             if (KINDS.indexOf(a[1]) < 0) out.push(at + 'kind ' + a[1]);
-            const d = a[2], num = (x) => typeof x === 'number' && x >= 0 && x <= 180;
+            const d = a[2], num = (x) => typeof x === 'number' && x >= 0 && x <= (LIMIT[a[1]] || 0);
             if (!(num(d) || (Array.isArray(d) && d.length === 2 && num(d[0]) && num(d[1]) && d[0] < d[1])
               || (Array.isArray(d) && d.length === 3 && d[2] === 'move' && num(d[0]) && num(d[1]) && d[0] !== d[1]))) out.push(at + 'degrees ' + JSON.stringify(d));
             if (!clean(a[3], 3, 70) || /<b>/.test(a[3])) out.push(at + 'what it is measured from');

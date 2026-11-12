@@ -45,14 +45,22 @@ function nextLoad(ex,w){
 function lighterKg(ex,w){                   // the number itself, or null when there is nothing lighter to name
   const st=+ex.step||2.5;
   let d=roundTo(w*0.9,st); if(d>=w) d=w-st;
+  if(ex.bar&&w>=ex.bar&&d<ex.bar) d=w>ex.bar?ex.bar:0;     // a full-size bar weighs 20 kg: nothing lighter can be loaded on it
   d=Math.round(d*100)/100;
   return d>0?d:null;
 }
 function lighter(ex,w){
   const d=lighterKg(ex,w);
   if(d!=null) return 'about '+(ex.load==='bw'?'+':'')+kg(d);
-  return ex.load==='bw'?'bodyweight only':'the lightest setting';
+  return ex.load==='bw'?'bodyweight only':ex.load==='bb'?'a lighter bar or dumbbells':'the lightest setting';
 }
+/* A deload set is made easier in one of two ways. Where the equipment has a weight about a tenth lighter,
+   that weight (deloadKg). Where it has not (one plate on the stack, a jump that would take a third or half off,
+   the empty bar, no weight at all), the weight stays and the set is cut short (deloadReps): three reps fewer,
+   or two thirds of a hold. A bodyweight lift with weight added takes weight off first, whatever the jump. */
+function deloadKg(ex,w){ const d=lighterKg(ex,w); return (d!=null&&(ex.load==='bw'||d>=w*0.75))?d:null; }
+/* three reps off, but never more than half the set: a set of 12 becomes 9, a heavy set of 5 becomes 3 */
+function deloadReps(it,r){ return (it&&it.hold)?Math.max(5,Math.round(r*2/3/5)*5):Math.max(Math.ceil(r/2),r-3); }
 function setText(ex,it,s){                 // one logged set, as the logbook prints it
   const w=s.w==null?null:+s.w;
   if(it&&it.hold) return (w?w+' kg · ':'')+s.r+' s';
@@ -67,15 +75,15 @@ function adviceFrom(ex,it,e,hist){
   const rr=repRange(it), tgt=+it.sets||3, hold=!!it.hold, unit=hold?' s':'';
   const rows=judged(e,tgt), w=workWeight(rows), noLoad=!w;
   const own=ex.load==='bw'||hold;                      // a lift where no weight is the normal case
-  const at=noLoad?(own?'bodyweight':'the same weight'):kg(w);
-  const same=(noLoad&&!own)?'the same weight':'same '+at, Same=same.charAt(0).toUpperCase()+same.slice(1);
+  const at=noLoad?(hold?'this hold':own?'bodyweight':'the same weight'):kg(w);      // a timed hold has no weight to name, and is not "bodyweight"
+  const same=(noLoad&&hold)?'the same hold':(noLoad&&!own)?'the same weight':'same '+at, Same=same.charAt(0).toUpperCase()+same.slice(1);
   const step=+ex.step||2.5, drop=noLoad?'':lighter(ex,w);
   const UP=t=>({cls:'up', txt:t}), HOLD=t=>({cls:'hold', txt:t});
 
   if(!rr){                                 // "as many as you can": the total is the score
     const total=rows.reduce((a,s)=>a+s.r,0);
     if(rows.length>=tgt&&rows.every(s=>s.r>=12))
-      return UP('12 or more on every set — add '+kg(step)+' (a dumbbell between your feet, or a belt) and build back up.');
+      return UP('12 or more on every set: add '+kg(step)+' (a dumbbell between your feet, or a belt) and build back up.');
     return UP('beat '+total+' total reps ('+rows.map(s=>s.r).join(', ')+') by at least one.');
   }
   if(rows.length<tgt)
@@ -110,7 +118,7 @@ function adviceFrom(ex,it,e,hist){
   }
   const next=rows.findIndex(s=>s.r<rr[1]);
   if(next<0) return UP(same+', and make every set as clean as the best one.'+mixed);
-  return UP(same+' — '+(hold?'5 more seconds':'one more rep')+' on set '+(rows[next].i+1)+' ('+rows[next].r+unit+' → '+(rows[next].r+(hold?5:1))+unit+').'+mixed);
+  return UP(same+': '+(hold?'5 more seconds':'one more rep')+' on set '+(rows[next].i+1)+' ('+rows[next].r+unit+' → '+(rows[next].r+(hold?5:1))+unit+').'+mixed);
 }
 function firstTime(ex,it){
   const rr=repRange(it);
@@ -135,15 +143,19 @@ function verdict(id,it){
 
   // ---- a deload session: nothing to beat, and it never becomes the reference
   if(dlToday){
-    const n=deloadSets(tgt), few=n+' sets'+(n<tgt?' instead of '+tgt:'');
-    const stop=(it.hold?', and end each hold well before it gets hard.':', and stop each set with about three reps left.')+' It should feel easy.';
+    const n=deloadSets(tgt), few=n+' sets'+(n<tgt?' instead of '+tgt:''), easy=' It should feel easy.';
+    const stop=(it.hold?', and end each hold well before it gets hard.':', and stop each set when you could still do about three more reps.')+easy;
+    const less=(it.hold?', and hold each one for about two thirds of last time.':', and about three reps fewer on each set than last time.')+easy;
     let t='Deload week: ';
     if(ref){
-      const w=workWeight(judged(ref,tgt));
-      t+=(w?lighter(ex,w)+' (lighter than last time), ':'')+few+stop;
+      // the same rule the "Same as last time, easier" button fills by: a lighter weight where there is one, shorter sets where there is not
+      const w=workWeight(judged(ref,tgt)), d=w?deloadKg(ex,w):null;
+      if(d!=null) t+='about '+(ex.load==='bw'?'+':'')+kg(d)+' (lighter than last time), '+few+stop;
+      else if(w&&ex.load==='bw') t+='bodyweight only, '+few+stop;
+      else t+=(w?'the same '+kg(w)+' as last time, ':'')+few+less;
     }else t+='a weight that feels light, '+few+stop;
     if(todayE) t+=' · '+Math.min(nToday,n)+' of '+n+' sets done';
-    return mk('none',t+(nToday>=n&&todayE?' — that is enough for today.':''));
+    return mk('none',t+(nToday>=n&&todayE?'. That is enough for today.':''));
   }
 
   const plan=ref?adviceFrom(ex,it,ref,all):null;

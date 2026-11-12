@@ -23,8 +23,8 @@ export default [
       const card = page.locator('#dlCard .dlcard');
       assert.equal(await card.count(), 1, 'no explanation on Today in a deload week');
       const t = await card.innerText();
-      for (const re of [/deload/i, /easy week/i, /tenth/i, /one set fewer/i, /three reps/i, /week 6/i]) assert.match(t, re);
-      assert.doesNotMatch(t, /RIR|RPE|CNS|10%|supercompensat/i, 'jargon in the explanation');
+      for (const re of [/deload/i, /easy week/i, /tenth less weight/i, /10%/, /one set fewer/i, /three more reps/i, /week 6/i]) assert.match(t, re);
+      assert.doesNotMatch(t, /RIR|RPE|CNS|supercompensat/i, 'jargon in the explanation');
       await card.locator('[data-dlok]').tap();
       assert.equal(await page.locator('#dlCard .dlcard').count(), 0, 'the card stayed after Got it');
       const line = page.locator('#dlCard .dlline');
@@ -35,7 +35,7 @@ export default [
       await page.locator('#dlCard .dlline [data-dlwhy]').tap();
       assert.match(await page.locator('#sheetTitle').innerText(), /deload/i);
       const body = await page.locator('#sheetBody').innerText();
-      for (const re of [/easy week/i, /week 6/i, /week 12/i, /numbers? to beat/i]) assert.match(body, re);
+      for (const re of [/easy week/i, /week 6/i, /week 12/i, /last normal session/i]) assert.match(body, re);
       assert.deepEqual(errors, []);
     },
   },
@@ -93,11 +93,11 @@ export default [
     async run({ open }) {
       const { page, errors } = await open({ state: v2State({ profile: week6, logs: squat100 }), hash: 'train' });
       const lg = await openToday(page, 'squat');
-      assert.match(await lg.locator('.dlnote').innerText(), /lighter on purpose/i);
+      assert.match(await lg.locator('.dlnote').innerText(), /easier on purpose/i);
       const h = await hint(page, 'squat');
       assert.match(h, /^Deload week: about 90 kg/, h);
       assert.match(h, /3 sets instead of 4/, h);
-      assert.match(h, /three reps/, h);
+      assert.match(h, /three more reps/, h);
       assert.match(await lg.locator('.dlchip').innerText(), /on/i);
       await lg.locator('.dlnote [data-dlwhy]').tap();
       assert.match(await page.locator('#sheetTitle').innerText(), /deload/i);
@@ -131,7 +131,7 @@ export default [
       const btn = lg.locator('[data-repeat]');
       assert.equal(await btn.count(), 1, 'the button is hidden in a deload week');
       assert.match(await btn.innerText(), /same as last time/i);
-      assert.match(await btn.innerText(), /lighter/i);
+      assert.match(await btn.innerText(), /easier/i);
       assert.match(await lg.locator('.lh .last').innerText(), /100×10/, 'last week is not shown');
       await btn.tap();
       const e = await page.evaluate(() => todayEntry('squat'));

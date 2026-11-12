@@ -37,7 +37,7 @@ function renderToday(){
       +'<h3>'+esc(s.name)+'</h3><p class="focus">'+esc(s.focus)+'</p><div class="meta">'
       +'<span class="pill hot">'+s.items.length+' exercises</span>'
       +'<span class="pill">'+condToday(info)+'</span>'
-      +(info.deload?'<span class="pill warn">Deload: a tenth lighter, one set fewer</span>':'')
+      +(info.deload?'<span class="pill warn">Deload week: easier on purpose</span>':'')
       +(sessionDone(TODAY)?'<span class="pill good">Done</span>':'')
       +'</div><button class="btn primary wide" style="margin-top:13px" data-goday="'+info.idx+'">Open the session</button></div>';
   }else{
@@ -64,29 +64,33 @@ function renderToday(){
   $('#miniPunch').innerHTML=punch(Math.max(0,Math.min(10,Math.ceil((started&&!done?di:1)/7)-1)),3);
 }
 /* ---- deload weeks, in plain words ---------------------------------- */
+/* Checked against the research by an independent review on 12 Nov 2026: no promise of lifting more afterwards
+   (the one controlled trial did not find it), nothing about nerves (they recover fastest), no count of hard weeks. */
 const DELOAD_WHAT='<ol class="steps big">'
-  +'<li><b>About a tenth less weight</b> than last time. The logbook works out the number for each lift.</li>'
-  +'<li><b>One set fewer</b> on each lift.</li>'
-  +'<li><b>Stop each set early</b>, with about three reps left. Nothing should feel hard.</li></ol>';
+  +'<li><b>About a tenth less weight</b> than last time (10%). The logbook works out the number for each lift. Where the weight cannot go down, it takes reps off instead.</li>'
+  +'<li><b>One set fewer</b> on each lift. A lift with only two sets keeps both.</li>'
+  +'<li><b>Stop each set early</b>, when you could still do about three more reps. Nothing should feel hard.</li></ol>';
 function deloadText(){
-  return '<p><b>A deload is a planned easy week.</b> Same exercises, same days. Three things change:</p>'
+  return '<p><b>A deload is a planned easy week.</b> You still train, but you do less on purpose, so your body can finish recovering from the weeks before. Same exercises, same days. Three things change:</p>'
     +DELOAD_WHAT
-    +'<p style="margin-top:12px"><b>Why.</b> Hard training tires your joints, tendons and nerves as well as your muscles, and those recover more slowly. After five hard weeks they are behind. One easy week lets them catch up, and most people then lift more than they did before it. One lighter week does not cost you muscle or strength.</p>'
-    +'<p style="margin-top:10px"><b>Like half-time in a match:</b> nobody gets weaker during the break. The players come back and run harder in the second half.</p>'
+    +'<p style="margin-top:12px"><b>Why.</b> Every hard session makes you a little stronger and a little more tired. The tiredness adds up from week to week. Tendons also get stronger more slowly than muscle, so tendons and joints are the first to ache. One easy week clears the tiredness and gives them a rest, so you start the next weeks fresh. You do not lose muscle or strength in one lighter week.</p>'
+    +'<p style="margin-top:10px"><b>Like half-time in a match:</b> nobody gets weaker during the break. The players come back less tired, and they have lost nothing.</p>'
+    +'<p style="margin-top:10px"><b>Like charging a phone:</b> you plug it in before it reaches zero, not after it has switched off. The easy week is planned ahead for the same reason.</p>'
     +'<p style="margin-top:10px"><b>When.</b> Week 6 and week 12 of the 13 weeks.</p>'
-    +'<p style="margin-top:10px"><b>In the logbook.</b> Sessions logged in that week are marked "Deload". They are lighter on purpose, so they are not used as numbers to beat: the week after, your targets carry on from your last normal session.</p>'
-    +'<p style="margin-top:10px"><b>May you skip it?</b> Yes, if your lifts are still going up, nothing aches and you are sleeping well. Take it if your lifts have stopped going up, a joint aches, or you feel worn down.</p>';
+    +'<p style="margin-top:10px"><b>Cardio.</b> Keep your steps and the easy cardio. Leave the hard intervals out this week.</p>'
+    +'<p style="margin-top:10px"><b>In the logbook.</b> Sessions logged in that week are marked "Deload". They are easier on purpose, so they are not used as numbers to beat: the week after, your targets continue from your last normal session.</p>'
+    +'<p style="margin-top:10px"><b>Can you skip it?</b> Yes, if your lifts are still going up, nothing aches and you are sleeping well. Take it if your lifts have stopped going up, a joint aches, or you feel very tired. If you are not sure, take it. If you skip week 6, do not skip week 12.</p>';
 }
 /* On Today, any day of a deload week: the full explanation until "Got it", then one line that leads back to it. */
 function deloadCard(info){
   if(!info||DELOAD_WEEKS.indexOf(info.week)<0) return '';
   const wk=info.week;
   if(dlSkipped(wk)) return '<p class="dlline">Week '+wk+' is a planned easy week (a deload). You chose to train normally. <button class="lkbtn" data-dlwhy>Change</button></p>';
-  if(dlSeen(wk)) return '<p class="dlline">Deload week: lighter on purpose. <button class="lkbtn" data-dlwhy>What is this?</button></p>';
+  if(dlSeen(wk)) return '<p class="dlline">Deload week: easier on purpose. <button class="lkbtn" data-dlwhy>What is this?</button></p>';
   return '<div class="card help dlcard"><div class="card-h"><h3>Week '+wk+' is a deload week</h3><button class="btn sm" data-dlok>Got it</button></div>'
-    +'<p class="dl-p"><b>A deload is a planned easy week.</b> Same exercises, same days. Three things change:</p>'
+    +'<p class="dl-p"><b>A deload is a planned easy week.</b> You still train, but you do less on purpose. Same exercises, same days. Three things change:</p>'
     +DELOAD_WHAT
-    +'<p class="dl-p">It lets your joints and tendons catch up after five hard weeks, so you come back lifting more. One lighter week does not cost you muscle.</p>'
+    +'<p class="dl-p">It clears the tiredness that builds up over weeks of training and gives your tendons and joints a rest, so you start the next weeks fresh. You do not lose muscle in one lighter week.</p>'
     +'<div class="dl-b"><button class="btn sm" data-dlwhy>More about this</button><button class="btn sm" data-dlskip>Train normally this week</button></div></div>';
 }
 function chkButton(x,on,attr){
@@ -118,9 +122,9 @@ function renderHelp(){
     $('#helpCard').innerHTML='<div class="card help">'
       +'<div class="card-h"><h3>New in this update</h3><button class="btn sm" data-hidenews>Got it</button></div>'
       +'<ol class="steps big">'
-      +'<li><b>Angles, grip and range on every exercise.</b> Open a lift in Train: each angle is drawn above the logbook, with the grip, the range and a comparison to picture it. Fold the block once and it stays folded.</li>'
-      +'<li><b>Deload weeks are explained.</b> Week 6 and week 12 are planned easy weeks. Today says what to do and why, and you can choose to train normally instead.</li>'
-      +'<li><b>"Same as last time" is there every week.</b> In a deload week it fills last time\'s sets a step lighter. If you finish a lift with rows you did not tick, the app asks whether you did them.</li>'
+      +'<li><b>Angles, grip and range on every exercise.</b> Open a lift in Train: each angle is drawn above the logbook, with the grip, the range and a line called Like that compares the movement with something from everyday life. Tap the title to close the block, and it stays closed.</li>'
+      +'<li><b>Deload weeks are explained.</b> Week 6 and week 12 are planned easy weeks. The Today screen says what to do and why, and you can choose to train normally instead.</li>'
+      +'<li><b>The "Same as last time" button works in every week.</b> In a deload week it fills in last time\'s sets made easier. If you finish a lift with sets you did not tick, the app asks whether you did them.</li>'
       +'</ol></div>';
     return;
   }

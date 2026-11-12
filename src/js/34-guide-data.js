@@ -68,15 +68,17 @@ const GUIDE=[
  {t:'Reading the angles on an exercise card', b:()=>{
    const row=(k,d,t)=>'<div class="ang">'+dial(k,d)+'<div class="ang-t"><span class="ang-h"><b>'+t[0]+'</b></span><span class="ang-w">'+t[1]+'</span></div></div>';
    return '<p>Every exercise card has a block called <b>Angles, grip and range</b>, above the logbook. Each angle has a small drawing: the <b>dashed line</b> is what the angle is measured from, and the <b>solid line</b> is where your body or the bench should be.</p>'
-    +'<p style="margin-top:10px">Three sizes are worth knowing by eye: <b>90°</b> is a right angle, the corner of a door. <b>45°</b> is half of that. <b>30°</b> is the gap between two neighbouring numbers on a clock face.</p>'
+    +'<p style="margin-top:10px">Three sizes to remember: <b>90°</b> is a right angle, like the corner of a door. <b>45°</b> is half of that. <b>30°</b> is the angle between two numbers that are next to each other on a clock.</p>'
     +'<div class="angs" style="margin-top:12px">'
     +row('up',30,['Up from flat','A bench or your body, measured up from level. 0° is flat, 90° is fully upright.'])
-    +row('lean',15,['From upright','How far something tips over from straight up: a lean of the body, or toes turned out from straight ahead.'])
+    +row('lean',15,['From upright','How far something leans away from straight up: your body, a forearm or a thigh. 0° is fully upright.'])
+    +row('turn',20,['A turn, seen from above','How far the toes or the arms are turned away from pointing straight ahead. 0° is straight ahead, 90° is straight out to the side. On the Dumbbell Curl it is the palm that turns.'])
+    +row('fwd',25,['Forward, seen from above','How far the elbows or the arms are in front of pointing straight out to the sides. 0° is straight out to the side, 90° is straight ahead.'])
     +row('out',45,['Out from your side','How far the upper arm is from hanging straight down. 0° is against your ribs, 90° is level with your shoulder.'])
-    +row('bend',90,['Bend at a joint','How far an elbow, a knee or the hips are bent. 0° is dead straight, 90° is a right angle.'])
+    +row('bend',90,['Bend at a joint','How far an elbow, a knee or the hips are bent. 0° is fully straight, 90° is a right angle.'])
     +row('bend',[100,0,'move'],['A shaded band','A range: either anywhere between two numbers, or how far the joint travels during the rep.'])
     +'</div>'
-    +'<p style="margin-top:12px">The numbers are guides, not laws. Bodies differ: if a position hurts, stop short of it. The line under each number says the same thing in plain words, and <b>Like</b> gives you a picture to hold in your head while you lift.</p>';
+    +'<p style="margin-top:12px">The numbers are guides, not strict rules. Bodies differ: if a position hurts, stop before you reach it. The line under each number says the same thing in plain words, and <b>Like</b> compares the movement with something you already know.</p>';
  }},
  {t:'Deload weeks: what they are and why', b:()=>deloadText()},
  {t:'Reading the trend, and when to change something', b:`
@@ -118,7 +120,7 @@ const GUIDE=[
   <li><b>Changing program too often.</b> Switching every two weeks prevents the steady increase that drives everything. Run a block to the end.</li>
   <li><b>Too much weight, half the range.</b> Half reps build very little and cost your joints.</li>
   <li><b>Too many intervals.</b> They feel productive and quietly wear down your lifting. Keep them capped.</li>
-  <li><b>Never taking a deload.</b> This is how people stall for months and blame the program.</li>
+  <li><b>Pushing on when your body asks for rest.</b> If your lifts have stopped going up, a joint aches or you feel very tired, take the easy week. Forcing it is how people stop improving for months.</li>
   <li><b>Calories you drink.</b> Sweet tea, juice and soft drinks add up without you noticing.</li>
   <li><b>Dense "healthy" foods.</b> Ghee, oil, nuts and peanut butter are good foods and very high in calories. Measure them honestly.</li>
   <li><b>Watching the daily number.</b> Weight zig-zags every day. Use the 7-day average and ignore the rest.</li>

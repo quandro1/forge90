@@ -311,7 +311,8 @@ details.formnotes>summary .how-t{flex:1}
 .ang-t{flex:1; min-width:0; font-size:13px; line-height:1.45; color:var(--text-dim)}
 .ang-h{display:block; color:var(--text)}
 .ang-h b{font-weight:600}
-.ang-v{font-family:var(--font-m); font-weight:700; font-size:14px; color:var(--ember); margin:0 5px 0 6px; white-space:nowrap}
+.ang-v{font-family:var(--font-m); font-weight:700; font-size:14px; color:var(--ember); margin:0 2px; white-space:nowrap}
+.askbar:focus{outline:none}
 .ang-r{color:var(--text-dim)}
 .ang-w{display:block; margin-top:1px}
 .ang-w b{color:var(--text); font-weight:600}
@@ -643,7 +644,11 @@ details.formnotes>summary .how-t{flex:1}
   .readout{grid-template-columns:repeat(2,1fr)}
   .readout>div:last-child:nth-child(odd){grid-column:1/-1}
   .logger .lf{padding-left:8px; padding-right:8px}
-  .logger .rest,.undobar{margin-left:8px; margin-right:8px}
+  .logger .rest,.undobar,.askbar{margin-left:8px; margin-right:8px}
+  .fn-b{padding:10px 9px 11px}
+  .dial{width:38px; height:38px}
+  .ang{gap:9px}
+  .formnotes .pos{grid-template-columns:44px 1fr; gap:5px 7px}
 }
 
 /* ============ sizes a thumb can hit ============ */

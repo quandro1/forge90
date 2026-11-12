@@ -162,19 +162,31 @@ function dlMark(list,week,on){
   d[list]=d[list].filter(x=>x!==week); if(on) d[list].push(week);
   if(d.off.length||d.seen.length) S.ui.dl=d; else delete S.ui.dl;
 }
-/* Train normally in a deload week, or take the deload after all. Sessions already logged that
-   week at the usual weight (or heavier) were not deloads, so they count as normal ones; sessions
-   that really were lighter keep their mark and are still not the numbers to beat. */
+/* Train normally in a deload week, or take the deload again.
+   Skipping: a session already logged that week counts as a normal one when it was not easier than the last
+   normal session (heavier, or the same weight with about the same reps on as many sets; today's session may
+   still be in progress, so it is compared set for set). A session that really was easier keeps its mark and is
+   still not a number to beat. Rows that were only planned for the deload go with the mark.
+   Taking it again: a logbook of today with nothing logged in it is a deload session again. */
 function setDeloadSkipped(week,skip){
   dlMark('off',week,skip);
-  if(!skip) return;
+  const unplan=e=>{ e.sets=e.sets.map(s=>planned(s)?{}:s); };
+  if(!skip){
+    for(const id in S.logs){
+      const e=S.logs[id].find(x=>x.d===TODAY);
+      if(e&&!e.dl&&!loggedSets(e).length){ e.dl=1; unplan(e); }
+    }
+    return;
+  }
   const from=iso(addDays(parseISO(S.profile.start),(week-1)*7)), to=iso(addDays(parseISO(S.profile.start),week*7-1));
   for(const id in S.logs){
     const arr=S.logs[id];
     arr.forEach((e,i)=>{
       if(!e.dl||e.d<from||e.d>to) return;
       const mine=judged(e,99), before=arr.slice(0,i).filter(x=>!x.dl&&loggedSets(x).length), ref=before.length?before[before.length-1]:null;
-      if(!mine.length||!ref||workWeight(mine)>=workWeight(judged(ref,99))) delete e.dl;
+      const was=ref?judged(ref,99):[], tot=r=>r.reduce((a,s)=>a+s.r,0), mw=workWeight(mine), rw=workWeight(was);
+      const full=e.d===TODAY||mine.length>=was.length;
+      if(!mine.length||!ref||mw>rw||(mw===rw&&full&&tot(mine)>=tot(was.slice(0,mine.length))*0.9)){ delete e.dl; unplan(e); }
     });
   }
 }

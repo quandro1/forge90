@@ -78,7 +78,7 @@ document.addEventListener('click',e=>{
     save(); return;
   }
   if(T.closest('[data-hidehelp]')){ S.ui.helpSeen=1; save(); renderHelp(); return; }
-  if(T.closest('[data-hidenew]')){ S.ui.from=2; S.ui.news=NEWS; save(); renderHelp(); return; }
+  if(T.closest('[data-hidenew]')){ S.ui.from=2; save(); renderHelp(); return; }      // the short "new in this update" note follows it
   if(T.closest('[data-hidenews]')){ S.ui.news=NEWS; save(); renderHelp(); return; }
   /* ---- deload weeks: the explanation, "Got it", and training normally instead ---- */
   const dlBtn=T.closest('[data-dlok],[data-dlskip],[data-dlback]');
@@ -89,9 +89,10 @@ document.addEventListener('click',e=>{
       else{ setDeloadSkipped(wk,dlBtn.hasAttribute('data-dlskip')); dlMark('seen',wk,true); }
       save();
       if(sheet.classList.contains('on')) closeSheet();
-      // on Train the open logbooks are redrawn where they stand (a rebuilt list would close the card in use)
-      if(currentTab==='train'){ const seen={}; $$('.logger').forEach(b=>{ const k=b.dataset.log; if(!seen[k]){ seen[k]=1; refreshLogger(k); } }); }
-      else refreshTab();
+      // Logbooks already open on Train are redrawn where they stand, whichever tab the tap came from: Train is
+      // built once and kept across tab changes, and a rebuilt list would close the card in use.
+      const seen={}; $$('.logger').forEach(b=>{ const k=b.dataset.log; if(!seen[k]){ seen[k]=1; refreshLogger(k); } });
+      if(currentTab!=='train') refreshTab();
     }
     return;
   }
@@ -191,36 +192,36 @@ document.addEventListener('click',e=>{
   const box=T.closest('.logger');
   if(box){
     const id=box.dataset.log, ref=box.dataset.ref, it=itemFor(id,ref);
-    if(T.closest('[data-dlwhy]')){ deloadSheet(); return; }
     // the question about unticked rows stands only until the logbook is used for something else
-    if(ASK===id&&!T.closest('[data-askyes],[data-askno],[data-savelog]')) ASK=null;
+    if(ASK===id&&!T.closest('.askbar,[data-savelog]')) dropAsk(id);
     if(T.closest('[data-repeat]')){
       const prev=prevSession(id);
       if(prev){
         const en=upsert(id,it), dl=!!en.dl, ex=EX[id];
         let left=dl?deloadSets(setsWanted(it)):Infinity;      // a deload session takes one set fewer
         prev.sets.forEach((s,i)=>{
-          if(blankSet(s)||left<=0) return;
+          if(blankSet(s)||planned(s)||left<=0) return;        // a row that was only planned last time was not a set
           left--;
           while(en.sets.length<=i) en.sets.push({});
           if(!blankSet(en.sets[i])) return;            // never touch a row that already holds something
           const o={pre:1};                             // a plan until it is ticked or changed
-          if(s.w!=null){
-            // on a deload day the weight is a step lighter; with nothing lighter to name, a loaded lift keeps its weight and a bodyweight lift drops the extra
-            const lw=dl?lighterKg(ex,+s.w):+s.w;
-            if(lw!=null) o.w=lw; else if(ex.load!=='bw') o.w=s.w;
-          }
-          if(s.r!=null) o.r=s.r;
+          // On a deload day each set is made easier the way the advice line says: a weight about a tenth lighter
+          // where the equipment has one; otherwise the same weight and a shorter set. A bodyweight lift with
+          // weight added and nothing lighter to hang on drops the extra weight and keeps its reps.
+          const lw=(dl&&s.w!=null)?deloadKg(ex,+s.w):null, off=dl&&ex.load==='bw'&&+s.w>0&&lw==null;
+          if(s.w!=null){ if(!dl) o.w=s.w; else if(lw!=null) o.w=lw; else if(ex.load!=='bw') o.w=s.w; }
+          if(s.r!=null) o.r=(dl&&lw==null&&!off)?deloadReps(it,s.r):s.r;
           en.sets[i]=o;
         });
         syncSession(); save(); refreshLogger(id);
       }
       return;
     }
-    if(T.closest('[data-dl]')){                 // deload session on/off
+    if(T.closest('[data-dl]')){                 // deload session on/off: rows planned for the other kind of session go
       const en=upsert(id,it);
       if(en.dl) delete en.dl; else en.dl=1;
-      save(); refreshLogger(id); return;
+      en.sets=en.sets.map(s=>planned(s)?{}:s);
+      syncSession(); save(); refreshLogger(id); return;
     }
     if(T.closest('[data-addset]')){
       upsert(id,it).sets.push({});
@@ -282,7 +283,11 @@ document.addEventListener('click',e=>{
       if(savelog&&en.sets.some(planned)){
         ASK=id; save(); refreshLogger(id);
         const bar=$('.logger[data-log="'+id+'"][data-ref="'+ref+'"] .askbar');
-        if(bar&&bar.scrollIntoView) bar.scrollIntoView({block:'nearest'});
+        if(bar){
+          if(bar.scrollIntoView) bar.scrollIntoView({block:'nearest'});
+          // the question itself takes the focus (not its Yes button, so a second Enter cannot count sets by accident)
+          try{ bar.focus({preventScroll:true}); }catch(err){}
+        }
         return;
       }
       ASK=null;
@@ -356,6 +361,7 @@ document.addEventListener('input',e=>{
     const en=upsert(id,itemFor(id,box.dataset.ref));
     while(en.sets.length<=i) en.sets.push({});
     if(UNDO&&UNDO.id===id&&UNDO.i===i){ UNDO=null; $$('.logger[data-log="'+id+'"] .undobar').forEach(b=>b.remove()); }   // typing there replaces what was cleared
+    if(ASK===id) dropAsk(id);                 // typing answers the question about unticked rows by hand
     // keep only digits (and one dot for weight), so junk never reaches state
     let raw=latinNumber(T.value).replace(f==='w'?/[^0-9.]/g:/[^0-9]/g,'');
     if(f==='w') raw=raw.replace(/(\..*)\./g,'$1');

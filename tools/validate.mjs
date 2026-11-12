@@ -63,6 +63,7 @@ for (const id of Object.keys(EX)) {
   if (!KINDS.has(e.kind)) err(at + 'kind ' + e.kind);
   if (!LOADS.has(e.load)) err(at + 'load ' + e.load);
   if (typeof e.step !== 'number' || e.step < 0) err(at + 'step');
+  if (e.bar !== undefined && (e.load !== 'bb' || !(e.bar >= 5 && e.bar <= 25))) err(at + 'bar is the weight of a full-size barbell (5-25 kg) and belongs on barbell lifts only');
   if (!Array.isArray(e.prim) || !e.prim.length || e.prim.length > 2) err(at + 'prim must name 1 or 2 zones');
   for (const z of [...(e.prim || []), ...(e.sec || [])]) if (!ZONES.has(z)) err(at + 'unknown muscle zone ' + z);
   if ((e.sec || []).some((z) => (e.prim || []).includes(z))) err(at + 'a zone is both prim and sec');
@@ -100,7 +101,7 @@ for (const id of Object.keys(EX)) {
 /* the short form notes: 1-3 angles with numbers, grip or feet, the range, one comparison */
 function formOk(f, at) {
   if (!f || typeof f !== 'object') { err(at + 'form notes missing'); return; }
-  const plain = (s, lo, hi) => textOk(s) && s.trim().length >= lo && s.length <= hi;
+  const plain = (s, lo, hi) => textOk(s) && !/—/.test(s) && s.trim().length >= lo && s.length <= hi;       // no long dash: a colon or a full stop
   const num = (x) => typeof x === 'number' && x >= 0 && x <= 180;
   const LIMIT = { up: 90, fwd: 90, lean: 90, turn: 90, out: 100, bend: 150 };      // what each drawing can show
   if (!Array.isArray(f.angles) || f.angles.length < 1 || f.angles.length > 3) { err(at + 'form.angles needs 1 to 3 entries'); return; }
@@ -123,6 +124,7 @@ function formOk(f, at) {
   if (!plain(f.range, 20, 160)) err(at + 'form.range (20-160 characters)');
   if (/\b\d(–\d)? seconds? (down|up|back|forward|in|out)\b/i.test(f.range || '')) warn(at + 'form.range carries a tempo (the card has a tempo line for that)');
   if (!plain(f.like, 20, 160) || /<b>/.test(f.like || '')) err(at + 'form.like (20-160 characters, no markup)');
+  if (/^like\b/i.test(f.like || '')) err(at + 'form.like starts with "Like": the row is already labelled Like');
   for (const k of Object.keys(f)) if (!['angles', 'grip', 'feet', 'range', 'like'].includes(k)) err(at + 'form has an unknown field ' + k);
 }
 function rxOk(it) {

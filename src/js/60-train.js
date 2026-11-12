@@ -154,7 +154,7 @@ function formNotes(id,plain){
   // a short "measured from" ("of bend") stays on one line with its number
   const from=t=>t.length<=12?esc(t).replace(/ /g,'&nbsp;'):esc(t);
   const rows=(f.angles||[]).map(a=>'<div class="ang">'+dial(a[1],a[2])
-    +'<div class="ang-t"><span class="ang-h"><b>'+esc(a[0])+'</b><span class="ang-v">'+esc(degText(a[2]))+'</span><span class="ang-r">'+from(a[3])+'</span></span>'
+    +'<div class="ang-t"><span class="ang-h"><b>'+esc(a[0])+'</b> <span class="ang-v">'+esc(degText(a[2]))+'</span>'+(a[3].length<=12?'&nbsp;':' ')+'<span class="ang-r">'+from(a[3])+'</span></span>'
     +'<span class="ang-w">'+a[4]+'</span></div></div>').join('');
   const body='<div class="angs">'+rows+'</div><dl class="pos">'
     +(f.grip?'<dt>Grip</dt><dd>'+f.grip+'</dd>':'')

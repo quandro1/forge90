@@ -41,8 +41,8 @@ function deloadSheet(){
   const p='<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:9px">';
   openSheet('Deload weeks', deloadText()
     +(live?'<div class="sec">'+(dlSkipped(wk)
-        ?p+'You chose to train normally in week '+wk+'. Sessions you log now count as normal ones.</p><button class="btn wide" data-dlback>Make week '+wk+' a deload week after all</button>'
-        :p+'This is week '+wk+': a deload week. If you train normally instead, sessions already logged this week at your usual weight count as normal ones, and lighter ones stay marked as deload.</p><button class="btn wide" data-dlskip>Train normally this week</button>')
+        ?p+'You chose to train normally in week '+wk+'. Sessions you log now count as normal ones.</p><button class="btn wide" data-dlback>Make week '+wk+' a deload week again</button>'
+        :p+'This is week '+wk+': a deload week. If you train normally instead, sessions already logged this week at your usual weight and reps count as normal ones, and easier ones stay marked as deload.</p><button class="btn wide" data-dlskip>Train normally this week</button>')
       +'</div>':''));
 }
 /* ---- exercise library ------------------------------------------- */
@@ -145,7 +145,7 @@ function daySheet(i){
       +'<div class="tw" style="margin-top:12px"><table><thead><tr><th>Exercise</th><th class="n">Sets × reps</th><th class="n">Rest</th></tr></thead><tbody>'
       +d.session.items.map(it=>EX[it.ex]?'<tr><td>'+esc(EX[it.ex].name)+'</td><td class="n">'+esc(rxText(it))+'</td><td class="n">'+esc(restText(it.rest))+'</td></tr>':'').join('')
       +'</tbody></table></div>';
-    if(d.deload) body+='<div class="note hot" style="margin-top:12px"><b>Deload week.</b> A planned easy week: the same exercises with about a tenth less weight, one set fewer, and every set stopped early. You should leave the gym feeling you could have done much more. <button class="lkbtn" data-dlwhy>What is this?</button></div>';
+    if(d.deload) body+='<div class="note hot" style="margin-top:12px"><b>Deload week.</b> A planned easy week: the same exercises with about a tenth less weight (10%), one set fewer, and every set stopped early. You should leave the gym feeling you could have done much more. <button class="lkbtn" data-dlwhy>What is this?</button></div>';
   }else if(d.type==='cardio'){
     body+='<div class="session rest"><div class="tag">Conditioning</div><h3>Zone 2 &amp; steps</h3>'
       +'<p class="focus">'+esc(condToday(d))+' at '+t.z2[0]+'–'+t.z2[1]+' bpm. Incline walk, bike or elliptical — low joint cost, legs stay fresh.</p></div>';

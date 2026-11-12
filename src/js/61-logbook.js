@@ -8,6 +8,8 @@
 let UNDO=null;
 /* the lift whose "Done with this lift" is waiting for an answer about rows filled in from last time and never ticked */
 let ASK=null;
+/* the question is withdrawn as soon as the logbook is used for anything else, on screen as well as in memory */
+function dropAsk(id){ ASK=null; $$('.logger[data-log="'+id+'"] .askbar').forEach(b=>b.remove()); }
 /* how this lift is prescribed in that slot (or its usual prescription when it is not in a plan) */
 function itemFor(id,ref){
   const sl=ref?slotAt(ref):null;
@@ -56,15 +58,15 @@ function logger(id,ref){
     :(isDeload()?'<button class="dlchip" data-dl aria-pressed="false">Deload: off</button>':'');
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
     +'<div class="lh"><b>Logbook</b>'+chip+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
-    +(dlNow?'<p class="dlnote">Deload session: lighter on purpose, and not a number to beat next week. <button class="lkbtn" data-dlwhy>What is this?</button></p>':'')
+    +(dlNow?'<p class="dlnote">Deload session: easier on purpose. Next week\'s target comes from your last normal session, not from this one. <button class="lkbtn" data-dlwhy>What is this?</button></p>':'')
     +'<div class="sets">'+rows+'</div>'
-    +(nPre&&ASK!==id?'<p class="prenote">Filled in from last time'+(dlNow?', a step lighter and with one set fewer for the deload':'')+'. Tick each set as you do it, or type over it.</p>':'')
-    +(nPre&&ASK===id?'<div class="askbar"><span>'+(nPre===1?'1 set is':nPre+' sets are')+' filled in from last time and not ticked. Did you do '+(nPre===1?'it':'them')+'?</span>'
+    +(nPre&&ASK!==id?'<p class="prenote">Filled in from last time'+(dlNow?' and made easier for the deload week':'')+'. Tick each set as you do it, or type over it.</p>':'')
+    +(nPre&&ASK===id?'<div class="askbar" role="alert" tabindex="-1"><span>'+(nPre===1?'1 set is':nPre+' sets are')+' filled in from last time and not ticked. Did you do '+(nPre===1?'it':'them')+'?</span>'
       +'<span class="ask-b"><button class="btn sm primary" data-askyes>Yes, count '+(nPre===1?'it':'them')+'</button><button class="btn sm" data-askno>No, clear '+(nPre===1?'it':'them')+'</button></span></div>':'')
     +(UNDO&&UNDO.id===id&&UNDO.d===TODAY?'<div class="undobar"><span>Set '+(UNDO.i+1)+' cleared.</span><button class="btn sm" data-undo>Undo</button></div>':'')
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
-    +(prev?'<button class="btn sm" data-repeat>Same as last time'+(dlNow?', lighter':'')+'</button>':'')
+    +(prev?'<button class="btn sm" data-repeat>Same as last time'+(dlNow?', easier':'')+'</button>':'')
     +'<button class="btn sm primary" data-savelog>Done with this lift</button></div>'
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';
