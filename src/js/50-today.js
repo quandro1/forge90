@@ -114,7 +114,7 @@ function renderHelp(){
       +'<li><b>Choose a target.</b> Train → Change: six plans, with the days you train.</li>'
       +'<li><b>Clearer exercise guides.</b> Each lift now shows where a rep starts and finishes, where you should feel it, and what to change if you do not.</li>'
       +'<li><b>The rest timer always starts,</b> and today\'s target stays on screen until your last set.</li>'
-      +'<li><b>Station taken?</b> Open "How to do it" and swap to another lift for the same muscle.</li>'
+      +'<li><b>Station taken?</b> Open the lift: the buttons under Video and Photos swap it for another lift for the same muscle.</li>'
       +'</ol></div>';
     return;
   }

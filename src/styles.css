@@ -358,6 +358,8 @@ details.formnotes>summary .how-t{flex:1}
 .planbar .pb-k{display:block; font-family:var(--font-d); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ember)}
 .planbar .pb-n{display:block; font-family:var(--font-d); font-size:20px; margin-top:2px}
 .planbar .pb-l{display:block; font-size:13px; color:var(--text-dim); margin-top:2px}
+.swapbox{margin-top:12px}
+.swapbox .eyebrow{margin-bottom:7px}
 .swaps{display:flex; flex-wrap:wrap; gap:8px}
 .swapnote{font-size:12px; color:var(--text-faint); margin-top:8px}
 .pill.eq{color:var(--text-faint)}

@@ -49,7 +49,6 @@ export default [
       await check('Days-a-week switch', page.locator('#splitSeg button'));
       const tiny = await page.locator(blk + '.warm .lk.tiny').first().boundingBox();
       if (tiny.width < 40 || tiny.height < 40) small.push('warm-up video link ' + Math.round(tiny.width) + ' x ' + Math.round(tiny.height));
-      await page.locator(blk + '.ex[data-ex="squat"] details.how > summary').click();
       await check('Swap button', page.locator(blk + '.ex[data-ex="squat"] [data-swap]'));
       await tab(page, 'fuel');
       await check('Training day / Rest day switch', page.locator('#dietSeg button'));

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="2fc401720e">
+<meta name="forge-build" content="3ddf92320f">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -376,6 +376,8 @@ details.formnotes>summary .how-t{flex:1}
 .planbar .pb-k{display:block; font-family:var(--font-d); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ember)}
 .planbar .pb-n{display:block; font-family:var(--font-d); font-size:20px; margin-top:2px}
 .planbar .pb-l{display:block; font-size:13px; color:var(--text-dim); margin-top:2px}
+.swapbox{margin-top:12px}
+.swapbox .eyebrow{margin-bottom:7px}
 .swaps{display:flex; flex-wrap:wrap; gap:8px}
 .swapnote{font-size:12px; color:var(--text-faint); margin-top:8px}
 .pill.eq{color:var(--text-faint)}
@@ -4285,7 +4287,7 @@ function renderHelp(){
       +'<li><b>Choose a target.</b> Train → Change: six plans, with the days you train.</li>'
       +'<li><b>Clearer exercise guides.</b> Each lift now shows where a rep starts and finishes, where you should feel it, and what to change if you do not.</li>'
       +'<li><b>The rest timer always starts,</b> and today\'s target stays on screen until your last set.</li>'
-      +'<li><b>Station taken?</b> Open "How to do it" and swap to another lift for the same muscle.</li>'
+      +'<li><b>Station taken?</b> Open the lift: the buttons under Video and Photos swap it for another lift for the same muscle.</li>'
       +'</ol></div>';
     return;
   }
@@ -4627,7 +4629,9 @@ function rampNote(id,ref){
     +(w>0?kg(roundTo(w*0.5,st))+' × 5, then '+kg(roundTo(w*0.75,st))+' × 3.'
          :'About half of today\'s weight for 5 reps, then about three-quarters for 3.')+'</div>';
 }
-/* another exercise for the same muscle, when the station is taken or the gym does not have it */
+/* another exercise for the same muscle, when the station is taken or the gym does not have it.
+   Drawn at the top of an opened card, under the demo links: it is needed the moment you
+   reach a busy station, so it does not sit inside the long guide. */
 function swapRow(id,ref){
   const sl=ref?slotAt(ref):null; if(!sl) return '';
   const base=sl.it.base||sl.it.ex;
@@ -4635,13 +4639,14 @@ function swapRow(id,ref){
   const taken=sessions()[sl.si].items.filter((o,k)=>k!==sl.k).map(o=>o.ex);
   const opts=[base].concat(EX[base].swap||[]).filter((x,i,a)=>EX[x]&&a.indexOf(x)===i&&x!==id&&taken.indexOf(x)<0);
   if(!opts.length) return '';
-  return '<div class="how-sec"><div class="eyebrow">Station taken, or not in your gym?</div><div class="swaps">'
+  return '<div class="swapbox"><div class="eyebrow">Station taken, or not in your gym?</div><div class="swaps">'
     +opts.map(x=>'<button class="btn sm" data-swap="'+x+'">'+(x===base?'Back to ':'Use ')+esc(EX[x].name)+'</button>').join('')
     +'</div><p class="swapnote">The number of sets stays the same. Each exercise keeps its own history.</p></div>';
 }
 function fillEx(box,id,ref){
   // Order: what you need between sets first (the one-line cue, the demo links,
-  // how heavy, the angles with grip and range, the logbook), then the full guide.
+  // the swap to another lift, how heavy, the angles with grip and range, the
+  // logbook), then the full guide.
   // The angles stay open on every lift until they are folded by hand, and that
   // choice is remembered. The guide starts open the first time you meet a lift
   // and folded once it is in your log. No stick-figure poses: the muscle map and
@@ -4650,12 +4655,13 @@ function fillEx(box,id,ref){
   const known=(S.logs[id]||[]).some(x=>loggedSets(x).length>0);
   box.innerHTML='<p class="cue">'+e.cue+'</p>'
     +demoLinks(e.name)
+    +swapRow(id,ref)
     +howHeavy(id,ref)
     +rampNote(id,ref)
     +formNotes(id)
     +logger(id,ref)
     +'<details class="how"'+(known?'':' open')+'><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary>'
-    +'<div class="how-b">'+mapsFor(e)+howTo(id)+swapRow(id,ref)+'</div></details>';
+    +'<div class="how-b">'+mapsFor(e)+howTo(id)+'</div></details>';
 }
 
 /* ---- demo links --------------------------------------------------
