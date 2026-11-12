@@ -18,6 +18,14 @@ Changing the app
   tests/                    node tests/run.mjs     -> drives the built page in
                             headless Chrome on an emulated phone
 
+The body drawing in "How to do it"
+  vendor/musclemap/         the drawing's source files and its MIT licence
+                            (MuscleMap by Jsplice), kept unchanged
+  tools/muscle-data.mjs     reads them and writes src/js/00-muscle-data.js
+                            (GENERATED — do not edit by hand). The licence
+                            text travels inside that file into index.html.
+  tools/map-sheet.mjs       pictures of every exercise's muscle map
+
 Publish: build, run the tests, commit, push to main. Phones pick the new
 build up the next time they open the app with a connection.
 

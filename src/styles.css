@@ -29,7 +29,7 @@
     --ember-wash:rgba(184,64,20,.10); --steel-wash:rgba(62,108,134,.10);
     --shadow:0 1px 2px rgba(16,32,40,.07), 0 8px 24px -14px rgba(16,32,40,.28);
     --fig:#41535E; --equip:#6C7D88; --plate:#8695A0;
-    --zone-off:#C4D0D6; --silo-fill:#E7ECEF; --silo-line:#CBD5D9;
+    --zone-off:#C4D0D6; --silo-fill:#FBFCFD; --silo-line:#9FB0B9;
     --mach-line:#8DA0AB; --mach-fill:#EBEFF1; --mach-pad:#A9B8C1;
   }
 }
@@ -43,7 +43,7 @@
   --ember-wash:rgba(184,64,20,.10); --steel-wash:rgba(62,108,134,.10);
   --shadow:0 1px 2px rgba(16,32,40,.07), 0 8px 24px -14px rgba(16,32,40,.28);
   --fig:#41535E; --equip:#6C7D88; --plate:#8695A0;
-  --zone-off:#C4D0D6; --silo-fill:#E7ECEF; --silo-line:#CBD5D9;
+  --zone-off:#C4D0D6; --silo-fill:#FBFCFD; --silo-line:#9FB0B9;
   --mach-line:#8DA0AB; --mach-fill:#EBEFF1; --mach-pad:#A9B8C1;
 }
 
@@ -263,9 +263,16 @@ summary .idx{font-family:var(--font-m); font-size:11px; color:var(--ember); flex
 .ex.open .ex-h .chev{transform:rotate(90deg)}
 .ex-b{display:none; padding:0 14px 14px; border-top:1px solid var(--line-soft)}
 .ex.open .ex-b{display:block}
-.maps{display:flex; gap:14px; align-items:center; justify-content:center; background:var(--sunken); border:1px solid var(--line-soft); border-radius:10px; padding:12px; margin-top:13px}
-.maps svg{height:128px; width:auto}
+.maps{background:var(--sunken); border:1px solid var(--line-soft); border-radius:10px; padding:12px 12px 10px; margin-top:13px}
+.maps .figs{display:flex; gap:14px; align-items:center; justify-content:center}
+.maps svg{height:208px; width:auto; max-width:calc(50% - 7px); flex:none}
+.mkey{display:flex; gap:18px; justify-content:center; margin-top:9px; font-family:var(--font-d); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim)}
+.mkey span{display:inline-flex; align-items:center; gap:6px}
+.mkey .k{display:block; width:12px; height:12px; border-radius:3px; flex:none}
+.mkey .k.m{background:var(--ember)}
+.mkey .k.h{background:var(--zone-sec); border:1.5px solid var(--ember)}
 .mtags{display:flex; flex-wrap:wrap; gap:5px; margin-top:9px}
+.credits{font-size:12px; color:var(--text-faint); margin-top:18px; line-height:1.45}
 .cue{font-size:13.5px; color:var(--text-dim); margin-top:11px}
 .cue b{color:var(--text); font-weight:600}
 
@@ -288,11 +295,14 @@ summary .idx{font-family:var(--font-m); font-size:11px; color:var(--ember); flex
 .dots i.on{background:var(--ember); border-color:var(--ember)}
 .dots.none{font-size:11.5px; color:var(--text-faint); font-family:var(--font-b)}
 
-/* muscle map — the only figure art the app renders */
+/* muscle map — the only figure art the app renders.
+   A main muscle is filled; a helper is tinted and outlined, so it is told from an unused muscle
+   by its outline and not only by a shade. Line widths are in screen pixels at every figure size. */
 svg{display:block}
-.mz{fill:var(--zone-off); transition:fill .3s}
+:root{--zone-sec:color-mix(in srgb,var(--ember) 26%,var(--zone-off))}
+.mz{fill:var(--zone-off)}
 .mz.on{fill:var(--ember)}
-.mz.sec{fill:color-mix(in srgb,var(--ember) 38%,var(--zone-off))}
+.mz.sec{fill:var(--zone-sec); stroke:var(--ember); stroke-width:1.1px; stroke-linejoin:round; vector-effect:non-scaling-stroke}
 
 /* ============ HOW TO DO IT (the written guide inside a card) ============ */
 details.how{margin-top:12px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
@@ -327,6 +337,14 @@ details.formnotes>summary .how-t{flex:1}
 .dial .d-band{fill:var(--ember); opacity:.24}
 .dial .d-arc{fill:none; stroke:var(--ember); stroke-width:1.5; opacity:.75}
 .dial .d-piv{fill:var(--text)}
+.dial .d-tick{stroke:var(--text-faint); stroke-width:1; stroke-linecap:round}
+/* the common mistake: a grey line with a cross at its end */
+.dial .d-not{stroke:var(--text-faint); stroke-width:2; stroke-linecap:round; opacity:.8}
+.dial .d-x{fill:none; stroke:var(--bad); stroke-width:1.7; stroke-linecap:round}
+/* a movement: the line swings from the start to the finish and back, three passes, and rests at the finish */
+.dial .d-swing{transform-box:view-box; animation:dialswing 1.2s ease-in-out 3 alternate}
+@keyframes dialswing{from{transform:rotate(var(--sw))} to{transform:rotate(0deg)}}
+@media (prefers-reduced-motion:reduce){.dial .d-swing{animation:none}}
 
 /* ============ DELOAD WEEKS, IN WORDS ============ */
 #helpCard:empty,#dlCard:empty{display:none}
@@ -362,10 +380,11 @@ details.formnotes>summary .how-t{flex:1}
 .swapbox .eyebrow{margin-bottom:7px}
 .swaps{display:flex; flex-wrap:wrap; gap:8px}
 .swapnote{font-size:12px; color:var(--text-faint); margin-top:8px}
-.pill.eq{color:var(--text-faint)}
+/* the equipment tag can be a whole phrase: on a narrow phone it wraps inside the card instead of sticking out */
+.pill.eq{color:var(--text-faint); white-space:normal; max-width:100%; border-radius:12px; line-height:1.4}
 .seg.wrap{flex-wrap:wrap}
 .seg.wrap button{flex:1 0 auto}
-.silo{fill:var(--silo-fill); stroke:var(--silo-line); stroke-width:1}
+.silo{fill:var(--silo-fill); stroke:var(--silo-line); stroke-width:1.2px; stroke-linejoin:round; vector-effect:non-scaling-stroke}
 
 /* ============ DEMO LINKS (photos / video) ============ */
 .links{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap}

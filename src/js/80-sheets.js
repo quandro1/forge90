@@ -127,7 +127,8 @@ function settingsSheet(){
     +'<p id="storageLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+storageLine()+'</p>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btnExport">Export a backup</button>'
     +'<button class="btn" id="btnImport">Restore</button>'
-    +'<button class="btn danger" id="btnWipe">Erase everything</button></div></div>');
+    +'<button class="btn danger" id="btnWipe">Erase everything</button></div></div>'
+    +'<p class="credits">The body drawing in "How to do it" is from MuscleMap by Jsplice, used under the MIT licence.</p>');
   cloudBadge();
 }
 function srow(label,key,type,val){

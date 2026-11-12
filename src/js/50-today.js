@@ -104,6 +104,19 @@ function renderChecklist(){
   const optional=list.some(x=>x.k==='creatine')&&c.indexOf('creatine')<0;
   $('#chkCount').textContent=c.length+' / '+(list.length-(optional?1:0));
 }
+/* What each update changed, by its number. NEWS (40-core.js) is the number of the latest one; S.ui.news is the
+   last one this person has read. Authored text: it may carry <b>. */
+const NEWS_NOTES={
+  1:[
+    '<b>Angles, grip and range on every exercise.</b> Open a lift in Train: each angle is drawn above the logbook, with the grip, the range and a line called Like that compares the movement with something from everyday life. Tap the title to close the block, and it stays closed.',
+    '<b>Deload weeks are explained.</b> Week 6 and week 12 are planned easy weeks. The Today screen says what to do and why, and you can choose to train normally instead.',
+    '<b>The "Same as last time" button works in every week.</b> In a deload week it fills in last time\'s sets made easier. If you finish a lift with sets you did not tick, the app asks whether you did them.'
+  ],
+  2:[
+    '<b>A real body shows the muscles.</b> Open a lift, then "How to do it": the muscles that work are lit on a drawing of a real body. A filled muscle does most of the work. An outlined muscle helps.',
+    '<b>Clearer angle drawings.</b> Small notches mark 30°, 45°, 60° and 90°. A grey line with a cross shows a common mistake next to the right position. Where a joint moves, the line swings from the start to the finish.'
+  ]
+};
 function renderHelp(){
   if(S.ui.from===1){                         // came from the earlier version: say what changed, once
     $('#helpCard').innerHTML='<div class="card help">'
@@ -118,14 +131,12 @@ function renderHelp(){
       +'</ol></div>';
     return;
   }
-  if(S.ui.helpSeen&&(+S.ui.news||0)<NEWS){   // someone who already uses the app: what the latest update changed, once
+  if(S.ui.helpSeen&&(+S.ui.news||0)<NEWS){   // someone who already uses the app: what the updates they have not read about changed, once
+    let items='';
+    for(let n=NEWS;n>(+S.ui.news||0);n--) items+=(NEWS_NOTES[n]||[]).map(t=>'<li>'+t+'</li>').join('');   // the newest update first
     $('#helpCard').innerHTML='<div class="card help">'
       +'<div class="card-h"><h3>New in this update</h3><button class="btn sm" data-hidenews>Got it</button></div>'
-      +'<ol class="steps big">'
-      +'<li><b>Angles, grip and range on every exercise.</b> Open a lift in Train: each angle is drawn above the logbook, with the grip, the range and a line called Like that compares the movement with something from everyday life. Tap the title to close the block, and it stays closed.</li>'
-      +'<li><b>Deload weeks are explained.</b> Week 6 and week 12 are planned easy weeks. The Today screen says what to do and why, and you can choose to train normally instead.</li>'
-      +'<li><b>The "Same as last time" button works in every week.</b> In a deload week it fills in last time\'s sets made easier. If you finish a lift with sets you did not tick, the app asks whether you did them.</li>'
-      +'</ol></div>';
+      +'<ol class="steps big">'+items+'</ol></div>';
     return;
   }
   if(S.ui.helpSeen){ $('#helpCard').innerHTML=''; return; }

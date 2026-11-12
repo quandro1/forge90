@@ -66,9 +66,10 @@ const GUIDE=[
     +'<p style="margin-top:12px">On the Strength plan the big barbell lifts go heavier still, 3 to 5 reps. Each exercise card says why that lift sits where it does.</p>';
  }},
  {t:'Reading the angles on an exercise card', b:()=>{
-   const row=(k,d,t)=>'<div class="ang">'+dial(k,d)+'<div class="ang-t"><span class="ang-h"><b>'+t[0]+'</b></span><span class="ang-w">'+t[1]+'</span></div></div>';
+   const row=(k,d,t,o)=>'<div class="ang">'+dial(k,d,o)+'<div class="ang-t"><span class="ang-h"><b>'+t[0]+'</b></span><span class="ang-w">'+t[1]+'</span></div></div>';
    return '<p>Every exercise card has a block called <b>Angles, grip and range</b>, above the logbook. Each angle has a small drawing: the <b>dashed line</b> is what the angle is measured from, and the <b>solid line</b> is where your body or the bench should be.</p>'
     +'<p style="margin-top:10px">Three sizes to remember: <b>90°</b> is a right angle, like the corner of a door. <b>45°</b> is half of that. <b>30°</b> is the angle between two numbers that are next to each other on a clock.</p>'
+    +'<p style="margin-top:10px">The short <b>notches</b> on the rim of each drawing mark 30°, 45°, 60° and 90°, so you can see at a glance how big an angle is.</p>'
     +'<div class="angs" style="margin-top:12px">'
     +row('up',30,['Up from flat','A bench or your body, measured up from level. 0° is flat, 90° is fully upright.'])
     +row('lean',15,['From upright','How far something leans away from straight up: your body, a forearm or a thigh. 0° is fully upright.'])
@@ -76,7 +77,8 @@ const GUIDE=[
     +row('fwd',25,['Forward, seen from above','How far the elbows or the arms are in front of pointing straight out to the sides. 0° is straight out to the side, 90° is straight ahead.'])
     +row('out',45,['Out from your side','How far the upper arm is from hanging straight down. 0° is against your ribs, 90° is level with your shoulder.'])
     +row('bend',90,['Bend at a joint','How far an elbow, a knee or the hips are bent. 0° is fully straight, 90° is a right angle.'])
-    +row('bend',[100,0,'move'],['A shaded band','A range: either anywhere between two numbers, or how far the joint travels during the rep.'])
+    +row('bend',[100,0,'move'],['A shaded band','A range: either anywhere between two numbers, or how far the joint travels during the rep. When the joint travels, the solid line swings from the start to the finish a few times, then stays at the finish.'])
+    +row('up',30,['A grey line with a cross','A common mistake, shown next to the right position. Here the bench is set too steep.'],{not:60})
     +'</div>'
     +'<p style="margin-top:12px">The numbers are guides, not strict rules. Bodies differ: if a position hurts, stop before you reach it. The line under each number says the same thing in plain words, and <b>Like</b> compares the movement with something you already know.</p>';
  }},

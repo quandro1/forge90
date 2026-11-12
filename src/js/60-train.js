@@ -72,13 +72,14 @@ function exCard(it,ref){
     +'<span class="s">'+esc(rxText(it))+' &nbsp;·&nbsp; '+esc(restText(it.rest))+' rest &nbsp;·&nbsp; '+esc(e.tag)+'</span></span>'
     +'<span class="chev">'+ICO.chev+'</span></button><div class="ex-b"></div></div>';
 }
-/* Which muscles, as one or two maps: prim drawn strong, sec lighter. */
+/* Which muscles, as one or two maps: the main ones filled, the helpers outlined, with a legend that says so. */
 function mapsFor(e){
-  const all=(e.prim||[]).concat(e.sec||[]);
-  let h='<div class="maps">';
-  if(all.some(k=>FRONT_ZONES[k])) h+=muscleMap('front',e.prim||[],e.sec||[]);
-  if(all.some(k=>BACK_ZONES[k]))  h+=muscleMap('back',e.prim||[],e.sec||[]);
-  h+='</div><div class="mtags">'
+  const prim=e.prim||[], sec=e.sec||[], all=prim.concat(sec);
+  let h='<div class="maps"><div class="figs">';
+  if(all.some(k=>FRONT_ZONES[k])) h+=muscleMap('front',prim,sec);
+  if(all.some(k=>BACK_ZONES[k]))  h+=muscleMap('back',prim,sec);
+  h+='</div><div class="mkey"><span><i class="k m"></i>Main</span>'+(sec.length?'<span><i class="k h"></i>Helps</span>':'')+'</div>'
+    +'</div><div class="mtags">'
     +(e.prim||[]).map(k=>'<span class="pill hot">'+esc(ZN[k]||k)+'</span>').join('')
     +(e.sec||[]).map(k=>'<span class="pill">'+esc(ZN[k]||k)+'</span>').join('')
     +'<span class="pill eq">'+esc(e.equip)+'</span></div>';
@@ -112,7 +113,12 @@ function howTo(id){
      out, bend   measured from a line hanging straight down, swinging out
                  (bend also draws the fixed half of the joint above it)
    Degrees are one number, [low, high] (anywhere between the two) or
-   [from, to, 'move'] (the joint travels from one to the other). */
+   [from, to, 'move'] (the joint travels from one to the other).
+   Three things help the eye (added 12 Nov 2026):
+     notches   short marks on the rim at 30, 45, 60 and 90 degrees, so 30 and 45 look different at a glance
+     not this  where the row's words name a mistake, a grey line with a cross at {not: degrees}
+     a swing   on a movement the solid line starts at the start, swings to the finish, and stays there
+               (three passes; no motion when the phone asks for less motion) */
 const DIAL={
   up:  {s:'A', x:7,  y:41, r:36, a:15}, fwd: {s:'A', x:7,  y:41, r:36, a:15},
   lean:{s:'B', x:9,  y:43, r:36, a:15}, turn:{s:'B', x:9,  y:43, r:36, a:15},
@@ -130,10 +136,12 @@ function degText(d){
   if(typeof d==='number') return d+'°';
   return d.length===3?d[0]+'° → '+d[1]+'°':d[0]+'–'+d[1]+'°';
 }
-function dial(kind,d){
+const DIAL_NOTCH=[30,45,60,90];
+function dial(kind,d,opt){
   const g=DIAL[kind]; if(!g) return '';
-  const P=(deg,r)=>dialPoint(g,deg,r), line=(cls,p)=>'<line class="'+cls+'" x1="'+g.x+'" y1="'+g.y+'" x2="'+p[0]+'" y2="'+p[1]+'"/>';
-  const sweep=g.s==='B'?1:0, at=degAt(d);
+  const P=(deg,r)=>dialPoint(g,deg,r), line=(cls,p,more)=>'<line class="'+cls+'" x1="'+g.x+'" y1="'+g.y+'" x2="'+p[0]+'" y2="'+p[1]+'"'+(more||'')+'/>';
+  const sweep=g.s==='B'?1:0, at=degAt(d), move=typeof d!=='number'&&d.length===3;
+  const not=opt&&typeof opt.not==='number'?opt.not:null;
   let h='<svg class="dial" viewBox="0 0 48 48" aria-hidden="true" focusable="false">';
   if(typeof d!=='number'){                                   // a range or a movement: the band between the two
     const lo=Math.min(d[0],d[1]), hi=Math.max(d[0],d[1]), a=P(lo,g.r), b=P(hi,g.r);
@@ -142,10 +150,23 @@ function dial(kind,d){
     const a=P(0,g.a), b=P(d,g.a);
     h+='<path class="d-arc" d="M'+a[0]+' '+a[1]+' A'+g.a+' '+g.a+' 0 0 '+sweep+' '+b[0]+' '+b[1]+'"/>';
   }
+  // notches on the rim; a bend can go past a right angle, so it has one more at 120
+  h+=DIAL_NOTCH.concat(kind==='bend'?[120]:[]).map(t=>{
+    const a=P(t,g.r-(t===90?4.5:3)), b=P(t,g.r+1);
+    return '<line class="d-tick" x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'"/>';
+  }).join('');
   h+=line('d-ref',P(0,g.r));
   if(kind==='bend') h+='<line class="d-fix" x1="'+g.x+'" y1="'+g.y+'" x2="'+g.x+'" y2="3"/>';
-  if(typeof d!=='number'&&d.length===3) h+=line('d-from',P(d[0],g.r));
-  h+=line('d-arm',P(at,g.r));
+  if(not!=null){                                             // the mistake: a grey line (none when it lies on the line it is measured from) and a cross at its end
+    const c=P(not,g.r), f=n=>Math.round(n*100)/100;
+    if(not>0) h+=line('d-not',P(not,g.r-3.2));
+    h+='<path class="d-x" d="M'+f(c[0]-2.3)+' '+f(c[1]-2.3)+'l4.6 4.6m0 -4.6l-4.6 4.6"/>';
+  }
+  if(move) h+=line('d-from',P(d[0],g.r));
+  // a movement: the line is drawn at the finish and turned back to the start for the swing.
+  // A turn to the right on screen is positive; the "from upright" drawings grow to the right, the others to the left.
+  h+=line('d-arm'+(move?' d-swing':''),P(at,g.r),
+    move?' style="--sw:'+((g.s==='B'?1:-1)*(d[0]-d[1]))+'deg;transform-origin:'+g.x+'px '+g.y+'px"':'');
   return h+'<circle class="d-piv" cx="'+g.x+'" cy="'+g.y+'" r="2.2"/></svg>';
 }
 /* plain = inside the library's guide, where it is not a fold of its own */
@@ -153,7 +174,7 @@ function formNotes(id,plain){
   const f=EX[id]&&EX[id].form; if(!f) return '';
   // a short "measured from" ("of bend") stays on one line with its number
   const from=t=>t.length<=12?esc(t).replace(/ /g,'&nbsp;'):esc(t);
-  const rows=(f.angles||[]).map(a=>'<div class="ang">'+dial(a[1],a[2])
+  const rows=(f.angles||[]).map(a=>'<div class="ang">'+dial(a[1],a[2],a[5])
     +'<div class="ang-t"><span class="ang-h"><b>'+esc(a[0])+'</b> <span class="ang-v">'+esc(degText(a[2]))+'</span>'+(a[3].length<=12?'&nbsp;':' ')+'<span class="ang-r">'+from(a[3])+'</span></span>'
     +'<span class="ang-w">'+a[4]+'</span></div></div>').join('');
   const body='<div class="angs">'+rows+'</div><dl class="pos">'

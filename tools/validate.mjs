@@ -104,10 +104,18 @@ function formOk(f, at) {
   const plain = (s, lo, hi) => textOk(s) && !/—/.test(s) && s.trim().length >= lo && s.length <= hi;       // no long dash: a colon or a full stop
   const num = (x) => typeof x === 'number' && x >= 0 && x <= 180;
   const LIMIT = { up: 90, fwd: 90, lean: 90, turn: 90, out: 100, bend: 150 };      // what each drawing can show
+  const NOT_LIMIT = { up: 90, fwd: 90, lean: 90, turn: 90, out: 115, bend: 150 };  // how far the grey "not this" line may go
   if (!Array.isArray(f.angles) || f.angles.length < 1 || f.angles.length > 3) { err(at + 'form.angles needs 1 to 3 entries'); return; }
   f.angles.forEach((a, i) => {
     const aa = at + 'form angle ' + (i + 1) + ': ';
-    if (!Array.isArray(a) || a.length !== 5) { err(aa + 'must be [what, kind, degrees, measured from, plain words]'); return; }
+    if (!Array.isArray(a) || (a.length !== 5 && a.length !== 6)) { err(aa + 'must be [what, kind, degrees, measured from, plain words] with an optional {not: degrees}'); return; }
+    if (a.length === 6) {
+      // the common mistake, drawn as a grey line with a cross: only where the plain words name it, and well away from the right position
+      const o = a[5], d = a[2], lo = typeof d === 'number' ? d : Math.min(d[0], d[1]), hi = typeof d === 'number' ? d : Math.max(d[0], d[1]);
+      if (!o || typeof o !== 'object' || Array.isArray(o) || Object.keys(o).some((k) => k !== 'not')) err(aa + 'the sixth entry may only be {not: degrees}');
+      else if (typeof o.not !== 'number' || o.not < 0 || o.not > (NOT_LIMIT[a[1]] || 0)) err(aa + 'not: ' + o.not + ' cannot be drawn on a ' + a[1] + ' drawing');
+      else if (o.not > lo - 15 && o.not < hi + 15) err(aa + 'not: ' + o.not + ' is within 15° of the right position ' + lo + '–' + hi);
+    }
     if (!plain(a[0], 2, 24) || /<b>/.test(a[0])) err(aa + 'label');
     if (!(a[1] in LIMIT)) { err(aa + 'unknown kind ' + a[1]); return; }
     const d = a[2], vals = typeof d === 'number' ? [d] : Array.isArray(d) ? d.slice(0, 2) : [];
