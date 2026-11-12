@@ -114,13 +114,15 @@ function formOk(f, at) {
     if (!shape) err(aa + 'degrees must be a number, [low, high] or [from, to, "move"]');
     else if (vals.some((v) => v > LIMIT[a[1]])) err(aa + 'the ' + a[1] + ' drawing cannot show more than ' + LIMIT[a[1]] + '°');
     if (!plain(a[3], 3, 70) || /<b>/.test(a[3])) err(aa + 'what it is measured from');
-    if (!plain(a[4], 12, 190)) err(aa + 'plain words (12-190 characters)');
+    if (!plain(a[4], 12, 130)) err(aa + 'plain words (12-130 characters)');
   });
+  // short on purpose: the block sits above the logbook and has to read at a glance on a phone
   if (!f.grip && !f.feet) err(at + 'form needs grip or feet');
-  if (f.grip !== undefined && !plain(f.grip, 12, 220)) err(at + 'form.grip (12-220 characters)');
-  if (f.feet !== undefined && !plain(f.feet, 12, 220)) err(at + 'form.feet (12-220 characters)');
-  if (!plain(f.range, 20, 240)) err(at + 'form.range (20-240 characters)');
-  if (!plain(f.like, 20, 220) || /<b>/.test(f.like || '')) err(at + 'form.like (20-220 characters, no markup)');
+  if (f.grip !== undefined && !plain(f.grip, 12, 140)) err(at + 'form.grip (12-140 characters)');
+  if (f.feet !== undefined && !plain(f.feet, 12, 130)) err(at + 'form.feet (12-130 characters)');
+  if (!plain(f.range, 20, 160)) err(at + 'form.range (20-160 characters)');
+  if (/\b\d(–\d)? seconds? (down|up|back|forward|in|out)\b/i.test(f.range || '')) warn(at + 'form.range carries a tempo (the card has a tempo line for that)');
+  if (!plain(f.like, 20, 160) || /<b>/.test(f.like || '')) err(at + 'form.like (20-160 characters, no markup)');
   for (const k of Object.keys(f)) if (!['angles', 'grip', 'feet', 'range', 'like'].includes(k)) err(at + 'form has an unknown field ' + k);
 }
 function rxOk(it) {

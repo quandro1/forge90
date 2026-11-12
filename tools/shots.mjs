@@ -40,6 +40,13 @@ try {
     const closeSheet = async () => { await page.locator('#sheet [data-close]').last().tap(); await page.waitForFunction(() => !document.querySelector('#sheet.on')); };
     await page.locator('#ro-today').waitFor();
     await shot('today', true);
+    // the made-up block began on 5 Oct, so the pretend "today" falls in week 6: a deload week
+    await page.locator('#dlCard [data-dlwhy]').tap();
+    await page.locator('#sheet.on').waitFor();
+    await shot('deload-sheet', true);
+    await closeSheet();
+    await page.locator('#dlCard [data-dlok]').tap();
+    await el('deload-line', '#dlCard');
     await tab('train');
     await shot('train-top');
     // a lift that is already in the log (guide folded) and one that is new (guide open)
@@ -57,6 +64,12 @@ try {
     await el('card-guide', blk + '.ex[data-ex="squat"] details.how');
     await page.locator(blk + '.ex[data-ex="legext"] .ex-h').click();
     await el('card-new', blk + '.ex[data-ex="legext"]');
+    // "Same as last time" in a deload week, then "Done with this lift" with the rows still unticked: the app asks
+    await page.locator(blk + '.ex[data-ex="legpress"] .ex-h').click();
+    await page.locator(blk + '.logger[data-log="legpress"] [data-repeat]').tap();
+    await el('logger-filled', blk + '.logger[data-log="legpress"]');
+    await page.locator(blk + '.logger[data-log="legpress"] [data-savelog]').tap();
+    await el('logger-ask', blk + '.logger[data-log="legpress"]');
     await page.locator('[data-pickplan]').first().tap();
     await page.locator('#sheet.on').waitFor();
     await shot('plan-picker');
@@ -74,6 +87,8 @@ try {
     await shot('guide');
     await page.locator('#sheetBody details').nth(1).locator('summary').click();     // heavy, medium or light
     await el('guide-howheavy', '#sheetBody details:nth-of-type(2)');
+    await page.locator('#sheetBody details').nth(2).locator('summary').click();     // reading the angles
+    await el('guide-angles', '#sheetBody details:nth-of-type(3)');
     await closeSheet();
     await tab('plan');
     await shot('map', true);

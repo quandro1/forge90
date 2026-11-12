@@ -151,13 +151,16 @@ function dial(kind,d){
 /* plain = inside the library's guide, where it is not a fold of its own */
 function formNotes(id,plain){
   const f=EX[id]&&EX[id].form; if(!f) return '';
+  // a short "measured from" ("of bend") stays on one line with its number
+  const from=t=>t.length<=12?esc(t).replace(/ /g,'&nbsp;'):esc(t);
   const rows=(f.angles||[]).map(a=>'<div class="ang">'+dial(a[1],a[2])
-    +'<div class="ang-t"><span class="ang-h"><b>'+esc(a[0])+'</b><span class="ang-v">'+esc(degText(a[2]))+'</span><span class="ang-r">'+esc(a[3])+'</span></span>'
+    +'<div class="ang-t"><span class="ang-h"><b>'+esc(a[0])+'</b><span class="ang-v">'+esc(degText(a[2]))+'</span><span class="ang-r">'+from(a[3])+'</span></span>'
     +'<span class="ang-w">'+a[4]+'</span></div></div>').join('');
   const body='<div class="angs">'+rows+'</div><dl class="pos">'
     +(f.grip?'<dt>Grip</dt><dd>'+f.grip+'</dd>':'')
     +(f.feet?'<dt>Feet</dt><dd>'+f.feet+'</dd>':'')
     +'<dt>Range</dt><dd>'+f.range+'</dd>'
+    +(EX[id].tempo?'<dt>Tempo</dt><dd>'+EX[id].tempo+'</dd>':'')
     +'<dt>Like</dt><dd class="sim">'+esc(f.like)+'</dd></dl>';
   if(plain) return '<div class="formnotes plain"><div class="eyebrow">Angles, grip and range</div>'+body+'</div>';
   return '<details class="formnotes"'+(S.ui.formOff?'':' open')+'><summary><span class="how-t">Angles, grip and range</span><span class="chev">'+ICO.chev+'</span></summary>'

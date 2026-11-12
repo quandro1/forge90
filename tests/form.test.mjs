@@ -32,13 +32,14 @@ export default [
             if (!(num(d) || (Array.isArray(d) && d.length === 2 && num(d[0]) && num(d[1]) && d[0] < d[1])
               || (Array.isArray(d) && d.length === 3 && d[2] === 'move' && num(d[0]) && num(d[1]) && d[0] !== d[1]))) out.push(at + 'degrees ' + JSON.stringify(d));
             if (!clean(a[3], 3, 70) || /<b>/.test(a[3])) out.push(at + 'what it is measured from');
-            if (!clean(a[4], 12, 190)) out.push(at + 'plain words');
+            if (!clean(a[4], 12, 130)) out.push(at + 'plain words');
           });
+          // short on purpose: the block sits above the logbook and has to read at a glance on a phone
           if (!f.grip && !f.feet) out.push(id + ': neither grip nor feet');
-          if (f.grip !== undefined && !clean(f.grip, 12, 220)) out.push(id + ': grip');
-          if (f.feet !== undefined && !clean(f.feet, 12, 220)) out.push(id + ': feet');
-          if (!clean(f.range, 20, 240)) out.push(id + ': range');
-          if (!clean(f.like, 20, 220) || /<b>/.test(f.like)) out.push(id + ': comparison');
+          if (f.grip !== undefined && !clean(f.grip, 12, 140)) out.push(id + ': grip');
+          if (f.feet !== undefined && !clean(f.feet, 12, 130)) out.push(id + ': feet');
+          if (!clean(f.range, 20, 160)) out.push(id + ': range');
+          if (!clean(f.like, 20, 160) || /<b>/.test(f.like)) out.push(id + ': comparison');
           for (const k in f) if (['angles', 'grip', 'feet', 'range', 'like'].indexOf(k) < 0) out.push(id + ': unknown field ' + k);
         }
         return out;
@@ -61,7 +62,10 @@ export default [
       const text = await fn.innerText();
       assert.match(text, /angles, grip and range/i);
       assert.match(text, /\d+(–\d+)?°/, 'no angle with a number: ' + text);
-      for (const label of ['Grip', 'Feet', 'Range', 'Like']) assert.match(text, new RegExp('(^|\\n)' + label + '\\b', 'i'), label + ' row missing');
+      for (const label of ['Grip', 'Feet', 'Range', 'Tempo', 'Like']) assert.match(text, new RegExp('(^|\\n)' + label + '\\b', 'i'), label + ' row missing');
+      // the block is short enough to see the logbook under it without a long scroll: at most about one screen
+      const tall = await fn.evaluate((el) => el.getBoundingClientRect().height);
+      assert.ok(tall < 640, 'the notes are ' + Math.round(tall) + ' px tall');
       assert.doesNotMatch(text, /undefined|\{|\}/);
       const want = await page.evaluate(() => EX.squat.form.angles.length);
       assert.equal(await fn.locator('.ang').count(), want);

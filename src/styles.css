@@ -315,8 +315,9 @@ details.formnotes>summary .how-t{flex:1}
 .ang-r{color:var(--text-dim)}
 .ang-w{display:block; margin-top:1px}
 .ang-w b{color:var(--text); font-weight:600}
-.formnotes .pos{margin-top:12px; padding-top:11px; border-top:1px solid var(--line-soft)}
+.formnotes .pos{margin-top:12px; padding-top:11px; border-top:1px solid var(--line-soft); grid-template-columns:50px 1fr; gap:6px 9px}
 .formnotes .pos .sim{margin-top:0}
+.formnotes .pos b{font-family:inherit; font-size:inherit}
 .dial{width:46px; height:46px; flex:none; overflow:visible}
 .dial .d-ref{stroke:var(--text-faint); stroke-width:1.5; stroke-dasharray:3 3.2; stroke-linecap:round}
 .dial .d-fix{stroke:var(--fig); stroke-width:3; stroke-linecap:round}
@@ -647,7 +648,8 @@ details.formnotes>summary .how-t{flex:1}
 
 /* ============ sizes a thumb can hit ============ */
 .btn.sm,.seg button,.lk{min-height:40px}
-.dlchip{min-height:40px; padding:4px 12px; display:inline-flex; align-items:center}
+.dlchip{min-height:40px; padding:4px 12px; display:inline-flex; align-items:center; white-space:nowrap; flex:none}
+.logger .lh .last{min-width:0; text-align:right}
 .lk.tiny{min-width:40px; min-height:40px; justify-content:center}
 #restPill .rp-x{align-self:stretch; min-width:44px}
 #measTable .del{min-width:40px; min-height:40px; font-size:18px; color:var(--text-faint)}
