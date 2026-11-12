@@ -90,8 +90,8 @@
  {
   "name": "the logbook header cannot wrap on a small phone",
   "file": "src/styles.css",
-  "find": ".logger .lh button.last{min-height:30px; padding:3px 0; line-height:1.45}",
-  "put": ".logger .lh button.last{min-height:30px; padding:3px 0; line-height:1.45; white-space:nowrap}",
+  "find": ".logger .lh .lasth{margin-left:auto; min-width:0; min-height:30px; padding:3px 0; line-height:1.45; text-align:right}",
+  "put": ".logger .lh .lasth{margin-left:auto; min-width:0; min-height:30px; padding:3px 0; line-height:1.45; text-align:right; white-space:nowrap}",
   "tests": "history",
   "expect": "on a small phone"
  },
