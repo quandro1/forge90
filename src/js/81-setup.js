@@ -183,6 +183,7 @@ function setupDone(){
     targetW:null, program:SU.program, dpw:+SU.dpw, days:days, start:start, setup:true},false);
   S.plans=[{from:start, program:S.profile.program, dpw:S.profile.dpw, days:S.profile.days.slice()}];
   S.ui.helpSeen=0;
+  S.ui.news=NEWS;                                                // nothing is new to someone who has just arrived
   const steps=(history.state&&history.state.su)?SU.step-1:0;
   save(); setupClose(); rerenderAll();
   if(steps>0){ try{ history.go(-steps); }catch(e){} }           // drop the steps set-up added to the history

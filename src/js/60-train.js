@@ -102,6 +102,67 @@ function howTo(id){
   if(e.safe) h+='<div class="avoid how-note"><span class="ic" aria-hidden="true">⚠</span><span><b>Safety:</b> '+e.safe+'</span></div>';
   return h;
 }
+/* ---- angles, grip and range -----------------------------------------
+   The short form notes of a card (EX[id].form), drawn above the logbook.
+   Each angle gets a small protractor: the dashed line is what the angle is
+   measured from, the solid line is where the body or the bench goes. Three
+   pictures cover every kind of angle:
+     up, fwd     measured from a level line, rising
+     lean, turn  measured from a line pointing straight up, tipping over
+     out, bend   measured from a line hanging straight down, swinging out
+                 (bend also draws the fixed half of the joint above it)
+   Degrees are one number, [low, high] (anywhere between the two) or
+   [from, to, 'move'] (the joint travels from one to the other). */
+const DIAL={
+  up:  {s:'A', x:7,  y:41, r:36, a:15}, fwd: {s:'A', x:7,  y:41, r:36, a:15},
+  lean:{s:'B', x:9,  y:43, r:36, a:15}, turn:{s:'B', x:9,  y:43, r:36, a:15},
+  out: {s:'C', x:13, y:8,  r:33, a:14}, bend:{s:'C', x:13, y:22, r:22, a:10}
+};
+function dialPoint(g,deg,r){
+  const t=deg*Math.PI/180, f=n=>Math.round(n*100)/100;
+  if(g.s==='A') return [f(g.x+r*Math.cos(t)), f(g.y-r*Math.sin(t))];
+  if(g.s==='B') return [f(g.x+r*Math.sin(t)), f(g.y-r*Math.cos(t))];
+  return [f(g.x+r*Math.sin(t)), f(g.y+r*Math.cos(t))];
+}
+/* the value an angle is drawn at: the number, the middle of a range, the finish of a movement */
+function degAt(d){ return typeof d==='number'?d:(d.length===3?d[1]:(d[0]+d[1])/2); }
+function degText(d){
+  if(typeof d==='number') return d+'°';
+  return d.length===3?d[0]+'° → '+d[1]+'°':d[0]+'–'+d[1]+'°';
+}
+function dial(kind,d){
+  const g=DIAL[kind]; if(!g) return '';
+  const P=(deg,r)=>dialPoint(g,deg,r), line=(cls,p)=>'<line class="'+cls+'" x1="'+g.x+'" y1="'+g.y+'" x2="'+p[0]+'" y2="'+p[1]+'"/>';
+  const sweep=g.s==='B'?1:0, at=degAt(d);
+  let h='<svg class="dial" viewBox="0 0 48 48" aria-hidden="true" focusable="false">';
+  if(typeof d!=='number'){                                   // a range or a movement: the band between the two
+    const lo=Math.min(d[0],d[1]), hi=Math.max(d[0],d[1]), a=P(lo,g.r), b=P(hi,g.r);
+    h+='<path class="d-band" d="M'+g.x+' '+g.y+' L'+a[0]+' '+a[1]+' A'+g.r+' '+g.r+' 0 0 '+sweep+' '+b[0]+' '+b[1]+' Z"/>';
+  }else if(d>0){                                             // one value: the arc from the line it is measured from
+    const a=P(0,g.a), b=P(d,g.a);
+    h+='<path class="d-arc" d="M'+a[0]+' '+a[1]+' A'+g.a+' '+g.a+' 0 0 '+sweep+' '+b[0]+' '+b[1]+'"/>';
+  }
+  h+=line('d-ref',P(0,g.r));
+  if(kind==='bend') h+='<line class="d-fix" x1="'+g.x+'" y1="'+g.y+'" x2="'+g.x+'" y2="3"/>';
+  if(typeof d!=='number'&&d.length===3) h+=line('d-from',P(d[0],g.r));
+  h+=line('d-arm',P(at,g.r));
+  return h+'<circle class="d-piv" cx="'+g.x+'" cy="'+g.y+'" r="2.2"/></svg>';
+}
+/* plain = inside the library's guide, where it is not a fold of its own */
+function formNotes(id,plain){
+  const f=EX[id]&&EX[id].form; if(!f) return '';
+  const rows=(f.angles||[]).map(a=>'<div class="ang">'+dial(a[1],a[2])
+    +'<div class="ang-t"><span class="ang-h"><b>'+esc(a[0])+'</b><span class="ang-v">'+esc(degText(a[2]))+'</span><span class="ang-r">'+esc(a[3])+'</span></span>'
+    +'<span class="ang-w">'+a[4]+'</span></div></div>').join('');
+  const body='<div class="angs">'+rows+'</div><dl class="pos">'
+    +(f.grip?'<dt>Grip</dt><dd>'+f.grip+'</dd>':'')
+    +(f.feet?'<dt>Feet</dt><dd>'+f.feet+'</dd>':'')
+    +'<dt>Range</dt><dd>'+f.range+'</dd>'
+    +'<dt>Like</dt><dd class="sim">'+esc(f.like)+'</dd></dl>';
+  if(plain) return '<div class="formnotes plain"><div class="eyebrow">Angles, grip and range</div>'+body+'</div>';
+  return '<details class="formnotes"'+(S.ui.formOff?'':' open')+'><summary><span class="how-t">Angles, grip and range</span><span class="chev">'+ICO.chev+'</span></summary>'
+    +'<div class="fn-b">'+body+'</div></details>';
+}
 /* How heavy this lift should go, and why. The reason names the reps of the slot it sits in. */
 const BAND_NAME={heavy:'Go heavy', medium:'Medium', light:'Go light', body:'Bodyweight', hold:'Timed hold'};
 function bandPill(e){ return '<span class="pill band'+(e.band==='heavy'?' hot':e.band==='light'?' cool':'')+'">'+esc(BAND_NAME[e.band]||'')+'</span>'; }
@@ -134,15 +195,18 @@ function swapRow(id,ref){
 }
 function fillEx(box,id,ref){
   // Order: what you need between sets first (the one-line cue, the demo links,
-  // the logbook), then the full guide. The guide starts open the first time you
-  // meet a lift and folded once it is in your log. No stick-figure poses: the
-  // muscle map and a real video or photo do that job better.
+  // how heavy, the angles with grip and range, the logbook), then the full guide.
+  // The angles stay open on every lift until they are folded by hand, and that
+  // choice is remembered. The guide starts open the first time you meet a lift
+  // and folded once it is in your log. No stick-figure poses: the muscle map and
+  // a real video or photo do that job better.
   const e=EX[id];
   const known=(S.logs[id]||[]).some(x=>loggedSets(x).length>0);
   box.innerHTML='<p class="cue">'+e.cue+'</p>'
     +demoLinks(e.name)
     +howHeavy(id,ref)
     +rampNote(id,ref)
+    +formNotes(id)
     +logger(id,ref)
     +'<details class="how"'+(known?'':' open')+'><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary>'
     +'<div class="how-b">'+mapsFor(e)+howTo(id)+swapRow(id,ref)+'</div></details>';

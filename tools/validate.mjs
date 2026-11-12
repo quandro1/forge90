@@ -94,7 +94,34 @@ for (const id of Object.keys(EX)) {
   if ((e.load === 'time') !== !!(t && t.hold)) err(at + 'a timed hold needs load "time" and typ.hold, and only then');
   for (const k of ['cue', 'feel', 'check', 'weight', 'tempo', ...(e.setup || []), ...(e.rep || []).map((r) => r[1]), ...(e.fix || []).flat()])
     { const s = e[k] !== undefined && typeof e[k] === 'string' ? e[k] : k; if (typeof s === 'string' && s.replace(/<\/?b>/g, '').length > 250) warn(at + 'a text runs past 250 characters: ' + s.slice(0, 40) + '…'); }
-  if (/\blike (a|an|the)\b|\bas if\b|\bimagine\b|\bpretend\b/i.test(JSON.stringify([e.cue, e.setup, e.rep, e.feel, e.fix, e.check]))) warn(at + 'reads like a comparison (the cards describe the body, not other objects)');
+  if (/\blike (a|an|the)\b|\bas if\b|\bimagine\b|\bpretend\b/i.test(JSON.stringify([e.cue, e.setup, e.rep, e.feel, e.fix, e.check]))) warn(at + 'reads like a comparison (comparisons belong in form.like; the rest of the card describes the body)');
+  formOk(e.form, at);
+}
+/* the short form notes: 1-3 angles with numbers, grip or feet, the range, one comparison */
+function formOk(f, at) {
+  if (!f || typeof f !== 'object') { err(at + 'form notes missing'); return; }
+  const plain = (s, lo, hi) => textOk(s) && s.trim().length >= lo && s.length <= hi;
+  const num = (x) => typeof x === 'number' && x >= 0 && x <= 180;
+  const LIMIT = { up: 90, fwd: 90, lean: 90, turn: 90, out: 100, bend: 150 };      // what each drawing can show
+  if (!Array.isArray(f.angles) || f.angles.length < 1 || f.angles.length > 3) { err(at + 'form.angles needs 1 to 3 entries'); return; }
+  f.angles.forEach((a, i) => {
+    const aa = at + 'form angle ' + (i + 1) + ': ';
+    if (!Array.isArray(a) || a.length !== 5) { err(aa + 'must be [what, kind, degrees, measured from, plain words]'); return; }
+    if (!plain(a[0], 2, 24) || /<b>/.test(a[0])) err(aa + 'label');
+    if (!(a[1] in LIMIT)) { err(aa + 'unknown kind ' + a[1]); return; }
+    const d = a[2], vals = typeof d === 'number' ? [d] : Array.isArray(d) ? d.slice(0, 2) : [];
+    const shape = num(d) || (Array.isArray(d) && d.length === 2 && num(d[0]) && num(d[1]) && d[0] < d[1]) || (Array.isArray(d) && d.length === 3 && d[2] === 'move' && num(d[0]) && num(d[1]) && d[0] !== d[1]);
+    if (!shape) err(aa + 'degrees must be a number, [low, high] or [from, to, "move"]');
+    else if (vals.some((v) => v > LIMIT[a[1]])) err(aa + 'the ' + a[1] + ' drawing cannot show more than ' + LIMIT[a[1]] + '°');
+    if (!plain(a[3], 3, 70) || /<b>/.test(a[3])) err(aa + 'what it is measured from');
+    if (!plain(a[4], 12, 190)) err(aa + 'plain words (12-190 characters)');
+  });
+  if (!f.grip && !f.feet) err(at + 'form needs grip or feet');
+  if (f.grip !== undefined && !plain(f.grip, 12, 220)) err(at + 'form.grip (12-220 characters)');
+  if (f.feet !== undefined && !plain(f.feet, 12, 220)) err(at + 'form.feet (12-220 characters)');
+  if (!plain(f.range, 20, 240)) err(at + 'form.range (20-240 characters)');
+  if (!plain(f.like, 20, 220) || /<b>/.test(f.like || '')) err(at + 'form.like (20-220 characters, no markup)');
+  for (const k of Object.keys(f)) if (!['angles', 'grip', 'feet', 'range', 'like'].includes(k)) err(at + 'form has an unknown field ' + k);
 }
 function rxOk(it) {
   if (it.hold) return Array.isArray(it.hold) && it.hold.length === 2 && it.hold[0] > 0 && it.hold[0] <= it.hold[1] && it.reps === undefined;

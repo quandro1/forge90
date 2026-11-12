@@ -298,6 +298,49 @@ svg{display:block}
 details.how{margin-top:12px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
 details.how>summary{padding:10px 12px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); min-height:44px}
 details.how>summary .how-t{flex:1}
+
+/* ============ ANGLES, GRIP AND RANGE (the short form notes above the logbook) ============ */
+details.formnotes{margin-top:12px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
+details.formnotes>summary{padding:10px 12px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); min-height:44px}
+details.formnotes>summary .how-t{flex:1}
+.fn-b{padding:11px 12px 12px}
+.formnotes.plain{margin-top:8px}
+.formnotes.plain .eyebrow{margin-bottom:9px}
+.angs{display:flex; flex-direction:column; gap:11px}
+.ang{display:flex; gap:11px; align-items:flex-start}
+.ang-t{flex:1; min-width:0; font-size:13px; line-height:1.45; color:var(--text-dim)}
+.ang-h{display:block; color:var(--text)}
+.ang-h b{font-weight:600}
+.ang-v{font-family:var(--font-m); font-weight:700; font-size:14px; color:var(--ember); margin:0 5px 0 6px; white-space:nowrap}
+.ang-r{color:var(--text-dim)}
+.ang-w{display:block; margin-top:1px}
+.ang-w b{color:var(--text); font-weight:600}
+.formnotes .pos{margin-top:12px; padding-top:11px; border-top:1px solid var(--line-soft)}
+.formnotes .pos .sim{margin-top:0}
+.dial{width:46px; height:46px; flex:none; overflow:visible}
+.dial .d-ref{stroke:var(--text-faint); stroke-width:1.5; stroke-dasharray:3 3.2; stroke-linecap:round}
+.dial .d-fix{stroke:var(--fig); stroke-width:3; stroke-linecap:round}
+.dial .d-arm{stroke:var(--ember); stroke-width:3; stroke-linecap:round}
+.dial .d-from{stroke:var(--fig); stroke-width:2; stroke-linecap:round}
+.dial .d-band{fill:var(--ember); opacity:.24}
+.dial .d-arc{fill:none; stroke:var(--ember); stroke-width:1.5; opacity:.75}
+.dial .d-piv{fill:var(--text)}
+
+/* ============ DELOAD WEEKS, IN WORDS ============ */
+#helpCard:empty,#dlCard:empty{display:none}
+.lkbtn{display:inline; padding:0; border:none; background:none; font:inherit; color:var(--steel); text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+.lkbtn:hover{color:var(--ember)}
+.dlline{font-size:13px; color:var(--text-dim); line-height:1.5; padding:0 2px}
+.dlline .lkbtn{padding:9px 4px; margin:-9px 0}
+.dlcard .dl-p{font-size:13.5px; color:var(--text-dim); line-height:1.5}
+.dlcard .dl-p b{color:var(--text)}
+.dlcard .steps{margin:9px 0 10px}
+.dlcard .dl-b{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+.dlnote{margin:0; padding:8px 11px; font-size:12.5px; line-height:1.45; color:var(--warn); border-bottom:1px solid var(--line)}
+.dlnote .lkbtn{padding:9px 2px; margin:-9px 0}
+.askbar{margin:0 11px 10px; padding:10px 11px; border:1px solid color-mix(in srgb,var(--ember) 45%,transparent); border-radius:9px; background:var(--ember-wash); font-size:13px; color:var(--text); line-height:1.45}
+.askbar .ask-b{display:flex; flex-wrap:wrap; gap:8px; margin-top:9px}
+.askbar .btn{min-height:40px}
 .how-b{padding:4px 12px 12px}
 .how-sec{margin-top:12px}
 .how-sec:first-child{margin-top:8px}

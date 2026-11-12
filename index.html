@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="24fc804325">
+<meta name="forge-build" content="c1379a1c9a">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -316,6 +316,49 @@ svg{display:block}
 details.how{margin-top:12px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
 details.how>summary{padding:10px 12px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); min-height:44px}
 details.how>summary .how-t{flex:1}
+
+/* ============ ANGLES, GRIP AND RANGE (the short form notes above the logbook) ============ */
+details.formnotes{margin-top:12px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
+details.formnotes>summary{padding:10px 12px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); min-height:44px}
+details.formnotes>summary .how-t{flex:1}
+.fn-b{padding:11px 12px 12px}
+.formnotes.plain{margin-top:8px}
+.formnotes.plain .eyebrow{margin-bottom:9px}
+.angs{display:flex; flex-direction:column; gap:11px}
+.ang{display:flex; gap:11px; align-items:flex-start}
+.ang-t{flex:1; min-width:0; font-size:13px; line-height:1.45; color:var(--text-dim)}
+.ang-h{display:block; color:var(--text)}
+.ang-h b{font-weight:600}
+.ang-v{font-family:var(--font-m); font-weight:700; font-size:14px; color:var(--ember); margin:0 5px 0 6px; white-space:nowrap}
+.ang-r{color:var(--text-dim)}
+.ang-w{display:block; margin-top:1px}
+.ang-w b{color:var(--text); font-weight:600}
+.formnotes .pos{margin-top:12px; padding-top:11px; border-top:1px solid var(--line-soft)}
+.formnotes .pos .sim{margin-top:0}
+.dial{width:46px; height:46px; flex:none; overflow:visible}
+.dial .d-ref{stroke:var(--text-faint); stroke-width:1.5; stroke-dasharray:3 3.2; stroke-linecap:round}
+.dial .d-fix{stroke:var(--fig); stroke-width:3; stroke-linecap:round}
+.dial .d-arm{stroke:var(--ember); stroke-width:3; stroke-linecap:round}
+.dial .d-from{stroke:var(--fig); stroke-width:2; stroke-linecap:round}
+.dial .d-band{fill:var(--ember); opacity:.24}
+.dial .d-arc{fill:none; stroke:var(--ember); stroke-width:1.5; opacity:.75}
+.dial .d-piv{fill:var(--text)}
+
+/* ============ DELOAD WEEKS, IN WORDS ============ */
+#helpCard:empty,#dlCard:empty{display:none}
+.lkbtn{display:inline; padding:0; border:none; background:none; font:inherit; color:var(--steel); text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+.lkbtn:hover{color:var(--ember)}
+.dlline{font-size:13px; color:var(--text-dim); line-height:1.5; padding:0 2px}
+.dlline .lkbtn{padding:9px 4px; margin:-9px 0}
+.dlcard .dl-p{font-size:13.5px; color:var(--text-dim); line-height:1.5}
+.dlcard .dl-p b{color:var(--text)}
+.dlcard .steps{margin:9px 0 10px}
+.dlcard .dl-b{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+.dlnote{margin:0; padding:8px 11px; font-size:12.5px; line-height:1.45; color:var(--warn); border-bottom:1px solid var(--line)}
+.dlnote .lkbtn{padding:9px 2px; margin:-9px 0}
+.askbar{margin:0 11px 10px; padding:10px 11px; border:1px solid color-mix(in srgb,var(--ember) 45%,transparent); border-radius:9px; background:var(--ember-wash); font-size:13px; color:var(--text); line-height:1.45}
+.askbar .ask-b{display:flex; flex-wrap:wrap; gap:8px; margin-top:9px}
+.askbar .btn{min-height:40px}
 .how-b{padding:4px 12px 12px}
 .how-sec{margin-top:12px}
 .how-sec:first-child{margin-top:8px}
@@ -669,6 +712,7 @@ if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)
       <div id="helpCard"></div>
       <div class="readout" id="ro-today"></div>
       <div id="sessionCard"></div>
+      <div id="dlCard"></div>
       <div class="card">
         <div class="card-h"><h3>Non-negotiables</h3><span class="pill" id="chkCount">0 / 7</span></div>
         <div class="checks" id="checklist"></div>
@@ -906,6 +950,15 @@ const ZN={uchest:'Upper chest',chest:'Chest',fdelt:'Front delts',sdelt:'Side del
      why    the reason for that band, in one or two plain sentences ({reps} = the slot's reps)
      next   bodyweight lifts only: what to do when every set reaches the top of the range
      cue    the one thing to think about
+     form   the short notes shown above the logbook (asked for by the owner on 12 Nov 2026):
+              angles  1 to 3 of [what, kind, degrees, what it is measured from, the same in plain words]
+                      kind: up (from flat or level) | lean (from upright) | turn (from straight ahead)
+                            out (the upper arm, out from the side) | bend (a joint; 0 is straight)
+                            fwd (in front of straight out to the side)
+                      degrees: 30 | [10, 15] anywhere between | [100, 0, "move"] the joint travels
+              grip    hands and wrists (feet: where the feet go, for lifts that stand on them)
+              range   where the rep starts and where it ends
+              like    one comparison with something from everyday life, and what it tells you
      setup  where the body and the equipment go before rep one, in order
      rep    one rep: Start, Move, Finish, with landmarks on the body
      tempo  how fast
@@ -915,9 +968,12 @@ const ZN={uchest:'Upper chest',chest:'Chest',fdelt:'Front delts',sdelt:'Side del
      weight how to pick the first weight and when to add
      safe   only where there is a real hazard
      swap   ids that train the same muscle, for when the station is taken
-   Writing rules: short sentences, plain words, landmarks on the body
-   instead of angles (degrees only where the equipment shows them), no
-   comparisons to other objects. <b>…</b> marks the numbers that matter.
+   Writing rules: short sentences, plain words. Every angle is given
+   twice: as a number with its drawing, and as a landmark on the body
+   ("halfway between your ribs and straight out"). Comparisons live in
+   form.like, one a card, with an everyday object and the point it makes;
+   the long guide (setup, rep, fix, check) describes the body itself.
+   <b>…</b> marks the numbers that matter.
    =================================================================== */
 const EX = {};
 
@@ -930,6 +986,15 @@ EX.inclineDB = {
   band: "medium",
   why: "Two separate dumbbells are harder to steady than a bar, and the heaviest pairs are awkward to get into place. Use a weight you can lower slowly and press {reps} times.",
   cue: "Press up and slightly in; lower until the dumbbells are level with your chest.",
+  form: {
+    angles: [
+      ["Bench", "up", 30, "up from flat", "One or two notches up. At 45° or more the shoulders take over from the chest."],
+      ["Elbows", "out", 45, "out from your sides", "Halfway between touching your ribs and pointing straight out to the sides."],
+    ],
+    grip: "Palms face your feet, or turned in a little if that is easier on your shoulders. Wrists straight, each dumbbell right above its elbow.",
+    range: "Down until the dumbbells are level with your chest and you feel a stretch. Up until your arms are straight, dumbbells close together but not touching.",
+    like: "The dumbbells draw a letter A: wide apart at the bottom beside your chest, close together at the top. They never bang into each other.",
+  },
   setup: [
     "Set the bench to <b>30°</b>: one or two notches up from flat. Steeper turns it into a shoulder press.",
     "Sit with a dumbbell standing on each thigh, close to the knee. As you lie back, lift one knee to push that dumbbell up to your shoulder, then the other.",
@@ -959,6 +1024,15 @@ EX.inclineBB = {
   band: "heavy",
   why: "A steady bar with both arms pushing together, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. Rest fully between sets.",
   cue: "Bar down to the top of your chest, then press it back up over your shoulders.",
+  form: {
+    angles: [
+      ["Bench", "up", 30, "up from flat", "One or two notches up. Steeper than that and the shoulders take over from the chest."],
+      ["Elbows", "out", [45, 60], "out from your sides", "About halfway between your ribs and straight out. Never straight out to the sides."],
+    ],
+    grip: "Each hand one hand-width outside your shoulder, thumbs wrapped round the bar. At the bottom your forearms are straight up and down.",
+    range: "Bar down to the top of the chest, two or three finger-widths below the collarbones. Up until the arms are straight and the bar is over your shoulders.",
+    like: "A plane landing: the bar comes down slowly, touches the top of your chest softly, and takes off again. No bounce.",
+  },
   setup: [
     "Bench at <b>30°</b>. Lie back with your eyes under the bar.",
     "Grip with each hand about one hand-width outside your shoulders, thumbs wrapped around the bar.",
@@ -989,6 +1063,15 @@ EX.benchBB = {
   band: "heavy",
   why: "A steady bar and a big muscle group, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. Rest fully between sets.",
   cue: "Lower the bar to the middle of your chest, then press it back up over your shoulders.",
+  form: {
+    angles: [
+      ["Elbows", "out", [45, 60], "out from your sides", "About halfway between your ribs and straight out. Straight out to the sides strains the shoulders."],
+      ["Forearms", "lean", 0, "from straight up", "At the bottom they are straight up and down under the bar. Leaning in: widen your grip. Leaning out: narrow it."],
+    ],
+    grip: "Each hand one hand-width outside your shoulder, thumbs wrapped round the bar, wrists straight above the elbows.",
+    range: "Bar down to the middle of the chest, touching it lightly. Up and slightly back until the arms are straight and the bar is over your shoulders.",
+    like: "Seen from above, your arms and body make an arrow, not a letter T: the elbows point back toward your hips, not straight out.",
+  },
   setup: [
     "Lie with your eyes under the bar, feet flat on the floor.",
     "Grip with each hand about one hand-width outside your shoulders, thumbs wrapped around the bar.",
@@ -1020,6 +1103,15 @@ EX.benchDB = {
   band: "medium",
   why: "Dumbbells go deeper than a bar and each arm has to steady its own weight, so they suit a middle weight. Lower slowly and press {reps} times.",
   cue: "Press the dumbbells up over your chest; lower until they are level with it.",
+  form: {
+    angles: [
+      ["Elbows", "out", 45, "out from your sides", "Halfway between touching your ribs and pointing straight out to the sides."],
+      ["Forearms", "lean", 0, "from straight up", "At the bottom each forearm points straight at the ceiling, with the dumbbell right above its elbow."],
+    ],
+    grip: "Palms face your feet, wrists straight. Hold each handle in the middle so the dumbbell stays level.",
+    range: "Down until the dumbbells are level with your chest and you feel a stretch across it. Up and slightly in until the arms are straight.",
+    like: "The dumbbells draw a letter A: wide apart at the bottom beside your chest, close together at the top. They never bang into each other.",
+  },
   setup: [
     "Flat bench. Sit with a dumbbell on each thigh, lie back and bring them to your chest.",
     "Feet flat, shoulder blades squeezed together and down.",
@@ -1048,6 +1140,15 @@ EX.pecdeck = {
   band: "light",
   why: "Your arms are held out almost straight, so a small weight is already hard for the chest. Too heavy and the shoulders roll forward. Use a weight you can squeeze for 1 second with the hands together, {reps} times.",
   cue: "Bring the handles together in front of your chest with your arms slightly bent, then open slowly.",
+  form: {
+    angles: [
+      ["Elbows", "bend", [10, 15], "of bend, and it never changes", "Almost straight, with a small soft bend. If the bend opens and closes, the arms are doing the work."],
+      ["Arms", "turn", [90, 0, "move"], "out from straight ahead", "From out to the sides, in line with your shoulders, to straight ahead with the handles almost touching. Never further back than your shoulders."],
+    ],
+    grip: "Hold the handles loosely: the squeeze comes from the chest, not the hands. On a machine with forearm pads, push with the forearms.",
+    range: "Open until your hands are in line with your shoulders and the chest stretches. Close until the handles almost touch. Squeeze 1 second, open for 3.",
+    like: "Hugging a wide tree trunk: your arms stay long and rounded and wrap around it. They do not bend to pull it in.",
+  },
   setup: [
     "Set the arm pins so the handles start level with your shoulders or slightly behind them: a stretch across the chest, not a strain.",
     "Set the seat so the handles are level with the middle of your chest.",
@@ -1078,6 +1179,15 @@ EX.pushup = {
   why: "Your own bodyweight is the load. Too hard: put your hands on a bench. Too easy: put your feet on a bench. Do not rush the reps.",
   next: "make it harder: hands from the bench to the floor, then feet on a bench, then a backpack with a plate in it",
   cue: "Body in one straight line; chest to the floor, then push away.",
+  form: {
+    angles: [
+      ["Elbows", "out", 45, "out from your sides", "Halfway between your ribs and straight out. They point back toward your feet, not out to the walls."],
+      ["Hips", "bend", 0, "of bend", "One straight line from head to heels. The hips do not sag and do not stick up."],
+    ],
+    grip: "Hands a little wider than your shoulders, fingers pointing forward, the whole palm pressed into the floor.",
+    range: "Down until your chest is a fist-width from the floor. Up until the arms are straight.",
+    like: "Seen from above you are an arrow, not a letter T. Seen from the side you are one stiff board from head to heels, turning on your toes.",
+  },
   setup: [
     "Hands on the floor a little wider than your shoulders, fingers forward.",
     "Legs straight, feet together, weight on your hands and toes.",
@@ -1109,6 +1219,15 @@ EX.machPress = {
   band: "medium",
   why: "The machine guides the path, so you can push close to your limit safely. A middle weight keeps every rep coming all the way down to ear height. {reps} reps, the last two hard.",
   cue: "Press the handles straight up; lower them to ear height.",
+  form: {
+    angles: [
+      ["Elbows", "fwd", [20, 30], "in front of straight out to the sides", "Not flared wide: a little forward, where you can just see them at the edge of your view."],
+      ["Forearms", "lean", 0, "from straight up", "Wrists stacked over elbows for the whole rep, seen from the front and from the side."],
+    ],
+    grip: "Wrists straight, not bent back. If the machine has two pairs of handles, the pair with palms facing each other is easier on the shoulders.",
+    range: "From handles beside your ears up to arms almost straight, without shrugging. Then 2–3 seconds down to ear height, every rep.",
+    like: "Pushing a stuck window up from ear height until your arms are almost straight, then easing it back down so it does not slam.",
+  },
   setup: [
     "Set the seat so the handles start level with your ears.",
     "Sit with your whole back on the pad, feet flat.",
@@ -1137,6 +1256,15 @@ EX.dbPress = {
   band: "medium",
   why: "Each arm has to balance its own dumbbell overhead, so very heavy pairs turn the lift into a balancing act. A middle weight for {reps} reps.",
   cue: "Press the dumbbells from ear height to straight arms, without arching your back.",
+  form: {
+    angles: [
+      ["Bench back", "up", [75, 85], "up from flat", "One notch short of fully upright, so your whole back can stay on the pad."],
+      ["Elbows", "fwd", [20, 30], "in front of straight out to the sides", "A little forward, where you can just see them at the edge of your view. Not flared straight out."],
+    ],
+    grip: "Palms forward, or turned in a little. Wrists straight, each dumbbell right above its elbow.",
+    range: "From dumbbells beside your ears up to arms almost straight, dumbbells close together above your head. Then 2–3 seconds down to ear height.",
+    like: "Lifting two full buckets from beside your ears onto a high shelf, and bringing them down again without spilling: slow and level.",
+  },
   setup: [
     "Set the bench back one notch short of upright.",
     "Sit with your whole back on the pad and feet flat. Stand a dumbbell on each thigh, then lift one knee at a time to push each dumbbell up to your shoulder.",
@@ -1165,6 +1293,15 @@ EX.ohp = {
   band: "heavy",
   why: "The whole body has to hold the bar steady overhead, so long rests suit it. Learn it with the empty bar first, then add weight until {reps} reps a set are hard. Every rep should look the same.",
   cue: "Press the bar from your collarbones to straight above your head.",
+  form: {
+    angles: [
+      ["Forearms", "lean", 0, "from straight up", "Straight up and down under the bar at the start. If they lean outward, bring your hands in."],
+      ["Body", "lean", 0, "from upright", "Tall and straight from ankles to hands. Leaning back to finish means the bar is too heavy."],
+    ],
+    grip: "Hands just outside your shoulders, thumbs wrapped round the bar, the bar low in the palm above the wrist. Elbows slightly in front of the bar.",
+    range: "From the bar resting on the top of your chest to arms straight overhead, bar above the middle of your feet. Lower under control to the collarbones.",
+    like: "A lift going up its shaft: the bar rises in one straight line, close past your face. Your head moves back to let it pass, then forward under it.",
+  },
   setup: [
     "Take the bar from a rack at chest height, hands just outside your shoulders.",
     "The bar rests on the top of your chest, elbows slightly in front of the bar.",
@@ -1194,6 +1331,16 @@ EX.latRaise = {
   band: "light",
   why: "The weight sits at the end of a straight arm, so a few kilos are already heavy for the shoulder. Use a weight you can raise {reps} times without swinging and hold for a moment at the top.",
   cue: "Lift your arms out to the sides until your hands are level with your shoulders.",
+  form: {
+    angles: [
+      ["Arms at the top", "out", 90, "out from your sides", "Level with the floor: hands and elbows at shoulder height, and no higher."],
+      ["Raise line", "fwd", [20, 30], "in front of straight out to the sides", "Not straight sideways: a little forward, so you can see both hands without turning your head."],
+      ["Elbows", "bend", [10, 15], "of bend, and it never changes", "Soft, not locked. Bending them more makes the lift easier and takes work off the shoulder."],
+    ],
+    grip: "Hold the dumbbells loosely, knuckles up. The thumb and the little finger stay at the same height. If the top of the shoulder pinches, turn the thumbs slightly up.",
+    range: "From just outside your thighs up to shoulder height. A short hold there, then 2–3 seconds down.",
+    like: "Pushing two walls apart with the backs of your hands. Reach out wide rather than lifting up, and stop when your arms and body make a letter T.",
+  },
   setup: [
     "Stand with feet under your hips, a dumbbell in each hand beside your thighs.",
     "Lean your chest forward a little and keep a small bend in the elbows.",
@@ -1223,6 +1370,15 @@ EX.cableLat = {
   band: "light",
   why: "The cable pulls on the end of a straight arm, so a small weight is enough. If your body leans or the shoulder shrugs up, it is too heavy. {reps} smooth reps on each side.",
   cue: "One arm at a time: pull the handle out to the side until your hand is level with your shoulder.",
+  form: {
+    angles: [
+      ["Arm at the top", "out", 90, "out from your side", "Hand level with your shoulder, and no higher."],
+      ["Elbow", "bend", [10, 15], "of bend, and it never changes", "A small soft bend. The elbow stays as high as the hand."],
+    ],
+    grip: "Hold the handle loosely in the arm farther from the machine, knuckles up, wrist straight. The other hand holds the frame.",
+    range: "From in front of the opposite thigh, across your body and out to shoulder height. Then 3 seconds down without letting the plates touch.",
+    like: "Drawing a sword from the opposite hip: the hand starts low across your body and sweeps out wide to shoulder height. The arm stays long.",
+  },
   setup: [
     "Set the pulley at the lowest position and attach a single handle.",
     "Stand side-on to the machine and hold the handle with the arm farther from it, so the cable crosses in front of your body.",
@@ -1251,6 +1407,15 @@ EX.reardelt = {
   band: "light",
   why: "The muscle at the back of the shoulder is small. With a heavy weight the upper back and a swing take over, so that muscle gets less of the work. Use a weight you can hold open for 1 second, {reps} times.",
   cue: "Open your arms out and back until they are in line with your shoulders.",
+  form: {
+    angles: [
+      ["Arms", "turn", [0, 90, "move"], "out from straight ahead", "A quarter turn: from pointing straight ahead to pointing straight out to the sides, in line with your shoulders. No further back."],
+      ["Elbows", "bend", [10, 15], "of bend, and it never changes", "Almost straight. If they bend more as you pull, it has become a row."],
+    ],
+    grip: "Palms facing each other or facing down, whichever handles the machine has. Hold them loosely and lead with the elbows.",
+    range: "From arms straight in front of you, out and back until they are in line with your shoulders. Hold 1 second there, then 2–3 seconds forward.",
+    like: "Opening a pair of heavy double doors with the backs of your hands, and stopping when both doors stand wide open in line with your shoulders.",
+  },
   setup: [
     "On a machine that also does the chest fly, move both arm pins to the back position, so the handles start close together in front of the pad.",
     "Sit facing the pad with your chest against it.",
@@ -1280,6 +1445,15 @@ EX.facepull = {
   band: "light",
   why: "This trains small muscles at the back of the shoulder and between the shoulder blades. A heavy weight turns it into a row with a lean back. Stay light enough to pause with your hands beside your ears, {reps} times.",
   cue: "Pull the rope toward your eyes and spread your hands apart.",
+  form: {
+    angles: [
+      ["Upper arms at the finish", "out", 90, "out from your sides", "Elbows as high as your shoulders. If they drop toward your ribs, it has become a row."],
+      ["Elbows at the finish", "bend", 90, "of bend", "A right angle: hands beside your ears, forearms pointing up."],
+    ],
+    grip: "Hold the two rope ends with your thumbs pointing back at you. Pull the ends apart as they come toward your face.",
+    range: "From arms straight in front of your face to hands beside your ears with the rope ends apart. Hold 1 second, then 2–3 seconds back.",
+    like: "Showing both biceps to someone standing behind you: elbows high and wide, fists beside your ears.",
+  },
   setup: [
     "Set the pulley at the height of your forehead and attach a rope.",
     "Hold the rope with your thumbs pointing back at you and step back until your arms are straight.",
@@ -1310,6 +1484,15 @@ EX.pushdown = {
   band: "light",
   why: "Only the elbows move, so they take all the weight. Too heavy and the shoulders roll forward and the elbows ache. Use a weight that lets you straighten your arms fully and hold for 1 second, {reps} times.",
   cue: "Elbows stay at your sides; push the bar down until your arms are straight.",
+  form: {
+    angles: [
+      ["Lean", "lean", [10, 15], "forward from upright", "A small lean from the hips so the bar clears your body. More than that and your bodyweight is pushing the bar."],
+      ["Elbows", "bend", [100, 0, "move"], "of bend", "From hands at chest height down to arms fully straight. Only the forearms move."],
+    ],
+    grip: "Hands shoulder-width on the bar, palms down, wrists straight. With a rope, palms face each other and the ends move apart at the bottom.",
+    range: "From hands at chest height down to arms fully straight, hands in front of your thighs. Squeeze 1 second, then 2–3 seconds up.",
+    like: "Your elbows are hinges screwed to your ribs. The forearms swing down like a gate closing, and the hinges do not travel.",
+  },
   setup: [
     "Set the pulley at the top and attach a short bar or a rope.",
     "Stand close, lean forward a little, and tuck your elbows against your ribs.",
@@ -1338,6 +1521,15 @@ EX.ohext = {
   band: "medium",
   why: "The elbow works from a deep stretch here, where it is weakest and most easily irritated. Use a middle weight you can lower for 3 seconds, {reps} times. If the elbows ache, go lighter.",
   cue: "Lower the dumbbell behind your head, then straighten your arms.",
+  form: {
+    angles: [
+      ["Upper arms", "lean", 0, "from straight up", "Beside your ears, pointing at the ceiling, and they stay there. Only the forearms move."],
+      ["Elbows", "bend", [130, 0, "move"], "of bend", "From forearms touching your biceps behind your head to arms fully straight."],
+    ],
+    grip: "Both hands cupped under the top plate of one dumbbell, thumbs round the handle. Elbows point forward and up, about as wide as your ears.",
+    range: "Down behind your head for 3 seconds until the forearms touch your biceps and the back of the arms stretches. Up until the arms are fully straight.",
+    like: "Reaching down to scratch between your shoulder blades with the dumbbell, then lifting it back to the ceiling. Only the forearms travel.",
+  },
   setup: [
     "Sit on a bench with a back support, or stand.",
     "Hold one dumbbell with both hands under its top plate and lift it above your head.",
@@ -1366,6 +1558,15 @@ EX.bbCurl = {
   band: "medium",
   why: "Two hands on one bar make this the curl that takes the most weight, but only up to the point where your hips start to swing. {reps} reps with no swing.",
   cue: "Elbows at your sides; curl the bar to your shoulders and lower it slowly.",
+  form: {
+    angles: [
+      ["Upper arms", "out", 0, "away from hanging straight down", "Beside your ribs, and they stay there. If the elbows drift forward, the shoulders are helping."],
+      ["Elbows", "bend", [0, 135, "move"], "of bend", "From arms fully straight to the bar at the top of your chest. Then 3 seconds back to straight."],
+    ],
+    grip: "Palms up, hands shoulder-width apart, wrists straight and not curled toward you. If your wrists hurt, use the EZ bar, the one with bends in it.",
+    range: "From arms straight with the bar on your thighs up to the bar at the top of your chest. Then 3 seconds down until the arms are fully straight.",
+    like: "Carrying a full tray of tea up to your chest: it stays level, your elbows stay by your ribs, and nothing swings or spills.",
+  },
   setup: [
     "Stand with feet under your hips, holding the bar palms up, hands shoulder-width apart.",
     "Elbows beside your ribs, shoulders back.",
@@ -1394,6 +1595,15 @@ EX.dbCurl = {
   band: "medium",
   why: "One arm at a time, with no help from the other side. If the elbow drifts forward or the body rocks, it is too heavy. {reps} reps on each arm with no swing.",
   cue: "Curl one dumbbell at a time and turn your palm up as it rises.",
+  form: {
+    angles: [
+      ["Palm", "turn", [0, 90, "move"], "of turn", "A quarter turn: from facing your thigh at the bottom to facing your shoulder at the top. Start turning as the dumbbell leaves your thigh."],
+      ["Upper arm", "out", 0, "away from hanging straight down", "Beside your ribs for the whole rep. The elbow does not swing forward."],
+    ],
+    grip: "Hold the handle in the middle, wrist straight. Start with palms facing your thighs and turn the little finger up toward your shoulder as you lift.",
+    range: "From a fully straight arm up to the dumbbell in front of your shoulder, palm facing it. Then 3 seconds down to straight.",
+    like: "Turning a door key while you lift: the hand turns a quarter turn on the way up and turns back on the way down.",
+  },
   setup: [
     "Stand or sit with a dumbbell in each hand, arms straight, palms facing your thighs.",
     "Elbows beside your ribs.",
@@ -1424,6 +1634,15 @@ EX.pulldown = {
   band: "medium",
   why: "A big back muscle on a guided cable: it takes a solid middle weight. If you have to lean far back or the bar stops short of your upper chest, go lighter. {reps} reps.",
   cue: "Pull the bar to the top of your chest by driving your elbows down.",
+  form: {
+    angles: [
+      ["Lean", "lean", [10, 15], "back from upright", "A small lean so the bar can pass your face, and it stays the same all set. Rocking further back means it is too heavy."],
+      ["Forearms", "lean", 0, "from straight up", "Under the bar the whole way: the elbows point at the floor, not behind you."],
+    ],
+    grip: "Palms facing away, each hand one hand-width outside your shoulder. Hold the bar in your fingers like hooks, so the back pulls and not the forearms.",
+    range: "From arms straight with the shoulders lifted toward your ears, down until the bar touches the top of your chest. Hold 1 second, then 2–3 seconds up.",
+    like: "Pulling your elbows down into your back pockets. The hands are only hooks on the bar: the elbows do the pulling.",
+  },
   setup: [
     "Set the thigh pad so your legs cannot lift.",
     "Stand up, grip the bar with palms facing away, each hand one hand-width outside your shoulders.",
@@ -1455,6 +1674,15 @@ EX.pullup = {
   why: "Your whole body is the weight, and that is heavy for two arms. {reps} reps a set, with help from the assisted machine or a band if you need it. When every set reaches the top number, take help off first; add weight only when no help is left.",
   next: "take one plate of help off on the assisted machine, or use a thinner band; with no help, add 2.5 kg (a dumbbell between your feet, or a belt)",
   cue: "Hang with straight arms; pull until your chin is over the bar.",
+  form: {
+    angles: [
+      ["Arms at the bottom", "bend", 0, "of bend", "Fully straight. Every rep starts from a still hang, not from half-way."],
+      ["Body", "lean", 0, "from hanging straight down", "Still, with quiet legs. No swing and no kick."],
+    ],
+    grip: "Palms facing away, hands just outside your shoulders, thumbs wrapped round the bar.",
+    range: "From a still hang with arms fully straight up to your chin clearly over the bar. Then 2–3 seconds down to straight arms.",
+    like: "Climbing a wall to look over the top: you start hanging at full stretch and pull until your chin clears the edge. Then you lower yourself; you do not drop.",
+  },
   setup: [
     "Grip the bar with palms facing away, hands just outside your shoulders.",
     "Hang with arms straight and legs still. Cross your ankles if it helps.",
@@ -1484,6 +1712,15 @@ EX.cableRow = {
   band: "medium",
   why: "A middle weight you can pull to your stomach and hold for a moment. If your body rocks back and forth to move it, the weight is too heavy for the back muscles. {reps} reps.",
   cue: "Sit tall and pull the handle to your stomach; let it stretch you forward under control.",
+  form: {
+    angles: [
+      ["Body", "lean", 0, "from upright", "Sit tall and stay there. It may rock a hand-width forward and back, no more."],
+      ["Elbows", "out", [0, 20], "out from your sides", "They brush along your ribs as they travel back. They do not wing out."],
+    ],
+    grip: "The narrow handle whose two grips face each other: palms in, wrists straight. Hold it in your fingers and pull with the elbows.",
+    range: "From arms straight with the shoulders reaching forward, back to the handle touching your stomach above the navel, elbows behind your body. Hold 1 second, 2–3 seconds back.",
+    like: "Rowing a boat: reach forward long, then pull the oars to your stomach while sitting tall. The back does not swing to help.",
+  },
   setup: [
     "Sit with your feet on the plates and knees slightly bent.",
     "Use the narrow handle whose two grips face each other. Take it and sit tall, chest up, arms straight.",
@@ -1513,6 +1750,15 @@ EX.csRow = {
   band: "medium",
   why: "Your chest rests on the pad, so your lower back does not have to hold you up and the back muscles can work hard. A solid middle weight for {reps} reps. Of all the rows, this one can go heaviest.",
   cue: "Chest on the pad; pull your elbows back until your hands reach your ribs.",
+  form: {
+    angles: [
+      ["Elbows", "out", [30, 45], "out from your sides", "Angled back and a little out, so the hands arrive beside your lower ribs. Flared straight out, the shoulders take over."],
+      ["Arms at the start", "bend", 0, "of bend", "Fully straight, with the shoulder blades spread apart. That stretch is half the rep."],
+    ],
+    grip: "Use the handles with palms facing each other if the machine has them. Hold with the fingers and pull with the elbows.",
+    range: "From arms straight and shoulder blades spread apart to elbows past your body, hands beside your lower ribs. Hold 1 second, 2–3 seconds down.",
+    like: "Squeezing a pencil between your shoulder blades at the end of every pull, and letting it go as your arms reach forward again.",
+  },
   setup: [
     "Set the seat or foot plate so the top of the pad is at the middle of your chest.",
     "Press your chest against the pad.",
@@ -1541,6 +1787,15 @@ EX.dbRow = {
   band: "medium",
   why: "One arm works while the other hand supports you, so the back can take a fair weight. Too heavy and the body twists to heave it up. {reps} reps on each side with no twist.",
   cue: "Flat back; pull the dumbbell toward your hip.",
+  form: {
+    angles: [
+      ["Back", "up", [0, 15], "up from level with the floor", "Flat like a table top, or the chest a little higher than the hips. Both shoulders stay the same height."],
+      ["Elbow", "out", [15, 30], "out from your side", "Close to your body: it brushes past your ribs on the way to the hip."],
+    ],
+    grip: "Palm facing the bench, wrist straight, the dumbbell hanging from your fingers like the handle of a bag.",
+    range: "From the arm hanging straight with the shoulder reaching toward the floor, up until the dumbbell is beside your hip and the elbow is above your back. 2–3 seconds down.",
+    like: "Pulling the starter cord of a generator, slowly: reach down long, then pull the hand back to your hip pocket with the elbow leading. The body does not twist.",
+  },
   setup: [
     "Put one knee and the hand on the same side on a flat bench.",
     "The other foot is on the floor, out to the side. Your back is flat and level.",
@@ -1569,6 +1824,15 @@ EX.straightArm = {
   band: "light",
   why: "Straight arms put the weight far from the shoulder, so a small weight is plenty for the back muscles. A heavy one turns it into a triceps pushdown. {reps} slow reps.",
   cue: "Arms almost straight; sweep the bar down to your thighs.",
+  form: {
+    angles: [
+      ["Lean", "lean", [20, 30], "forward from upright", "A small bow from the hips with a flat back, so the bar has room to travel."],
+      ["Elbows", "bend", [10, 15], "of bend, and it never changes", "Almost straight. If they bend more, the back of the arms takes over and it becomes a pushdown."],
+    ],
+    grip: "Palms down on the bar, hands shoulder-width apart. Hold it loosely: the arms are only ropes between the bar and your back.",
+    range: "From hands at eye height with a stretch under the armpits, down in a wide arc until the bar touches your thighs. Squeeze 1 second, 3 seconds up.",
+    like: "Pressing a big ball down into water with long, almost straight arms: one wide arc from eye height to your thighs.",
+  },
   setup: [
     "Set the pulley at the top with a straight bar or a rope.",
     "Hold it with hands shoulder-width apart and take one step back.",
@@ -1597,6 +1861,16 @@ EX.deadlift = {
   band: "heavy",
   why: "This lift takes the most weight of all and suits the fewest reps: a flat back gets harder to hold as you tire. Do {reps} reps a set. Start at 40 kg or less and add 5 kg at a time.",
   cue: "Bar over the middle of your feet; push the floor away and stand up with a flat back.",
+  form: {
+    angles: [
+      ["Arms", "bend", 0, "of bend", "Locked straight from start to finish. They are ropes holding the bar; the legs and hips lift it."],
+      ["Bar path", "lean", 0, "from straight up", "One straight line up and down above the middle of your feet, touching your legs all the way."],
+    ],
+    grip: "Both palms facing you, hands just outside your legs, arms hanging straight down. Squeeze the bar hard before it leaves the floor.",
+    feet: "Hip-width apart, toes forward or turned out a little, the bar above the knot of your shoelaces.",
+    range: "From the bar on the floor to standing tall with hips and knees straight. Do not lean back at the top. Lower it the same way: hips back first, then knees.",
+    like: "Pushing the floor away with your legs, as on a leg press machine stood on its end. You are not pulling the bar up with your back.",
+  },
   setup: [
     "Stand with the bar over the middle of your feet, feet hip-width apart.",
     "Bend over and grip the bar just outside your legs, both palms facing you. Then bend your knees until your shins touch the bar. Do not roll the bar.",
@@ -1630,6 +1904,16 @@ EX.squat = {
   band: "heavy",
   why: "The biggest muscles of the body under a steady bar, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. With many more reps your breathing gives out before your legs do.",
   cue: "Sit down between your heels until your thighs are level, then stand up.",
+  form: {
+    angles: [
+      ["Toes", "turn", [15, 30], "out from straight ahead", "Left foot toward 11 on a clock, right foot toward 1, or a little less. The knees travel the same way as the toes."],
+      ["Knees at the bottom", "bend", [110, 120], "of bend", "Clearly past a right angle: the crease of your hip ends level with the top of your knee, or just below it."],
+    ],
+    grip: "Hands just outside your shoulders, elbows pointing down, pulling the bar into the muscle at the top of your back. It never rests on the neck.",
+    feet: "Shoulder-width apart, weight on the whole foot: big toe, little toe and heel all pressed down.",
+    range: "From standing tall down until your thighs are level with the floor or a little lower, heels still down. Then stand all the way up.",
+    like: "Sitting down onto a low stool just behind you and standing up the moment you touch it. Chest up, so someone in front could read the writing on your shirt.",
+  },
   setup: [
     "Set the bar in the rack at chest height. Set the safety bars one hole below where the barbell is at the bottom of your squat; test it with the empty bar.",
     "Step under the bar so it rests on the muscle at the top of your back, not on your neck. Hands just outside your shoulders.",
@@ -1661,6 +1945,16 @@ EX.legpress = {
   band: "medium",
   why: "The machine takes care of balance and your back is supported, so the legs can be pushed hard for longer sets. A weight for {reps} deep reps. If the depth shrinks, it is too heavy.",
   cue: "Lower the platform as far as your hips stay on the seat, then press it away.",
+  form: {
+    angles: [
+      ["Knees at the bottom", "bend", [90, 110], "of bend", "A right angle or a little deeper, as long as your hips stay flat on the seat."],
+      ["Knees at the top", "bend", [5, 10], "of bend", "Almost straight, never snapped locked."],
+    ],
+    grip: "Hold the handles beside the seat and pull yourself down into it, so your hips cannot lift.",
+    feet: "Middle of the platform, shoulder-width apart, toes turned out a little. Higher on the platform works the glutes more; lower works the front of the thigh more.",
+    range: "Lower for 3 seconds as deep as you can with your hips and lower back still flat on the pad. Press until the legs are almost straight.",
+    like: "Pushing a stalled car away with your feet: slow and strong through the whole foot, and you never kick your legs straight.",
+  },
   setup: [
     "Sit with your hips and your whole back against the pad.",
     "Feet in the middle of the platform, shoulder-width apart, toes turned out slightly.",
@@ -1691,6 +1985,16 @@ EX.gobletSquat = {
   band: "medium",
   why: "Your arms have to hold the weight, so they limit how heavy this can go. That is fine: it is the lift for learning depth. {reps} deep reps.",
   cue: "Hold one dumbbell at your chest and squat down between your knees.",
+  form: {
+    angles: [
+      ["Toes", "turn", [15, 30], "out from straight ahead", "Turned out a little. The knees travel the same way as the toes."],
+      ["Knees at the bottom", "bend", [110, 130], "of bend", "Well past a right angle: thighs level with the floor or lower, elbows touching the inside of your knees."],
+    ],
+    grip: "One dumbbell held upright against your chest, both hands cupped under its top plate, elbows pointing down.",
+    feet: "Shoulder-width apart, heels down for the whole rep.",
+    range: "Down for 3 seconds between your heels until your thighs are level with the floor or lower. Then stand all the way up.",
+    like: "Lowering yourself onto a very low stool between your heels while holding a full bowl against your chest: upright, slow, and nothing spills.",
+  },
   setup: [
     "Hold one dumbbell upright against your chest, both hands under its top plate.",
     "Feet shoulder-width apart, toes turned out slightly.",
@@ -1719,6 +2023,16 @@ EX.lunge = {
   band: "medium",
   why: "Balance limits this lift. With dumbbells that are too heavy you wobble and shorten the step. A weight you can control for {reps} steps on each leg.",
   cue: "Take a long step and lower your back knee toward the floor.",
+  form: {
+    angles: [
+      ["Both knees at the bottom", "bend", 90, "of bend", "A right angle each. The front shin is close to upright and the back knee is a hand-width above the floor."],
+      ["Body", "lean", [0, 10], "forward from upright", "Tall, chest up. A small lean forward is fine; folding over is not."],
+    ],
+    grip: "A dumbbell in each hand, arms hanging straight at your sides. They do not swing.",
+    feet: "A long step: far enough that both knees can reach a right angle. The feet stay hip-width apart, as if on two rails, not on one line.",
+    range: "Step, then lower straight down until the back knee is a hand-width above the floor. Push through the front foot and step straight into the next rep.",
+    like: "Kneeling down to pick a coin off the floor without letting the back knee touch, then standing up and walking on.",
+  },
   setup: [
     "Stand tall with a dumbbell in each hand, arms straight at your sides.",
     "Find a clear path of about 10 steps; turn round at the end and keep going.",
@@ -1748,6 +2062,16 @@ EX.bulgarian = {
   band: "medium",
   why: "One leg does the work and has to balance as well, so it needs far less weight than a squat. Start lighter than you think. {reps} controlled reps on each leg.",
   cue: "Back foot on a bench; lower straight down on the front leg.",
+  form: {
+    angles: [
+      ["Front knee at the bottom", "bend", [90, 110], "of bend", "A right angle or a little deeper: the front thigh ends level with the floor."],
+      ["Body", "lean", [0, 20], "forward from upright", "Upright for more front of the thigh. A small lean forward for more glute."],
+    ],
+    grip: "A dumbbell in each hand, arms hanging straight. While you learn the balance, hold one dumbbell and keep the other hand on a support.",
+    feet: "Front foot one long step in front of the bench, flat on the floor. The top of the back foot rests on the bench and only balances.",
+    range: "Down for 3 seconds until the back knee is just above the floor and the front thigh is level. Up through the whole front foot.",
+    like: "A lift, not an escalator: your body travels straight down and straight back up, with no drift forward.",
+  },
   setup: [
     "Stand one long step in front of a bench, a dumbbell in each hand.",
     "Put the top of your back foot on the bench.",
@@ -1777,6 +2101,15 @@ EX.legext = {
   band: "light",
   why: "Only the knee moves, and the pad pushes on your shin far from it, so the load on the knee climbs fast as the weight goes up. Higher reps train the front of the thigh just as well with less of that load. Use a weight you can hold at the top for 1 second, {reps} times.",
   cue: "Straighten your knees fully, squeeze, and lower slowly.",
+  form: {
+    angles: [
+      ["Knees", "bend", [100, 0, "move"], "of bend", "From the deepest bend the machine allows to fully straight, with a squeeze at the top."],
+    ],
+    grip: "Hold the handles beside the seat and pull yourself down, so your hips stay on the seat.",
+    feet: "Ankle pad on the lower shin, just above your feet. Knees in line with the machine's pivot, toes pointing up.",
+    range: "From knees bent as far as the machine allows up to legs fully straight. Squeeze 1 second, then 3 seconds down to the deepest bend.",
+    like: "Kicking a football in slow motion and freezing at the end of the kick: the leg goes dead straight and stays there for a second.",
+  },
   setup: [
     "Set the back pad so your knees line up with the machine's pivot.",
     "Set the ankle pad on the lower shin, just above your feet.",
@@ -1805,6 +2138,16 @@ EX.rdl = {
   band: "medium",
   why: "A big lift, but one done slowly with a long stretch. Use the weight you can lower under control with a flat back for {reps} reps, not the most you could pick up.",
   cue: "Push your hips back and slide the bar down your legs; keep your back flat.",
+  form: {
+    angles: [
+      ["Knees", "bend", [15, 20], "of bend, and it never changes", "Soft, not locked, and they stay like that. If they keep bending, it is turning into a squat."],
+      ["Body at the bottom", "lean", [45, 80], "forward from upright", "Between half-way down and almost level with the floor. Stop where your hips cannot go further back with a flat back."],
+    ],
+    grip: "Palms facing you, hands just outside your thighs, arms straight. Use straps or chalk when your grip gives up before your legs.",
+    feet: "Under your hips, toes forward, weight on the heels and the middle of the foot.",
+    range: "The bar slides down your legs for 3 seconds, usually to between the knee and the middle of the shin. Stand up by pushing the hips forward; do not lean back at the top.",
+    like: "Closing a car door with your backside while your hands are full: the hips go straight back, the knees hardly bend, and the back stays flat.",
+  },
   setup: [
     "Take the bar from a rack at mid-thigh height, hands just outside your thighs.",
     "Feet under your hips. Take one step back.",
@@ -1835,6 +2178,15 @@ EX.legcurl = {
   band: "light",
   why: "Only the knee moves. If your hips lift off the pad, the weight is too heavy and the hips are helping it up. {reps} reps with a slow return.",
   cue: "Curl your heels toward your glutes; hips stay on the pad.",
+  form: {
+    angles: [
+      ["Knees", "bend", [0, 120, "move"], "of bend", "From legs straight to the pad as close to your glutes as it will go: well past a right angle."],
+    ],
+    grip: "Hold the handles and pull your hips down into the pad.",
+    feet: "Ankle pad just above your heels. Knees just off the end of the pad, in line with the pivot. If the calves cramp, pull your toes toward your shins.",
+    range: "From legs straight, curl until the pad is as close to your glutes as it will go. Squeeze 1 second, then 3 seconds down to straight.",
+    like: "Trying to kick your own backside with both heels, in slow motion, while your hips stay glued to the pad.",
+  },
   setup: [
     "Lie face down with your knees just off the end of the pad, in line with the pivot.",
     "Set the ankle pad just above your heels.",
@@ -1863,6 +2215,15 @@ EX.seatedLegCurl = {
   band: "light",
   why: "Only the knee moves. Use a weight you can curl all the way and let back slowly, {reps} times. If you have to yank it, go lighter.",
   cue: "Pull your heels under the seat, then let the legs straighten slowly.",
+  form: {
+    angles: [
+      ["Knees", "bend", [0, 110, "move"], "of bend", "From legs straight out in front to heels pulled back under the seat, as far as the machine allows."],
+    ],
+    grip: "Hold the handles and sit tall, or lean forward a little: leaning forward stretches the back of the thighs more.",
+    feet: "Ankle pad just above your heels, thigh pad locked down just above the knees, knees in line with the pivot.",
+    range: "From legs fully straight, pull the heels down and back under the seat as far as they go. Squeeze 1 second, then 3 seconds back to straight.",
+    like: "Dragging a heavy sack toward you under your chair with your heels, then letting it slide slowly away again.",
+  },
   setup: [
     "Set the back pad so your knees line up with the pivot.",
     "Lower the thigh pad firmly onto your thighs, just above the knees.",
@@ -1891,6 +2252,16 @@ EX.calf = {
   band: "light",
   why: "The calf moves a short distance, and with a heavy weight you start to bounce, which lets the tendon do the work. Go light enough for a full stretch and a 1-second pause at the bottom, {reps} times.",
   cue: "Rise as high as you can on the balls of your feet; lower until your heels are below the step.",
+  form: {
+    angles: [
+      ["Knees", "bend", 0, "of bend", "Straight but not jammed locked, for the whole set. Bending them lets the thighs help."],
+      ["Feet", "turn", 0, "out from straight ahead", "Pointing straight ahead, hip-width apart, so you rise over the big toe and not the little toe."],
+    ],
+    grip: "On a machine, shoulders under the pads and hands on the frame. With a dumbbell, hold it in one hand and a support with the other.",
+    feet: "The balls of your feet on the edge of the step, heels hanging free.",
+    range: "From heels below the step with a stretch in the calves, pause 1–2 seconds, then up as high as you can on the balls of your feet. Hold 1 second, 2–3 seconds down.",
+    like: "Standing on tiptoe to reach a top shelf, then letting your heels sink below the edge of a stair. No bounce at the bottom.",
+  },
   setup: [
     "Stand with the balls of your feet on the edge of the step, heels hanging off.",
     "Shoulders under the pads. Without a machine, hold a dumbbell in one hand and a support with the other.",
@@ -1921,6 +2292,16 @@ EX.hipthrust = {
   band: "medium",
   why: "The number on the bar grows fast on this lift because the movement is short. That is fine as long as you can hold the top for 1 second on each of {reps} reps. If you cannot pause there, it is too heavy.",
   cue: "Shoulders on the bench; push your hips up until your body is level.",
+  form: {
+    angles: [
+      ["Knees at the top", "bend", 90, "of bend", "A right angle, shins straight up and down. Feet too far away and the back of the thighs takes over; too close and the front does."],
+      ["Body at the top", "up", 0, "up from level with the floor", "Flat from shoulders to knees. Higher than that is the lower back arching."],
+    ],
+    grip: "Both hands on the bar just outside your hips for the whole set, so it cannot roll. A pad between the bar and your hips.",
+    feet: "Flat and shoulder-width apart, close enough that your shins are upright at the top. Push through the heels.",
+    range: "From hips low up until they are level with your shoulders and knees. Squeeze the glutes for 1 full second, then 2 seconds down.",
+    like: "Your body becomes a table: the bench under your shoulders and your shins are the legs, and hips, stomach and thighs are the flat top. Hold the table for a second.",
+  },
   setup: [
     "Sit on the floor with your upper back against the long side of a bench. With big plates, roll the bar over your legs into the crease of your hips; with an empty bar or small plates, lift it onto your hips. Put a pad under it.",
     "Feet flat and shoulder-width apart, close enough that your shins are upright at the top.",
@@ -1952,6 +2333,15 @@ EX.backExt = {
   why: "Your upper body is the weight. Do {reps} slow reps. Hold a plate against your chest only when every set reaches the top number.",
   next: "hold a 5 kg plate against your chest",
   cue: "Bend at the hips over the pad, then lift until your body is straight.",
+  form: {
+    angles: [
+      ["Hips", "bend", [80, 0, "move"], "of bend", "From folded forward with a stretch at the back of the thighs to one straight line from head to heels. Stop there: do not arch past straight."],
+    ],
+    grip: "Arms crossed on your chest. When bodyweight is easy, hug a plate against your chest.",
+    feet: "On the foot plate, turned out a little. The pad sits just below your hip bones, so you can fold freely at the hips.",
+    range: "Bend at the hips and lower your chest for 2–3 seconds until the back of the thighs stretches. Squeeze the glutes and rise until the body is straight, and no higher.",
+    like: "A slow, deep bow from the hips, and back up to standing straight. The glutes pull you up; the back only comes along.",
+  },
   setup: [
     "Set the pad just below your hip bones, so you can bend freely at the hips.",
     "Feet on the plate, turned out slightly. Cross your arms on your chest.",
@@ -1980,6 +2370,15 @@ EX.abduction = {
   band: "light",
   why: "A small muscle on the side of the hip. A heavy stack makes you rock and use momentum. Use a weight you can hold open for 1 second, {reps} times.",
   cue: "Push your knees apart as far as they go, then close slowly.",
+  form: {
+    angles: [
+      ["Lean", "lean", [10, 20], "forward from upright", "A small lean off the back pad puts more of the work on the glutes."],
+    ],
+    grip: "Hold the handles beside the seat so your hips stay at the back of it.",
+    feet: "On the footrests, pads on the outside of your knees. Push with the knees, not with the feet.",
+    range: "From knees together out as wide as the machine allows. Hold 1 second, then 3 seconds in without letting the plates touch.",
+    like: "Opening a heavy pair of sliding doors with your knees, holding them open for a second, and letting them close slowly.",
+  },
   setup: [
     "Sit with your hips right at the back of the seat and the pads on the outside of your knees.",
     "Lean your chest forward a little, off the back pad, and hold the handles.",
@@ -2011,6 +2410,15 @@ EX.hangraise = {
   why: "Your legs are the weight. Make it harder by straightening them, not by swinging faster.",
   next: "do it with straight legs; once that is easy too, raise your feet toward the bar",
   cue: "Hang from the bar and curl your hips up as you lift your knees.",
+  form: {
+    angles: [
+      ["Hips at the top", "bend", [100, 120], "of bend", "Past a right angle: your knees end higher than your hips and the lower back rounds a little."],
+      ["Body", "lean", 0, "from hanging straight down", "Still before every rep. If you swing, stop for a moment at the bottom."],
+    ],
+    grip: "Palms facing away, hands shoulder-width apart, thumbs wrapped round the bar. Padded arm supports are fine if your grip gives up first.",
+    range: "From a still hang with legs down, lift the knees and curl the hips up until the knees are above hip height. Then 2–3 seconds down, with no swing.",
+    like: "Your hips are a bucket of water. As the knees rise, tip the bucket so it would pour out behind you: the belt buckle turns up toward your chin.",
+  },
   setup: [
     "Hang from a pull-up bar, hands shoulder-width apart.",
     "Legs together, body still.",
@@ -2040,6 +2448,14 @@ EX.cablecrunch = {
   band: "light",
   why: "The stomach muscles curl the spine through a short distance. Too heavy and the hips and arms pull instead. Use a weight you can curl slowly {reps} times.",
   cue: "Kneel and curl your ribs down toward your hips.",
+  form: {
+    angles: [
+      ["Thighs", "lean", 0, "from straight up", "Upright for the whole set: the hips stay above your knees and do not sink back toward your heels."],
+    ],
+    grip: "The two rope ends held beside your ears, and they stay there. The arms only hold on; they do not pull.",
+    range: "From a tall, straight back with a stretch in the stomach, curl your ribs down toward your hips until the elbows are near your knees. Squeeze 1 second, 2–3 seconds up.",
+    like: "Rolling up a mat, starting from the head: the spine curls down one piece at a time. It is not a bow from the hips.",
+  },
   setup: [
     "Set the pulley at the top with a rope.",
     "Kneel facing the machine, one step away from it, and hold the two rope ends beside your ears.",
@@ -2068,6 +2484,16 @@ EX.pallof = {
   band: "light",
   why: "The job is to stay still while the cable tries to turn you. If your body twists, it is too heavy. {reps} slow presses on each side.",
   cue: "Press the handle straight out and do not let the cable turn you.",
+  form: {
+    angles: [
+      ["Stance", "turn", 90, "side-on to the cable", "The cable comes from straight out to your side, and your chest keeps pointing ahead."],
+      ["Arms at the finish", "bend", 0, "of bend", "Fully straight in front of the middle of your chest, held there for 2 seconds."],
+    ],
+    grip: "Both hands wrapped round one handle, one hand over the other, starting against the middle of your chest.",
+    feet: "Shoulder-width apart, knees soft, one step away from the machine so the cable pulls firmly.",
+    range: "From hands on your chest, press straight out until the arms are straight, hold 2 seconds, and bring them back. Nothing else moves.",
+    like: "Holding a door shut while someone pushes it from the side: your arms reach out in front and your body refuses to turn.",
+  },
   setup: [
     "Set the pulley at chest height with a single handle.",
     "Stand side-on to the machine, one step away, feet shoulder-width apart.",
@@ -2096,6 +2522,16 @@ EX.plank = {
   band: "hold",
   why: "No weight: you hold a position for time. Add seconds before you add anything else.",
   cue: "Hold one straight line from head to heels.",
+  form: {
+    angles: [
+      ["Elbows", "bend", 90, "of bend", "A right angle, directly under your shoulders, forearms flat on the floor."],
+      ["Hips", "bend", 0, "of bend", "One straight line from head to heels: hips level with your shoulders, not sagging and not raised."],
+    ],
+    grip: "Forearms flat and parallel on the floor, palms down or in fists, whichever is comfortable.",
+    feet: "Together, weight on the toes.",
+    range: "No movement: hold the straight line for the time shown and breathe slowly. The set ends when the hips start to drop or rise.",
+    like: "A wooden plank resting on two bricks: straight and stiff from end to end, with no dip in the middle.",
+  },
   setup: [
     "Forearms on the floor, elbows under your shoulders.",
     "Legs straight, feet together, weight on your forearms and toes.",
@@ -2494,7 +2930,7 @@ const PHASES=[
    gain:'Technique solid and the first small increases on the bar.'}},
  {n:2, name:'Overload', sub:'Weeks 5–8', w:[5,8], color:'ember',
   goal:'Now you push. Take sets to one or two reps before failure and add weight whenever the range is filled.',
-  train:['Main lifts one or two reps from failure; small lifts to the last clean rep.','Add the smallest jump as soon as every set reaches the top of the range.','Week 6 is a deload: about 10% lighter and one set fewer.'],
+  train:['Main lifts one or two reps from failure; small lifts to the last clean rep.','Add the smallest jump as soon as every set reaches the top of the range.','Week 6 is a deload, a planned easy week: about a tenth lighter and one set fewer.'],
   eat:{
    lose:['Hold the calorie target.','Put most of your carbs in the meals around training.','Weekends count: that is where a week is most often undone.'],
    hold:['Keep eating at your target.','Put most of your carbs in the meals around training.'],
@@ -2506,7 +2942,7 @@ const PHASES=[
    gain:'Weight creeping up slowly and clear increases in the logbook.'}},
  {n:3, name:'Refinement', sub:'Weeks 9–13', w:[9,13], color:'ember',
   goal:'Hold the heavy work, tidy the details, and finish strong.',
-  train:['Keep the main lifts heavy: that is what keeps your muscle.','On small lifts you may take the last set to failure.','Week 12 is a deload, then one hard final week.'],
+  train:['Keep the main lifts heavy: that is what keeps your muscle.','On small lifts you may take the last set to failure.','Week 12 is a deload, a planned easy week, then one hard final week.'],
   eat:{
    lose:['Hold the deficit. If you feel worn down, eat at maintenance for 3 to 7 days, then go back.','Watch the oil and ghee your food is cooked in: that is where calories hide.','Protein stays high.'],
    hold:['Keep doing what works.','Protein stays high.'],
@@ -2784,6 +3220,20 @@ const GUIDE=[
     +row('heavy','up to 10 reps')+row('medium','about 8–15 reps')+row('light','about 10–20 reps')+row('body','your own weight')+row('hold','seconds')
     +'<p style="margin-top:12px">On the Strength plan the big barbell lifts go heavier still, 3 to 5 reps. Each exercise card says why that lift sits where it does.</p>';
  }},
+ {t:'Reading the angles on an exercise card', b:()=>{
+   const row=(k,d,t)=>'<div class="ang">'+dial(k,d)+'<div class="ang-t"><span class="ang-h"><b>'+t[0]+'</b></span><span class="ang-w">'+t[1]+'</span></div></div>';
+   return '<p>Every exercise card has a block called <b>Angles, grip and range</b>, above the logbook. Each angle has a small drawing: the <b>dashed line</b> is what the angle is measured from, and the <b>solid line</b> is where your body or the bench should be.</p>'
+    +'<p style="margin-top:10px">Three sizes are worth knowing by eye: <b>90°</b> is a right angle, the corner of a door. <b>45°</b> is half of that. <b>30°</b> is the gap between two neighbouring numbers on a clock face.</p>'
+    +'<div class="angs" style="margin-top:12px">'
+    +row('up',30,['Up from flat','A bench or your body, measured up from level. 0° is flat, 90° is fully upright.'])
+    +row('lean',15,['From upright','How far something tips over from straight up: a lean of the body, or toes turned out from straight ahead.'])
+    +row('out',45,['Out from your side','How far the upper arm is from hanging straight down. 0° is against your ribs, 90° is level with your shoulder.'])
+    +row('bend',90,['Bend at a joint','How far an elbow, a knee or the hips are bent. 0° is dead straight, 90° is a right angle.'])
+    +row('bend',[100,0,'move'],['A shaded band','A range: either anywhere between two numbers, or how far the joint travels during the rep.'])
+    +'</div>'
+    +'<p style="margin-top:12px">The numbers are guides, not laws. Bodies differ: if a position hurts, stop short of it. The line under each number says the same thing in plain words, and <b>Like</b> gives you a picture to hold in your head while you lift.</p>';
+ }},
+ {t:'Deload weeks: what they are and why', b:()=>deloadText()},
  {t:'Reading the trend, and when to change something', b:`
   <p>Judge on <b>two to three weeks</b>, never one week and never one morning.</p>
   <div class="tw" style="margin-top:10px"><table>
@@ -2871,6 +3321,8 @@ const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000
 /* a segmented control tells a screen reader which side is chosen, as well as showing it */
 function segSync(){ $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('on')))); }
 const BLOCK_DAYS=91;                        // a block is thirteen weeks
+const DELOAD_WEEKS=[6,12];                  // the two planned easy weeks of a block
+const NEWS=1;                               // the number of the latest "what changed" note on Today (raise it when one is added)
 const DAY_ROLL_H=3;
 const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));
 const TODAY=dayOf(new Date());
@@ -3032,6 +3484,15 @@ function normalize(p){
     const a={d:u.auto.d, k:ks(u.auto.k), off:ks(u.auto.off)};
     if(a.k.length||a.off.length) s.ui.auto=a;
   }
+  if(u.formOff) s.ui.formOff=1;                              // the angles block on the cards was folded by hand
+  // deload weeks of the block that began on `start`: the ones skipped (off) and the ones already explained (seen)
+  if(isObj(u.dl)&&isDate(u.dl.start)){
+    const wk=x=>(Array.isArray(x)?x:[]).filter((n,i,a)=>DELOAD_WEEKS.indexOf(n)>=0&&a.indexOf(n)===i);
+    const d={start:u.dl.start, off:wk(u.dl.off), seen:wk(u.dl.seen)};
+    if(d.off.length||d.seen.length) s.ui.dl=d;
+  }
+  if(legacy) s.ui.news=NEWS;                                 // a version 1 copy gets the full what-is-new note instead
+  else if(numIn(u.news,1,99,null)!=null) s.ui.news=+u.news;  // the last "what changed" note that was read
   // plan history: which plan was in force from which date, so a change never re-judges the past
   s.plans=(Array.isArray(p.plans)?p.plans:[]).filter(x=>isObj(x)&&isDate(x.from)&&typeof x.program==='string'&&safeKey(x.program)
       &&PROGRAMS[x.program]&&PROGRAMS[x.program].variants[x.dpw]&&validDays(x.days,PROGRAMS[x.program].variants[x.dpw].sessions.length))
@@ -3395,6 +3856,34 @@ function cardioDaysFor(days,phase){
   for(const wd of [1,2,3,4,5,6,0]){ if(days.indexOf(wd)<0&&wd!==ci&&out.length<want) out.push(wd); }
   return out;
 }
+/* ---- deload weeks: weeks 6 and 12, unless this block's one was skipped by hand ---- */
+function dlState(){
+  const d=S.ui.dl;
+  return (d&&d.start===S.profile.start)?d:{start:S.profile.start, off:[], seen:[]};
+}
+function dlSkipped(week){ return dlState().off.indexOf(week)>=0; }
+function dlSeen(week){ return dlState().seen.indexOf(week)>=0; }
+function dlMark(list,week,on){
+  const d=dlState();
+  d[list]=d[list].filter(x=>x!==week); if(on) d[list].push(week);
+  if(d.off.length||d.seen.length) S.ui.dl=d; else delete S.ui.dl;
+}
+/* Train normally in a deload week, or take the deload after all. Sessions already logged that
+   week at the usual weight (or heavier) were not deloads, so they count as normal ones; sessions
+   that really were lighter keep their mark and are still not the numbers to beat. */
+function setDeloadSkipped(week,skip){
+  dlMark('off',week,skip);
+  if(!skip) return;
+  const from=iso(addDays(parseISO(S.profile.start),(week-1)*7)), to=iso(addDays(parseISO(S.profile.start),week*7-1));
+  for(const id in S.logs){
+    const arr=S.logs[id];
+    arr.forEach((e,i)=>{
+      if(!e.dl||e.d<from||e.d>to) return;
+      const mine=judged(e,99), before=arr.slice(0,i).filter(x=>!x.dl&&loggedSets(x).length), ref=before.length?before[before.length-1]:null;
+      if(!mine.length||!ref||workWeight(mine)>=workWeight(judged(ref,99))) delete e.dl;
+    });
+  }
+}
 function dayInfo(i){                       // i = 1..91
   const date=addDays(parseISO(S.profile.start), i-1);
   const wd=date.getDay(), week=Math.ceil(i/7);
@@ -3404,7 +3893,7 @@ function dayInfo(i){                       // i = 1..91
   if(li>=0){ type='lift'; idx=li; }
   else if(cardioDaysFor(days,phase).indexOf(wd)>=0) type='cardio';
   return {i, date:ds, wd, week, phase, type, idx,
-          deload:(week===6||week===12), checkin:(wd===checkinDayFor(days)), session:idx>=0?sessionsOf(pe.program,pe.dpw)[idx]:null};
+          deload:(DELOAD_WEEKS.indexOf(week)>=0&&!dlSkipped(week)), checkin:(wd===checkinDayFor(days)), session:idx>=0?sessionsOf(pe.program,pe.dpw)[idx]:null};
 }
 function todayIndex(){ return daysBetween(parseISO(S.profile.start), parseISO(TODAY))+1; }
 function infoForDate(ds){
@@ -3517,11 +4006,15 @@ function nextLoad(ex,w){
 }
 /* A step lighter: a tenth off, to the nearest jump the equipment has, and never the
    weight you are already on. Under one jump there is nothing lighter to name. */
-function lighter(ex,w){
+function lighterKg(ex,w){                   // the number itself, or null when there is nothing lighter to name
   const st=+ex.step||2.5;
   let d=roundTo(w*0.9,st); if(d>=w) d=w-st;
   d=Math.round(d*100)/100;
-  if(d>0) return 'about '+(ex.load==='bw'?'+':'')+kg(d);
+  return d>0?d:null;
+}
+function lighter(ex,w){
+  const d=lighterKg(ex,w);
+  if(d!=null) return 'about '+(ex.load==='bw'?'+':'')+kg(d);
   return ex.load==='bw'?'bodyweight only':'the lightest setting';
 }
 function setText(ex,it,s){                 // one logged set, as the logbook prints it
@@ -3606,12 +4099,13 @@ function verdict(id,it){
 
   // ---- a deload session: nothing to beat, and it never becomes the reference
   if(dlToday){
-    const n=deloadSets(tgt);
-    let t='Deload: ';
+    const n=deloadSets(tgt), few=n+' sets'+(n<tgt?' instead of '+tgt:'');
+    const stop=(it.hold?', and end each hold well before it gets hard.':', and stop each set with about three reps left.')+' It should feel easy.';
+    let t='Deload week: ';
     if(ref){
       const w=workWeight(judged(ref,tgt));
-      t+=(w?lighter(ex,w)+' (lighter than last time), ':'')+n+' sets, stop three reps short of failure.';
-    }else t+='lighter than you could, '+n+' sets, stop three reps short of failure.';
+      t+=(w?lighter(ex,w)+' (lighter than last time), ':'')+few+stop;
+    }else t+='a weight that feels light, '+few+stop;
     if(todayE) t+=' · '+Math.min(nToday,n)+' of '+n+' sets done';
     return mk('none',t+(nToday>=n&&todayE?' — that is enough for today.':''));
   }
@@ -3677,7 +4171,7 @@ function renderToday(){
       +'<h3>'+esc(s.name)+'</h3><p class="focus">'+esc(s.focus)+'</p><div class="meta">'
       +'<span class="pill hot">'+s.items.length+' exercises</span>'
       +'<span class="pill">'+condToday(info)+'</span>'
-      +(info.deload?'<span class="pill warn">−10% load, drop a set</span>':'')
+      +(info.deload?'<span class="pill warn">Deload: a tenth lighter, one set fewer</span>':'')
       +(sessionDone(TODAY)?'<span class="pill good">Done</span>':'')
       +'</div><button class="btn primary wide" style="margin-top:13px" data-goday="'+info.idx+'">Open the session</button></div>';
   }else{
@@ -3690,6 +4184,7 @@ function renderToday(){
       +(info.checkin?'<span class="pill warn">Weekly check-in</span>':'')+'</div></div>';
   }
   $('#sessionCard').innerHTML=sc;
+  $('#dlCard').innerHTML=deloadCard(started&&!done?info:null);
 
   renderChecklist();
 
@@ -3701,6 +4196,32 @@ function renderToday(){
   renderHelp();
   renderCond();
   $('#miniPunch').innerHTML=punch(Math.max(0,Math.min(10,Math.ceil((started&&!done?di:1)/7)-1)),3);
+}
+/* ---- deload weeks, in plain words ---------------------------------- */
+const DELOAD_WHAT='<ol class="steps big">'
+  +'<li><b>About a tenth less weight</b> than last time. The logbook works out the number for each lift.</li>'
+  +'<li><b>One set fewer</b> on each lift.</li>'
+  +'<li><b>Stop each set early</b>, with about three reps left. Nothing should feel hard.</li></ol>';
+function deloadText(){
+  return '<p><b>A deload is a planned easy week.</b> Same exercises, same days. Three things change:</p>'
+    +DELOAD_WHAT
+    +'<p style="margin-top:12px"><b>Why.</b> Hard training tires your joints, tendons and nerves as well as your muscles, and those recover more slowly. After five hard weeks they are behind. One easy week lets them catch up, and most people then lift more than they did before it. One lighter week does not cost you muscle or strength.</p>'
+    +'<p style="margin-top:10px"><b>Like half-time in a match:</b> nobody gets weaker during the break. The players come back and run harder in the second half.</p>'
+    +'<p style="margin-top:10px"><b>When.</b> Week 6 and week 12 of the 13 weeks.</p>'
+    +'<p style="margin-top:10px"><b>In the logbook.</b> Sessions logged in that week are marked "Deload". They are lighter on purpose, so they are not used as numbers to beat: the week after, your targets carry on from your last normal session.</p>'
+    +'<p style="margin-top:10px"><b>May you skip it?</b> Yes, if your lifts are still going up, nothing aches and you are sleeping well. Take it if your lifts have stopped going up, a joint aches, or you feel worn down.</p>';
+}
+/* On Today, any day of a deload week: the full explanation until "Got it", then one line that leads back to it. */
+function deloadCard(info){
+  if(!info||DELOAD_WEEKS.indexOf(info.week)<0) return '';
+  const wk=info.week;
+  if(dlSkipped(wk)) return '<p class="dlline">Week '+wk+' is a planned easy week (a deload). You chose to train normally. <button class="lkbtn" data-dlwhy>Change</button></p>';
+  if(dlSeen(wk)) return '<p class="dlline">Deload week: lighter on purpose. <button class="lkbtn" data-dlwhy>What is this?</button></p>';
+  return '<div class="card help dlcard"><div class="card-h"><h3>Week '+wk+' is a deload week</h3><button class="btn sm" data-dlok>Got it</button></div>'
+    +'<p class="dl-p"><b>A deload is a planned easy week.</b> Same exercises, same days. Three things change:</p>'
+    +DELOAD_WHAT
+    +'<p class="dl-p">It lets your joints and tendons catch up after five hard weeks, so you come back lifting more. One lighter week does not cost you muscle.</p>'
+    +'<div class="dl-b"><button class="btn sm" data-dlwhy>More about this</button><button class="btn sm" data-dlskip>Train normally this week</button></div></div>';
 }
 function chkButton(x,on,attr){
   return '<button class="chk" '+attr+' aria-pressed="'+!!on+'">'
@@ -3724,6 +4245,16 @@ function renderHelp(){
       +'<li><b>Clearer exercise guides.</b> Each lift now shows where a rep starts and finishes, where you should feel it, and what to change if you do not.</li>'
       +'<li><b>The rest timer always starts,</b> and today\'s target stays on screen until your last set.</li>'
       +'<li><b>Station taken?</b> Open "How to do it" and swap to another lift for the same muscle.</li>'
+      +'</ol></div>';
+    return;
+  }
+  if(S.ui.helpSeen&&(+S.ui.news||0)<NEWS){   // someone who already uses the app: what the latest update changed, once
+    $('#helpCard').innerHTML='<div class="card help">'
+      +'<div class="card-h"><h3>New in this update</h3><button class="btn sm" data-hidenews>Got it</button></div>'
+      +'<ol class="steps big">'
+      +'<li><b>Angles, grip and range on every exercise.</b> Open a lift in Train: each angle is drawn above the logbook, with the grip, the range and a comparison to picture it. Fold the block once and it stays folded.</li>'
+      +'<li><b>Deload weeks are explained.</b> Week 6 and week 12 are planned easy weeks. Today says what to do and why, and you can choose to train normally instead.</li>'
+      +'<li><b>"Same as last time" is there every week.</b> In a deload week it fills last time\'s sets a step lighter. If you finish a lift with rows you did not tick, the app asks whether you did them.</li>'
       +'</ol></div>';
     return;
   }
@@ -3973,6 +4504,67 @@ function howTo(id){
   if(e.safe) h+='<div class="avoid how-note"><span class="ic" aria-hidden="true">⚠</span><span><b>Safety:</b> '+e.safe+'</span></div>';
   return h;
 }
+/* ---- angles, grip and range -----------------------------------------
+   The short form notes of a card (EX[id].form), drawn above the logbook.
+   Each angle gets a small protractor: the dashed line is what the angle is
+   measured from, the solid line is where the body or the bench goes. Three
+   pictures cover every kind of angle:
+     up, fwd     measured from a level line, rising
+     lean, turn  measured from a line pointing straight up, tipping over
+     out, bend   measured from a line hanging straight down, swinging out
+                 (bend also draws the fixed half of the joint above it)
+   Degrees are one number, [low, high] (anywhere between the two) or
+   [from, to, 'move'] (the joint travels from one to the other). */
+const DIAL={
+  up:  {s:'A', x:7,  y:41, r:36, a:15}, fwd: {s:'A', x:7,  y:41, r:36, a:15},
+  lean:{s:'B', x:9,  y:43, r:36, a:15}, turn:{s:'B', x:9,  y:43, r:36, a:15},
+  out: {s:'C', x:13, y:8,  r:33, a:14}, bend:{s:'C', x:13, y:22, r:22, a:10}
+};
+function dialPoint(g,deg,r){
+  const t=deg*Math.PI/180, f=n=>Math.round(n*100)/100;
+  if(g.s==='A') return [f(g.x+r*Math.cos(t)), f(g.y-r*Math.sin(t))];
+  if(g.s==='B') return [f(g.x+r*Math.sin(t)), f(g.y-r*Math.cos(t))];
+  return [f(g.x+r*Math.sin(t)), f(g.y+r*Math.cos(t))];
+}
+/* the value an angle is drawn at: the number, the middle of a range, the finish of a movement */
+function degAt(d){ return typeof d==='number'?d:(d.length===3?d[1]:(d[0]+d[1])/2); }
+function degText(d){
+  if(typeof d==='number') return d+'°';
+  return d.length===3?d[0]+'° → '+d[1]+'°':d[0]+'–'+d[1]+'°';
+}
+function dial(kind,d){
+  const g=DIAL[kind]; if(!g) return '';
+  const P=(deg,r)=>dialPoint(g,deg,r), line=(cls,p)=>'<line class="'+cls+'" x1="'+g.x+'" y1="'+g.y+'" x2="'+p[0]+'" y2="'+p[1]+'"/>';
+  const sweep=g.s==='B'?1:0, at=degAt(d);
+  let h='<svg class="dial" viewBox="0 0 48 48" aria-hidden="true" focusable="false">';
+  if(typeof d!=='number'){                                   // a range or a movement: the band between the two
+    const lo=Math.min(d[0],d[1]), hi=Math.max(d[0],d[1]), a=P(lo,g.r), b=P(hi,g.r);
+    h+='<path class="d-band" d="M'+g.x+' '+g.y+' L'+a[0]+' '+a[1]+' A'+g.r+' '+g.r+' 0 0 '+sweep+' '+b[0]+' '+b[1]+' Z"/>';
+  }else if(d>0){                                             // one value: the arc from the line it is measured from
+    const a=P(0,g.a), b=P(d,g.a);
+    h+='<path class="d-arc" d="M'+a[0]+' '+a[1]+' A'+g.a+' '+g.a+' 0 0 '+sweep+' '+b[0]+' '+b[1]+'"/>';
+  }
+  h+=line('d-ref',P(0,g.r));
+  if(kind==='bend') h+='<line class="d-fix" x1="'+g.x+'" y1="'+g.y+'" x2="'+g.x+'" y2="3"/>';
+  if(typeof d!=='number'&&d.length===3) h+=line('d-from',P(d[0],g.r));
+  h+=line('d-arm',P(at,g.r));
+  return h+'<circle class="d-piv" cx="'+g.x+'" cy="'+g.y+'" r="2.2"/></svg>';
+}
+/* plain = inside the library's guide, where it is not a fold of its own */
+function formNotes(id,plain){
+  const f=EX[id]&&EX[id].form; if(!f) return '';
+  const rows=(f.angles||[]).map(a=>'<div class="ang">'+dial(a[1],a[2])
+    +'<div class="ang-t"><span class="ang-h"><b>'+esc(a[0])+'</b><span class="ang-v">'+esc(degText(a[2]))+'</span><span class="ang-r">'+esc(a[3])+'</span></span>'
+    +'<span class="ang-w">'+a[4]+'</span></div></div>').join('');
+  const body='<div class="angs">'+rows+'</div><dl class="pos">'
+    +(f.grip?'<dt>Grip</dt><dd>'+f.grip+'</dd>':'')
+    +(f.feet?'<dt>Feet</dt><dd>'+f.feet+'</dd>':'')
+    +'<dt>Range</dt><dd>'+f.range+'</dd>'
+    +'<dt>Like</dt><dd class="sim">'+esc(f.like)+'</dd></dl>';
+  if(plain) return '<div class="formnotes plain"><div class="eyebrow">Angles, grip and range</div>'+body+'</div>';
+  return '<details class="formnotes"'+(S.ui.formOff?'':' open')+'><summary><span class="how-t">Angles, grip and range</span><span class="chev">'+ICO.chev+'</span></summary>'
+    +'<div class="fn-b">'+body+'</div></details>';
+}
 /* How heavy this lift should go, and why. The reason names the reps of the slot it sits in. */
 const BAND_NAME={heavy:'Go heavy', medium:'Medium', light:'Go light', body:'Bodyweight', hold:'Timed hold'};
 function bandPill(e){ return '<span class="pill band'+(e.band==='heavy'?' hot':e.band==='light'?' cool':'')+'">'+esc(BAND_NAME[e.band]||'')+'</span>'; }
@@ -4005,15 +4597,18 @@ function swapRow(id,ref){
 }
 function fillEx(box,id,ref){
   // Order: what you need between sets first (the one-line cue, the demo links,
-  // the logbook), then the full guide. The guide starts open the first time you
-  // meet a lift and folded once it is in your log. No stick-figure poses: the
-  // muscle map and a real video or photo do that job better.
+  // how heavy, the angles with grip and range, the logbook), then the full guide.
+  // The angles stay open on every lift until they are folded by hand, and that
+  // choice is remembered. The guide starts open the first time you meet a lift
+  // and folded once it is in your log. No stick-figure poses: the muscle map and
+  // a real video or photo do that job better.
   const e=EX[id];
   const known=(S.logs[id]||[]).some(x=>loggedSets(x).length>0);
   box.innerHTML='<p class="cue">'+e.cue+'</p>'
     +demoLinks(e.name)
     +howHeavy(id,ref)
     +rampNote(id,ref)
+    +formNotes(id)
     +logger(id,ref)
     +'<details class="how"'+(known?'':' open')+'><summary><span class="how-t">How to do it</span><span class="chev">'+ICO.chev+'</span></summary>'
     +'<div class="how-b">'+mapsFor(e)+howTo(id)+swapRow(id,ref)+'</div></details>';
@@ -4038,6 +4633,8 @@ function demoLinks(name,compact){
    =================================================================== */
 /* the last set row cleared by hand, so a slip of the thumb can be put back: {id, i, set, popped, d} */
 let UNDO=null;
+/* the lift whose "Done with this lift" is waiting for an answer about rows filled in from last time and never ticked */
+let ASK=null;
 /* how this lift is prescribed in that slot (or its usual prescription when it is not in a plan) */
 function itemFor(id,ref){
   const sl=ref?slotAt(ref):null;
@@ -4080,15 +4677,21 @@ function logger(id,ref){
       +'<button class="ok" data-ok="'+i+'" aria-label="Set '+(i+1)+' done, start rest">✓</button>'
       +'<button class="del" data-del="'+i+'" aria-label="Clear set '+(i+1)+'">×</button></div>';
   }
-  const prev=prevSession(id), vd=safeVerdict(id,it), dlNow=draft?!!draft.dl:isDeload(), anyPre=cur.some(planned);
+  const prev=prevSession(id), vd=safeVerdict(id,it), dlNow=draft?!!draft.dl:isDeload(), nPre=cur.filter(planned).length;
+  // In a deload week the chip says whether this lift is being logged as a deload session, and turns it off or on.
+  const chip=dlNow?'<button class="dlchip on" data-dl aria-pressed="true">Deload: on</button>'
+    :(isDeload()?'<button class="dlchip" data-dl aria-pressed="false">Deload: off</button>':'');
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
-    +'<div class="lh"><b>Logbook</b>'+((draft?draft.dl:isDeload())?'<button class="dlchip on" data-dl aria-pressed="true" title="A lighter session that is not used as your reference. Tap if you trained normally.">Deload</button>':(isDeload()?'<button class="dlchip" data-dl aria-pressed="false" title="Mark this as a deload session">Deload</button>':''))+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
+    +'<div class="lh"><b>Logbook</b>'+chip+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
+    +(dlNow?'<p class="dlnote">Deload session: lighter on purpose, and not a number to beat next week. <button class="lkbtn" data-dlwhy>What is this?</button></p>':'')
     +'<div class="sets">'+rows+'</div>'
-    +(anyPre?'<p class="prenote">Filled in from last time. Tick each set when it is done, or type what you did. Rows left like this are not counted.</p>':'')
+    +(nPre&&ASK!==id?'<p class="prenote">Filled in from last time'+(dlNow?', a step lighter and with one set fewer for the deload':'')+'. Tick each set as you do it, or type over it.</p>':'')
+    +(nPre&&ASK===id?'<div class="askbar"><span>'+(nPre===1?'1 set is':nPre+' sets are')+' filled in from last time and not ticked. Did you do '+(nPre===1?'it':'them')+'?</span>'
+      +'<span class="ask-b"><button class="btn sm primary" data-askyes>Yes, count '+(nPre===1?'it':'them')+'</button><button class="btn sm" data-askno>No, clear '+(nPre===1?'it':'them')+'</button></span></div>':'')
     +(UNDO&&UNDO.id===id&&UNDO.d===TODAY?'<div class="undobar"><span>Set '+(UNDO.i+1)+' cleared.</span><button class="btn sm" data-undo>Undo</button></div>':'')
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
-    +(prev&&!dlNow?'<button class="btn sm" data-repeat>Same as last time</button>':'')
+    +(prev?'<button class="btn sm" data-repeat>Same as last time'+(dlNow?', lighter':'')+'</button>':'')
     +'<button class="btn sm primary" data-savelog>Done with this lift</button></div>'
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';
@@ -4768,6 +5371,16 @@ function guideSheet(){
     '<details'+(i===0?' open':'')+'><summary><span class="idx">'+String(i+1).padStart(2,'0')+'</span>'
     +esc(g.t)+'<span class="chev">'+ICO.chev+'</span></summary><div class="dbody">'+(typeof g.b==='function'?g.b():g.b)+'</div></details>').join(''));
 }
+/* what a deload week is, with the switch for the one in progress */
+function deloadSheet(){
+  const di=todayIndex(), info=(di>=1&&di<=BLOCK_DAYS)?dayInfo(di):null, wk=info?info.week:0, live=DELOAD_WEEKS.indexOf(wk)>=0;
+  const p='<p style="font-size:13.5px;color:var(--text-dim);margin-bottom:9px">';
+  openSheet('Deload weeks', deloadText()
+    +(live?'<div class="sec">'+(dlSkipped(wk)
+        ?p+'You chose to train normally in week '+wk+'. Sessions you log now count as normal ones.</p><button class="btn wide" data-dlback>Make week '+wk+' a deload week after all</button>'
+        :p+'This is week '+wk+': a deload week. If you train normally instead, sessions already logged this week at your usual weight count as normal ones, and lighter ones stay marked as deload.</p><button class="btn wide" data-dlskip>Train normally this week</button>')
+      +'</div>':''));
+}
 /* ---- exercise library ------------------------------------------- */
 const GROUPS=['Chest','Back','Shoulders','Arms','Legs','Glutes','Core'];
 function libSheet(){
@@ -4787,7 +5400,7 @@ function libSheet(){
   $('#libList').addEventListener('toggle',e=>{
     const d=e.target;
     if(d&&d.classList&&d.classList.contains('how')&&d.open&&!d.dataset.filled){
-      $('.how-b',d).innerHTML=mapsFor(EX[d.dataset.how])+howTo(d.dataset.how); d.dataset.filled='1';
+      $('.how-b',d).innerHTML=formNotes(d.dataset.how,true)+mapsFor(EX[d.dataset.how])+howTo(d.dataset.how); d.dataset.filled='1';
     }
   },true);
 }
@@ -4868,7 +5481,7 @@ function daySheet(i){
       +'<div class="tw" style="margin-top:12px"><table><thead><tr><th>Exercise</th><th class="n">Sets × reps</th><th class="n">Rest</th></tr></thead><tbody>'
       +d.session.items.map(it=>EX[it.ex]?'<tr><td>'+esc(EX[it.ex].name)+'</td><td class="n">'+esc(rxText(it))+'</td><td class="n">'+esc(restText(it.rest))+'</td></tr>':'').join('')
       +'</tbody></table></div>';
-    if(d.deload) body+='<div class="note hot" style="margin-top:12px"><b>Deload week.</b> Same exercises, cut the load about 10% and drop a set or two. You should leave the gym feeling you could have done much more. Skipping deloads is how people stall for months.</div>';
+    if(d.deload) body+='<div class="note hot" style="margin-top:12px"><b>Deload week.</b> A planned easy week: the same exercises with about a tenth less weight, one set fewer, and every set stopped early. You should leave the gym feeling you could have done much more. <button class="lkbtn" data-dlwhy>What is this?</button></div>';
   }else if(d.type==='cardio'){
     body+='<div class="session rest"><div class="tag">Conditioning</div><h3>Zone 2 &amp; steps</h3>'
       +'<p class="focus">'+esc(condToday(d))+' at '+t.z2[0]+'–'+t.z2[1]+' bpm. Incline walk, bike or elliptical — low joint cost, legs stay fresh.</p></div>';
@@ -5071,6 +5684,7 @@ function setupDone(){
     targetW:null, program:SU.program, dpw:+SU.dpw, days:days, start:start, setup:true},false);
   S.plans=[{from:start, program:S.profile.program, dpw:S.profile.dpw, days:S.profile.days.slice()}];
   S.ui.helpSeen=0;
+  S.ui.news=NEWS;                                                // nothing is new to someone who has just arrived
   const steps=(history.state&&history.state.su)?SU.step-1:0;
   save(); setupClose(); rerenderAll();
   if(steps>0){ try{ history.go(-steps); }catch(e){} }           // drop the steps set-up added to the history
@@ -5208,7 +5822,24 @@ document.addEventListener('click',e=>{
     save(); return;
   }
   if(T.closest('[data-hidehelp]')){ S.ui.helpSeen=1; save(); renderHelp(); return; }
-  if(T.closest('[data-hidenew]')){ S.ui.from=2; save(); renderHelp(); return; }
+  if(T.closest('[data-hidenew]')){ S.ui.from=2; S.ui.news=NEWS; save(); renderHelp(); return; }
+  if(T.closest('[data-hidenews]')){ S.ui.news=NEWS; save(); renderHelp(); return; }
+  /* ---- deload weeks: the explanation, "Got it", and training normally instead ---- */
+  const dlBtn=T.closest('[data-dlok],[data-dlskip],[data-dlback]');
+  if(dlBtn){
+    const info=infoForDate(TODAY), wk=info?info.week:0;
+    if(DELOAD_WEEKS.indexOf(wk)>=0){
+      if(dlBtn.hasAttribute('data-dlok')) dlMark('seen',wk,true);
+      else{ setDeloadSkipped(wk,dlBtn.hasAttribute('data-dlskip')); dlMark('seen',wk,true); }
+      save();
+      if(sheet.classList.contains('on')) closeSheet();
+      // on Train the open logbooks are redrawn where they stand (a rebuilt list would close the card in use)
+      if(currentTab==='train'){ const seen={}; $$('.logger').forEach(b=>{ const k=b.dataset.log; if(!seen[k]){ seen[k]=1; refreshLogger(k); } }); }
+      else refreshTab();
+    }
+    return;
+  }
+  if(T.closest('[data-dlwhy]')){ deloadSheet(); return; }
   if(T.closest('[data-newblock]')){ planSheet(true); return; }
   const cond=T.closest('[data-cond]');
   if(cond){ logCond(cond.dataset.cond); renderCond(); return; }
@@ -5230,6 +5861,16 @@ document.addEventListener('click',e=>{
   const dayBtn=T.closest('[data-day]');
   if(dayBtn){ daySheet(+dayBtn.dataset.day); return; }
 
+  const fold=T.closest('details.formnotes>summary');
+  if(fold){
+    // folded or opened by hand: remembered, and every card on screen follows.
+    // The click comes before the fold moves, so the state it is about to leave is the one read here.
+    const off=fold.parentNode.open;
+    if(off) S.ui.formOff=1; else delete S.ui.formOff;
+    save();
+    $$('details.formnotes').forEach(d=>{ if(d!==fold.parentNode) d.open=!off; });
+    return;
+  }
   const exh=T.closest('.ex-h');
   if(exh){
     const card=exh.closest('.ex'), id=card.dataset.ex, body=$('.ex-b',card);
@@ -5294,15 +5935,27 @@ document.addEventListener('click',e=>{
   const box=T.closest('.logger');
   if(box){
     const id=box.dataset.log, ref=box.dataset.ref, it=itemFor(id,ref);
+    if(T.closest('[data-dlwhy]')){ deloadSheet(); return; }
+    // the question about unticked rows stands only until the logbook is used for something else
+    if(ASK===id&&!T.closest('[data-askyes],[data-askno],[data-savelog]')) ASK=null;
     if(T.closest('[data-repeat]')){
       const prev=prevSession(id);
       if(prev){
-        const en=upsert(id,it);
+        const en=upsert(id,it), dl=!!en.dl, ex=EX[id];
+        let left=dl?deloadSets(setsWanted(it)):Infinity;      // a deload session takes one set fewer
         prev.sets.forEach((s,i)=>{
-          if(blankSet(s)) return;
+          if(blankSet(s)||left<=0) return;
+          left--;
           while(en.sets.length<=i) en.sets.push({});
           if(!blankSet(en.sets[i])) return;            // never touch a row that already holds something
-          const o={pre:1}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;      // a plan until it is ticked or changed
+          const o={pre:1};                             // a plan until it is ticked or changed
+          if(s.w!=null){
+            // on a deload day the weight is a step lighter; with nothing lighter to name, a loaded lift keeps its weight and a bodyweight lift drops the extra
+            const lw=dl?lighterKg(ex,+s.w):+s.w;
+            if(lw!=null) o.w=lw; else if(ex.load!=='bw') o.w=s.w;
+          }
+          if(s.r!=null) o.r=s.r;
+          en.sets[i]=o;
         });
         syncSession(); save(); refreshLogger(id);
       }
@@ -5364,11 +6017,21 @@ document.addEventListener('click',e=>{
       }
       refreshLogger(id); return;
     }
-    const savelog=T.closest('[data-savelog]');
-    if(savelog){
+    const savelog=T.closest('[data-savelog]'), yes=T.closest('[data-askyes]'), no=T.closest('[data-askno]');
+    if(savelog||yes||no){
       const en=upsert(id,it);
       if(UNDO&&UNDO.id===id) UNDO=null;
-      en.sets=en.sets.map(s=>planned(s)?{}:s);               // rows filled in from last time and never done are not sets
+      // Rows filled in from last time and never ticked: were they done? The app cannot know, so it asks
+      // once instead of counting them or throwing them away in silence.
+      if(savelog&&en.sets.some(planned)){
+        ASK=id; save(); refreshLogger(id);
+        const bar=$('.logger[data-log="'+id+'"][data-ref="'+ref+'"] .askbar');
+        if(bar&&bar.scrollIntoView) bar.scrollIntoView({block:'nearest'});
+        return;
+      }
+      ASK=null;
+      if(yes) en.sets.forEach(s=>{ if(planned(s)){ delete s.pre; s.done=1; } });
+      else en.sets=en.sets.map(s=>planned(s)?{}:s);          // "No": they were a plan, not sets
       // Trim only blank rows off the END. Filtering the whole array renumbered
       // the sets, so skipping set 2 silently turned set 3 into set 2.
       let n=en.sets.length;

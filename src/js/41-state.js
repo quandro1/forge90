@@ -144,6 +144,15 @@ function normalize(p){
     const a={d:u.auto.d, k:ks(u.auto.k), off:ks(u.auto.off)};
     if(a.k.length||a.off.length) s.ui.auto=a;
   }
+  if(u.formOff) s.ui.formOff=1;                              // the angles block on the cards was folded by hand
+  // deload weeks of the block that began on `start`: the ones skipped (off) and the ones already explained (seen)
+  if(isObj(u.dl)&&isDate(u.dl.start)){
+    const wk=x=>(Array.isArray(x)?x:[]).filter((n,i,a)=>DELOAD_WEEKS.indexOf(n)>=0&&a.indexOf(n)===i);
+    const d={start:u.dl.start, off:wk(u.dl.off), seen:wk(u.dl.seen)};
+    if(d.off.length||d.seen.length) s.ui.dl=d;
+  }
+  if(legacy) s.ui.news=NEWS;                                 // a version 1 copy gets the full what-is-new note instead
+  else if(numIn(u.news,1,99,null)!=null) s.ui.news=+u.news;  // the last "what changed" note that was read
   // plan history: which plan was in force from which date, so a change never re-judges the past
   s.plans=(Array.isArray(p.plans)?p.plans:[]).filter(x=>isObj(x)&&isDate(x.from)&&typeof x.program==='string'&&safeKey(x.program)
       &&PROGRAMS[x.program]&&PROGRAMS[x.program].variants[x.dpw]&&validDays(x.days,PROGRAMS[x.program].variants[x.dpw].sessions.length))

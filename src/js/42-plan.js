@@ -150,6 +150,34 @@ function cardioDaysFor(days,phase){
   for(const wd of [1,2,3,4,5,6,0]){ if(days.indexOf(wd)<0&&wd!==ci&&out.length<want) out.push(wd); }
   return out;
 }
+/* ---- deload weeks: weeks 6 and 12, unless this block's one was skipped by hand ---- */
+function dlState(){
+  const d=S.ui.dl;
+  return (d&&d.start===S.profile.start)?d:{start:S.profile.start, off:[], seen:[]};
+}
+function dlSkipped(week){ return dlState().off.indexOf(week)>=0; }
+function dlSeen(week){ return dlState().seen.indexOf(week)>=0; }
+function dlMark(list,week,on){
+  const d=dlState();
+  d[list]=d[list].filter(x=>x!==week); if(on) d[list].push(week);
+  if(d.off.length||d.seen.length) S.ui.dl=d; else delete S.ui.dl;
+}
+/* Train normally in a deload week, or take the deload after all. Sessions already logged that
+   week at the usual weight (or heavier) were not deloads, so they count as normal ones; sessions
+   that really were lighter keep their mark and are still not the numbers to beat. */
+function setDeloadSkipped(week,skip){
+  dlMark('off',week,skip);
+  if(!skip) return;
+  const from=iso(addDays(parseISO(S.profile.start),(week-1)*7)), to=iso(addDays(parseISO(S.profile.start),week*7-1));
+  for(const id in S.logs){
+    const arr=S.logs[id];
+    arr.forEach((e,i)=>{
+      if(!e.dl||e.d<from||e.d>to) return;
+      const mine=judged(e,99), before=arr.slice(0,i).filter(x=>!x.dl&&loggedSets(x).length), ref=before.length?before[before.length-1]:null;
+      if(!mine.length||!ref||workWeight(mine)>=workWeight(judged(ref,99))) delete e.dl;
+    });
+  }
+}
 function dayInfo(i){                       // i = 1..91
   const date=addDays(parseISO(S.profile.start), i-1);
   const wd=date.getDay(), week=Math.ceil(i/7);
@@ -159,7 +187,7 @@ function dayInfo(i){                       // i = 1..91
   if(li>=0){ type='lift'; idx=li; }
   else if(cardioDaysFor(days,phase).indexOf(wd)>=0) type='cardio';
   return {i, date:ds, wd, week, phase, type, idx,
-          deload:(week===6||week===12), checkin:(wd===checkinDayFor(days)), session:idx>=0?sessionsOf(pe.program,pe.dpw)[idx]:null};
+          deload:(DELOAD_WEEKS.indexOf(week)>=0&&!dlSkipped(week)), checkin:(wd===checkinDayFor(days)), session:idx>=0?sessionsOf(pe.program,pe.dpw)[idx]:null};
 }
 function todayIndex(){ return daysBetween(parseISO(S.profile.start), parseISO(TODAY))+1; }
 function infoForDate(ds){

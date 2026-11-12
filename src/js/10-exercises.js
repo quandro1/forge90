@@ -11,6 +11,15 @@
      why    the reason for that band, in one or two plain sentences ({reps} = the slot's reps)
      next   bodyweight lifts only: what to do when every set reaches the top of the range
      cue    the one thing to think about
+     form   the short notes shown above the logbook (asked for by the owner on 12 Nov 2026):
+              angles  1 to 3 of [what, kind, degrees, what it is measured from, the same in plain words]
+                      kind: up (from flat or level) | lean (from upright) | turn (from straight ahead)
+                            out (the upper arm, out from the side) | bend (a joint; 0 is straight)
+                            fwd (in front of straight out to the side)
+                      degrees: 30 | [10, 15] anywhere between | [100, 0, "move"] the joint travels
+              grip    hands and wrists (feet: where the feet go, for lifts that stand on them)
+              range   where the rep starts and where it ends
+              like    one comparison with something from everyday life, and what it tells you
      setup  where the body and the equipment go before rep one, in order
      rep    one rep: Start, Move, Finish, with landmarks on the body
      tempo  how fast
@@ -20,9 +29,12 @@
      weight how to pick the first weight and when to add
      safe   only where there is a real hazard
      swap   ids that train the same muscle, for when the station is taken
-   Writing rules: short sentences, plain words, landmarks on the body
-   instead of angles (degrees only where the equipment shows them), no
-   comparisons to other objects. <b>…</b> marks the numbers that matter.
+   Writing rules: short sentences, plain words. Every angle is given
+   twice: as a number with its drawing, and as a landmark on the body
+   ("halfway between your ribs and straight out"). Comparisons live in
+   form.like, one a card, with an everyday object and the point it makes;
+   the long guide (setup, rep, fix, check) describes the body itself.
+   <b>…</b> marks the numbers that matter.
    =================================================================== */
 const EX = {};
 
@@ -35,6 +47,15 @@ EX.inclineDB = {
   band: "medium",
   why: "Two separate dumbbells are harder to steady than a bar, and the heaviest pairs are awkward to get into place. Use a weight you can lower slowly and press {reps} times.",
   cue: "Press up and slightly in; lower until the dumbbells are level with your chest.",
+  form: {
+    angles: [
+      ["Bench", "up", 30, "up from flat", "One or two notches up. At 45° or more the shoulders take over from the chest."],
+      ["Elbows", "out", 45, "out from your sides", "Halfway between touching your ribs and pointing straight out to the sides."],
+    ],
+    grip: "Palms face your feet, or turned in a little if that is easier on your shoulders. Wrists straight, each dumbbell right above its elbow.",
+    range: "Down until the dumbbells are level with your chest and you feel a stretch. Up until your arms are straight, dumbbells close together but not touching.",
+    like: "The dumbbells draw a letter A: wide apart at the bottom beside your chest, close together at the top. They never bang into each other.",
+  },
   setup: [
     "Set the bench to <b>30°</b>: one or two notches up from flat. Steeper turns it into a shoulder press.",
     "Sit with a dumbbell standing on each thigh, close to the knee. As you lie back, lift one knee to push that dumbbell up to your shoulder, then the other.",
@@ -64,6 +85,15 @@ EX.inclineBB = {
   band: "heavy",
   why: "A steady bar with both arms pushing together, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. Rest fully between sets.",
   cue: "Bar down to the top of your chest, then press it back up over your shoulders.",
+  form: {
+    angles: [
+      ["Bench", "up", 30, "up from flat", "One or two notches up. Steeper than that and the shoulders take over from the chest."],
+      ["Elbows", "out", [45, 60], "out from your sides", "About halfway between your ribs and straight out. Never straight out to the sides."],
+    ],
+    grip: "Each hand one hand-width outside your shoulder, thumbs wrapped round the bar. At the bottom your forearms are straight up and down.",
+    range: "Bar down to the top of the chest, two or three finger-widths below the collarbones. Up until the arms are straight and the bar is over your shoulders.",
+    like: "A plane landing: the bar comes down slowly, touches the top of your chest softly, and takes off again. No bounce.",
+  },
   setup: [
     "Bench at <b>30°</b>. Lie back with your eyes under the bar.",
     "Grip with each hand about one hand-width outside your shoulders, thumbs wrapped around the bar.",
@@ -94,6 +124,15 @@ EX.benchBB = {
   band: "heavy",
   why: "A steady bar and a big muscle group, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. Rest fully between sets.",
   cue: "Lower the bar to the middle of your chest, then press it back up over your shoulders.",
+  form: {
+    angles: [
+      ["Elbows", "out", [45, 60], "out from your sides", "About halfway between your ribs and straight out. Straight out to the sides strains the shoulders."],
+      ["Forearms", "lean", 0, "from straight up", "At the bottom they are straight up and down under the bar. Leaning in: widen your grip. Leaning out: narrow it."],
+    ],
+    grip: "Each hand one hand-width outside your shoulder, thumbs wrapped round the bar, wrists straight above the elbows.",
+    range: "Bar down to the middle of the chest, touching it lightly. Up and slightly back until the arms are straight and the bar is over your shoulders.",
+    like: "Seen from above, your arms and body make an arrow, not a letter T: the elbows point back toward your hips, not straight out.",
+  },
   setup: [
     "Lie with your eyes under the bar, feet flat on the floor.",
     "Grip with each hand about one hand-width outside your shoulders, thumbs wrapped around the bar.",
@@ -125,6 +164,15 @@ EX.benchDB = {
   band: "medium",
   why: "Dumbbells go deeper than a bar and each arm has to steady its own weight, so they suit a middle weight. Lower slowly and press {reps} times.",
   cue: "Press the dumbbells up over your chest; lower until they are level with it.",
+  form: {
+    angles: [
+      ["Elbows", "out", 45, "out from your sides", "Halfway between touching your ribs and pointing straight out to the sides."],
+      ["Forearms", "lean", 0, "from straight up", "At the bottom each forearm points straight at the ceiling, with the dumbbell right above its elbow."],
+    ],
+    grip: "Palms face your feet, wrists straight. Hold each handle in the middle so the dumbbell stays level.",
+    range: "Down until the dumbbells are level with your chest and you feel a stretch across it. Up and slightly in until the arms are straight.",
+    like: "The dumbbells draw a letter A: wide apart at the bottom beside your chest, close together at the top. They never bang into each other.",
+  },
   setup: [
     "Flat bench. Sit with a dumbbell on each thigh, lie back and bring them to your chest.",
     "Feet flat, shoulder blades squeezed together and down.",
@@ -153,6 +201,15 @@ EX.pecdeck = {
   band: "light",
   why: "Your arms are held out almost straight, so a small weight is already hard for the chest. Too heavy and the shoulders roll forward. Use a weight you can squeeze for 1 second with the hands together, {reps} times.",
   cue: "Bring the handles together in front of your chest with your arms slightly bent, then open slowly.",
+  form: {
+    angles: [
+      ["Elbows", "bend", [10, 15], "of bend, and it never changes", "Almost straight, with a small soft bend. If the bend opens and closes, the arms are doing the work."],
+      ["Arms", "turn", [90, 0, "move"], "out from straight ahead", "From out to the sides, in line with your shoulders, to straight ahead with the handles almost touching. Never further back than your shoulders."],
+    ],
+    grip: "Hold the handles loosely: the squeeze comes from the chest, not the hands. On a machine with forearm pads, push with the forearms.",
+    range: "Open until your hands are in line with your shoulders and the chest stretches. Close until the handles almost touch. Squeeze 1 second, open for 3.",
+    like: "Hugging a wide tree trunk: your arms stay long and rounded and wrap around it. They do not bend to pull it in.",
+  },
   setup: [
     "Set the arm pins so the handles start level with your shoulders or slightly behind them: a stretch across the chest, not a strain.",
     "Set the seat so the handles are level with the middle of your chest.",
@@ -183,6 +240,15 @@ EX.pushup = {
   why: "Your own bodyweight is the load. Too hard: put your hands on a bench. Too easy: put your feet on a bench. Do not rush the reps.",
   next: "make it harder: hands from the bench to the floor, then feet on a bench, then a backpack with a plate in it",
   cue: "Body in one straight line; chest to the floor, then push away.",
+  form: {
+    angles: [
+      ["Elbows", "out", 45, "out from your sides", "Halfway between your ribs and straight out. They point back toward your feet, not out to the walls."],
+      ["Hips", "bend", 0, "of bend", "One straight line from head to heels. The hips do not sag and do not stick up."],
+    ],
+    grip: "Hands a little wider than your shoulders, fingers pointing forward, the whole palm pressed into the floor.",
+    range: "Down until your chest is a fist-width from the floor. Up until the arms are straight.",
+    like: "Seen from above you are an arrow, not a letter T. Seen from the side you are one stiff board from head to heels, turning on your toes.",
+  },
   setup: [
     "Hands on the floor a little wider than your shoulders, fingers forward.",
     "Legs straight, feet together, weight on your hands and toes.",
@@ -214,6 +280,15 @@ EX.machPress = {
   band: "medium",
   why: "The machine guides the path, so you can push close to your limit safely. A middle weight keeps every rep coming all the way down to ear height. {reps} reps, the last two hard.",
   cue: "Press the handles straight up; lower them to ear height.",
+  form: {
+    angles: [
+      ["Elbows", "fwd", [20, 30], "in front of straight out to the sides", "Not flared wide: a little forward, where you can just see them at the edge of your view."],
+      ["Forearms", "lean", 0, "from straight up", "Wrists stacked over elbows for the whole rep, seen from the front and from the side."],
+    ],
+    grip: "Wrists straight, not bent back. If the machine has two pairs of handles, the pair with palms facing each other is easier on the shoulders.",
+    range: "From handles beside your ears up to arms almost straight, without shrugging. Then 2–3 seconds down to ear height, every rep.",
+    like: "Pushing a stuck window up from ear height until your arms are almost straight, then easing it back down so it does not slam.",
+  },
   setup: [
     "Set the seat so the handles start level with your ears.",
     "Sit with your whole back on the pad, feet flat.",
@@ -242,6 +317,15 @@ EX.dbPress = {
   band: "medium",
   why: "Each arm has to balance its own dumbbell overhead, so very heavy pairs turn the lift into a balancing act. A middle weight for {reps} reps.",
   cue: "Press the dumbbells from ear height to straight arms, without arching your back.",
+  form: {
+    angles: [
+      ["Bench back", "up", [75, 85], "up from flat", "One notch short of fully upright, so your whole back can stay on the pad."],
+      ["Elbows", "fwd", [20, 30], "in front of straight out to the sides", "A little forward, where you can just see them at the edge of your view. Not flared straight out."],
+    ],
+    grip: "Palms forward, or turned in a little. Wrists straight, each dumbbell right above its elbow.",
+    range: "From dumbbells beside your ears up to arms almost straight, dumbbells close together above your head. Then 2–3 seconds down to ear height.",
+    like: "Lifting two full buckets from beside your ears onto a high shelf, and bringing them down again without spilling: slow and level.",
+  },
   setup: [
     "Set the bench back one notch short of upright.",
     "Sit with your whole back on the pad and feet flat. Stand a dumbbell on each thigh, then lift one knee at a time to push each dumbbell up to your shoulder.",
@@ -270,6 +354,15 @@ EX.ohp = {
   band: "heavy",
   why: "The whole body has to hold the bar steady overhead, so long rests suit it. Learn it with the empty bar first, then add weight until {reps} reps a set are hard. Every rep should look the same.",
   cue: "Press the bar from your collarbones to straight above your head.",
+  form: {
+    angles: [
+      ["Forearms", "lean", 0, "from straight up", "Straight up and down under the bar at the start. If they lean outward, bring your hands in."],
+      ["Body", "lean", 0, "from upright", "Tall and straight from ankles to hands. Leaning back to finish means the bar is too heavy."],
+    ],
+    grip: "Hands just outside your shoulders, thumbs wrapped round the bar, the bar low in the palm above the wrist. Elbows slightly in front of the bar.",
+    range: "From the bar resting on the top of your chest to arms straight overhead, bar above the middle of your feet. Lower under control to the collarbones.",
+    like: "A lift going up its shaft: the bar rises in one straight line, close past your face. Your head moves back to let it pass, then forward under it.",
+  },
   setup: [
     "Take the bar from a rack at chest height, hands just outside your shoulders.",
     "The bar rests on the top of your chest, elbows slightly in front of the bar.",
@@ -299,6 +392,16 @@ EX.latRaise = {
   band: "light",
   why: "The weight sits at the end of a straight arm, so a few kilos are already heavy for the shoulder. Use a weight you can raise {reps} times without swinging and hold for a moment at the top.",
   cue: "Lift your arms out to the sides until your hands are level with your shoulders.",
+  form: {
+    angles: [
+      ["Arms at the top", "out", 90, "out from your sides", "Level with the floor: hands and elbows at shoulder height, and no higher."],
+      ["Raise line", "fwd", [20, 30], "in front of straight out to the sides", "Not straight sideways: a little forward, so you can see both hands without turning your head."],
+      ["Elbows", "bend", [10, 15], "of bend, and it never changes", "Soft, not locked. Bending them more makes the lift easier and takes work off the shoulder."],
+    ],
+    grip: "Hold the dumbbells loosely, knuckles up. The thumb and the little finger stay at the same height. If the top of the shoulder pinches, turn the thumbs slightly up.",
+    range: "From just outside your thighs up to shoulder height. A short hold there, then 2–3 seconds down.",
+    like: "Pushing two walls apart with the backs of your hands. Reach out wide rather than lifting up, and stop when your arms and body make a letter T.",
+  },
   setup: [
     "Stand with feet under your hips, a dumbbell in each hand beside your thighs.",
     "Lean your chest forward a little and keep a small bend in the elbows.",
@@ -328,6 +431,15 @@ EX.cableLat = {
   band: "light",
   why: "The cable pulls on the end of a straight arm, so a small weight is enough. If your body leans or the shoulder shrugs up, it is too heavy. {reps} smooth reps on each side.",
   cue: "One arm at a time: pull the handle out to the side until your hand is level with your shoulder.",
+  form: {
+    angles: [
+      ["Arm at the top", "out", 90, "out from your side", "Hand level with your shoulder, and no higher."],
+      ["Elbow", "bend", [10, 15], "of bend, and it never changes", "A small soft bend. The elbow stays as high as the hand."],
+    ],
+    grip: "Hold the handle loosely in the arm farther from the machine, knuckles up, wrist straight. The other hand holds the frame.",
+    range: "From in front of the opposite thigh, across your body and out to shoulder height. Then 3 seconds down without letting the plates touch.",
+    like: "Drawing a sword from the opposite hip: the hand starts low across your body and sweeps out wide to shoulder height. The arm stays long.",
+  },
   setup: [
     "Set the pulley at the lowest position and attach a single handle.",
     "Stand side-on to the machine and hold the handle with the arm farther from it, so the cable crosses in front of your body.",
@@ -356,6 +468,15 @@ EX.reardelt = {
   band: "light",
   why: "The muscle at the back of the shoulder is small. With a heavy weight the upper back and a swing take over, so that muscle gets less of the work. Use a weight you can hold open for 1 second, {reps} times.",
   cue: "Open your arms out and back until they are in line with your shoulders.",
+  form: {
+    angles: [
+      ["Arms", "turn", [0, 90, "move"], "out from straight ahead", "A quarter turn: from pointing straight ahead to pointing straight out to the sides, in line with your shoulders. No further back."],
+      ["Elbows", "bend", [10, 15], "of bend, and it never changes", "Almost straight. If they bend more as you pull, it has become a row."],
+    ],
+    grip: "Palms facing each other or facing down, whichever handles the machine has. Hold them loosely and lead with the elbows.",
+    range: "From arms straight in front of you, out and back until they are in line with your shoulders. Hold 1 second there, then 2–3 seconds forward.",
+    like: "Opening a pair of heavy double doors with the backs of your hands, and stopping when both doors stand wide open in line with your shoulders.",
+  },
   setup: [
     "On a machine that also does the chest fly, move both arm pins to the back position, so the handles start close together in front of the pad.",
     "Sit facing the pad with your chest against it.",
@@ -385,6 +506,15 @@ EX.facepull = {
   band: "light",
   why: "This trains small muscles at the back of the shoulder and between the shoulder blades. A heavy weight turns it into a row with a lean back. Stay light enough to pause with your hands beside your ears, {reps} times.",
   cue: "Pull the rope toward your eyes and spread your hands apart.",
+  form: {
+    angles: [
+      ["Upper arms at the finish", "out", 90, "out from your sides", "Elbows as high as your shoulders. If they drop toward your ribs, it has become a row."],
+      ["Elbows at the finish", "bend", 90, "of bend", "A right angle: hands beside your ears, forearms pointing up."],
+    ],
+    grip: "Hold the two rope ends with your thumbs pointing back at you. Pull the ends apart as they come toward your face.",
+    range: "From arms straight in front of your face to hands beside your ears with the rope ends apart. Hold 1 second, then 2–3 seconds back.",
+    like: "Showing both biceps to someone standing behind you: elbows high and wide, fists beside your ears.",
+  },
   setup: [
     "Set the pulley at the height of your forehead and attach a rope.",
     "Hold the rope with your thumbs pointing back at you and step back until your arms are straight.",
@@ -415,6 +545,15 @@ EX.pushdown = {
   band: "light",
   why: "Only the elbows move, so they take all the weight. Too heavy and the shoulders roll forward and the elbows ache. Use a weight that lets you straighten your arms fully and hold for 1 second, {reps} times.",
   cue: "Elbows stay at your sides; push the bar down until your arms are straight.",
+  form: {
+    angles: [
+      ["Lean", "lean", [10, 15], "forward from upright", "A small lean from the hips so the bar clears your body. More than that and your bodyweight is pushing the bar."],
+      ["Elbows", "bend", [100, 0, "move"], "of bend", "From hands at chest height down to arms fully straight. Only the forearms move."],
+    ],
+    grip: "Hands shoulder-width on the bar, palms down, wrists straight. With a rope, palms face each other and the ends move apart at the bottom.",
+    range: "From hands at chest height down to arms fully straight, hands in front of your thighs. Squeeze 1 second, then 2–3 seconds up.",
+    like: "Your elbows are hinges screwed to your ribs. The forearms swing down like a gate closing, and the hinges do not travel.",
+  },
   setup: [
     "Set the pulley at the top and attach a short bar or a rope.",
     "Stand close, lean forward a little, and tuck your elbows against your ribs.",
@@ -443,6 +582,15 @@ EX.ohext = {
   band: "medium",
   why: "The elbow works from a deep stretch here, where it is weakest and most easily irritated. Use a middle weight you can lower for 3 seconds, {reps} times. If the elbows ache, go lighter.",
   cue: "Lower the dumbbell behind your head, then straighten your arms.",
+  form: {
+    angles: [
+      ["Upper arms", "lean", 0, "from straight up", "Beside your ears, pointing at the ceiling, and they stay there. Only the forearms move."],
+      ["Elbows", "bend", [130, 0, "move"], "of bend", "From forearms touching your biceps behind your head to arms fully straight."],
+    ],
+    grip: "Both hands cupped under the top plate of one dumbbell, thumbs round the handle. Elbows point forward and up, about as wide as your ears.",
+    range: "Down behind your head for 3 seconds until the forearms touch your biceps and the back of the arms stretches. Up until the arms are fully straight.",
+    like: "Reaching down to scratch between your shoulder blades with the dumbbell, then lifting it back to the ceiling. Only the forearms travel.",
+  },
   setup: [
     "Sit on a bench with a back support, or stand.",
     "Hold one dumbbell with both hands under its top plate and lift it above your head.",
@@ -471,6 +619,15 @@ EX.bbCurl = {
   band: "medium",
   why: "Two hands on one bar make this the curl that takes the most weight, but only up to the point where your hips start to swing. {reps} reps with no swing.",
   cue: "Elbows at your sides; curl the bar to your shoulders and lower it slowly.",
+  form: {
+    angles: [
+      ["Upper arms", "out", 0, "away from hanging straight down", "Beside your ribs, and they stay there. If the elbows drift forward, the shoulders are helping."],
+      ["Elbows", "bend", [0, 135, "move"], "of bend", "From arms fully straight to the bar at the top of your chest. Then 3 seconds back to straight."],
+    ],
+    grip: "Palms up, hands shoulder-width apart, wrists straight and not curled toward you. If your wrists hurt, use the EZ bar, the one with bends in it.",
+    range: "From arms straight with the bar on your thighs up to the bar at the top of your chest. Then 3 seconds down until the arms are fully straight.",
+    like: "Carrying a full tray of tea up to your chest: it stays level, your elbows stay by your ribs, and nothing swings or spills.",
+  },
   setup: [
     "Stand with feet under your hips, holding the bar palms up, hands shoulder-width apart.",
     "Elbows beside your ribs, shoulders back.",
@@ -499,6 +656,15 @@ EX.dbCurl = {
   band: "medium",
   why: "One arm at a time, with no help from the other side. If the elbow drifts forward or the body rocks, it is too heavy. {reps} reps on each arm with no swing.",
   cue: "Curl one dumbbell at a time and turn your palm up as it rises.",
+  form: {
+    angles: [
+      ["Palm", "turn", [0, 90, "move"], "of turn", "A quarter turn: from facing your thigh at the bottom to facing your shoulder at the top. Start turning as the dumbbell leaves your thigh."],
+      ["Upper arm", "out", 0, "away from hanging straight down", "Beside your ribs for the whole rep. The elbow does not swing forward."],
+    ],
+    grip: "Hold the handle in the middle, wrist straight. Start with palms facing your thighs and turn the little finger up toward your shoulder as you lift.",
+    range: "From a fully straight arm up to the dumbbell in front of your shoulder, palm facing it. Then 3 seconds down to straight.",
+    like: "Turning a door key while you lift: the hand turns a quarter turn on the way up and turns back on the way down.",
+  },
   setup: [
     "Stand or sit with a dumbbell in each hand, arms straight, palms facing your thighs.",
     "Elbows beside your ribs.",
@@ -529,6 +695,15 @@ EX.pulldown = {
   band: "medium",
   why: "A big back muscle on a guided cable: it takes a solid middle weight. If you have to lean far back or the bar stops short of your upper chest, go lighter. {reps} reps.",
   cue: "Pull the bar to the top of your chest by driving your elbows down.",
+  form: {
+    angles: [
+      ["Lean", "lean", [10, 15], "back from upright", "A small lean so the bar can pass your face, and it stays the same all set. Rocking further back means it is too heavy."],
+      ["Forearms", "lean", 0, "from straight up", "Under the bar the whole way: the elbows point at the floor, not behind you."],
+    ],
+    grip: "Palms facing away, each hand one hand-width outside your shoulder. Hold the bar in your fingers like hooks, so the back pulls and not the forearms.",
+    range: "From arms straight with the shoulders lifted toward your ears, down until the bar touches the top of your chest. Hold 1 second, then 2–3 seconds up.",
+    like: "Pulling your elbows down into your back pockets. The hands are only hooks on the bar: the elbows do the pulling.",
+  },
   setup: [
     "Set the thigh pad so your legs cannot lift.",
     "Stand up, grip the bar with palms facing away, each hand one hand-width outside your shoulders.",
@@ -560,6 +735,15 @@ EX.pullup = {
   why: "Your whole body is the weight, and that is heavy for two arms. {reps} reps a set, with help from the assisted machine or a band if you need it. When every set reaches the top number, take help off first; add weight only when no help is left.",
   next: "take one plate of help off on the assisted machine, or use a thinner band; with no help, add 2.5 kg (a dumbbell between your feet, or a belt)",
   cue: "Hang with straight arms; pull until your chin is over the bar.",
+  form: {
+    angles: [
+      ["Arms at the bottom", "bend", 0, "of bend", "Fully straight. Every rep starts from a still hang, not from half-way."],
+      ["Body", "lean", 0, "from hanging straight down", "Still, with quiet legs. No swing and no kick."],
+    ],
+    grip: "Palms facing away, hands just outside your shoulders, thumbs wrapped round the bar.",
+    range: "From a still hang with arms fully straight up to your chin clearly over the bar. Then 2–3 seconds down to straight arms.",
+    like: "Climbing a wall to look over the top: you start hanging at full stretch and pull until your chin clears the edge. Then you lower yourself; you do not drop.",
+  },
   setup: [
     "Grip the bar with palms facing away, hands just outside your shoulders.",
     "Hang with arms straight and legs still. Cross your ankles if it helps.",
@@ -589,6 +773,15 @@ EX.cableRow = {
   band: "medium",
   why: "A middle weight you can pull to your stomach and hold for a moment. If your body rocks back and forth to move it, the weight is too heavy for the back muscles. {reps} reps.",
   cue: "Sit tall and pull the handle to your stomach; let it stretch you forward under control.",
+  form: {
+    angles: [
+      ["Body", "lean", 0, "from upright", "Sit tall and stay there. It may rock a hand-width forward and back, no more."],
+      ["Elbows", "out", [0, 20], "out from your sides", "They brush along your ribs as they travel back. They do not wing out."],
+    ],
+    grip: "The narrow handle whose two grips face each other: palms in, wrists straight. Hold it in your fingers and pull with the elbows.",
+    range: "From arms straight with the shoulders reaching forward, back to the handle touching your stomach above the navel, elbows behind your body. Hold 1 second, 2–3 seconds back.",
+    like: "Rowing a boat: reach forward long, then pull the oars to your stomach while sitting tall. The back does not swing to help.",
+  },
   setup: [
     "Sit with your feet on the plates and knees slightly bent.",
     "Use the narrow handle whose two grips face each other. Take it and sit tall, chest up, arms straight.",
@@ -618,6 +811,15 @@ EX.csRow = {
   band: "medium",
   why: "Your chest rests on the pad, so your lower back does not have to hold you up and the back muscles can work hard. A solid middle weight for {reps} reps. Of all the rows, this one can go heaviest.",
   cue: "Chest on the pad; pull your elbows back until your hands reach your ribs.",
+  form: {
+    angles: [
+      ["Elbows", "out", [30, 45], "out from your sides", "Angled back and a little out, so the hands arrive beside your lower ribs. Flared straight out, the shoulders take over."],
+      ["Arms at the start", "bend", 0, "of bend", "Fully straight, with the shoulder blades spread apart. That stretch is half the rep."],
+    ],
+    grip: "Use the handles with palms facing each other if the machine has them. Hold with the fingers and pull with the elbows.",
+    range: "From arms straight and shoulder blades spread apart to elbows past your body, hands beside your lower ribs. Hold 1 second, 2–3 seconds down.",
+    like: "Squeezing a pencil between your shoulder blades at the end of every pull, and letting it go as your arms reach forward again.",
+  },
   setup: [
     "Set the seat or foot plate so the top of the pad is at the middle of your chest.",
     "Press your chest against the pad.",
@@ -646,6 +848,15 @@ EX.dbRow = {
   band: "medium",
   why: "One arm works while the other hand supports you, so the back can take a fair weight. Too heavy and the body twists to heave it up. {reps} reps on each side with no twist.",
   cue: "Flat back; pull the dumbbell toward your hip.",
+  form: {
+    angles: [
+      ["Back", "up", [0, 15], "up from level with the floor", "Flat like a table top, or the chest a little higher than the hips. Both shoulders stay the same height."],
+      ["Elbow", "out", [15, 30], "out from your side", "Close to your body: it brushes past your ribs on the way to the hip."],
+    ],
+    grip: "Palm facing the bench, wrist straight, the dumbbell hanging from your fingers like the handle of a bag.",
+    range: "From the arm hanging straight with the shoulder reaching toward the floor, up until the dumbbell is beside your hip and the elbow is above your back. 2–3 seconds down.",
+    like: "Pulling the starter cord of a generator, slowly: reach down long, then pull the hand back to your hip pocket with the elbow leading. The body does not twist.",
+  },
   setup: [
     "Put one knee and the hand on the same side on a flat bench.",
     "The other foot is on the floor, out to the side. Your back is flat and level.",
@@ -674,6 +885,15 @@ EX.straightArm = {
   band: "light",
   why: "Straight arms put the weight far from the shoulder, so a small weight is plenty for the back muscles. A heavy one turns it into a triceps pushdown. {reps} slow reps.",
   cue: "Arms almost straight; sweep the bar down to your thighs.",
+  form: {
+    angles: [
+      ["Lean", "lean", [20, 30], "forward from upright", "A small bow from the hips with a flat back, so the bar has room to travel."],
+      ["Elbows", "bend", [10, 15], "of bend, and it never changes", "Almost straight. If they bend more, the back of the arms takes over and it becomes a pushdown."],
+    ],
+    grip: "Palms down on the bar, hands shoulder-width apart. Hold it loosely: the arms are only ropes between the bar and your back.",
+    range: "From hands at eye height with a stretch under the armpits, down in a wide arc until the bar touches your thighs. Squeeze 1 second, 3 seconds up.",
+    like: "Pressing a big ball down into water with long, almost straight arms: one wide arc from eye height to your thighs.",
+  },
   setup: [
     "Set the pulley at the top with a straight bar or a rope.",
     "Hold it with hands shoulder-width apart and take one step back.",
@@ -702,6 +922,16 @@ EX.deadlift = {
   band: "heavy",
   why: "This lift takes the most weight of all and suits the fewest reps: a flat back gets harder to hold as you tire. Do {reps} reps a set. Start at 40 kg or less and add 5 kg at a time.",
   cue: "Bar over the middle of your feet; push the floor away and stand up with a flat back.",
+  form: {
+    angles: [
+      ["Arms", "bend", 0, "of bend", "Locked straight from start to finish. They are ropes holding the bar; the legs and hips lift it."],
+      ["Bar path", "lean", 0, "from straight up", "One straight line up and down above the middle of your feet, touching your legs all the way."],
+    ],
+    grip: "Both palms facing you, hands just outside your legs, arms hanging straight down. Squeeze the bar hard before it leaves the floor.",
+    feet: "Hip-width apart, toes forward or turned out a little, the bar above the knot of your shoelaces.",
+    range: "From the bar on the floor to standing tall with hips and knees straight. Do not lean back at the top. Lower it the same way: hips back first, then knees.",
+    like: "Pushing the floor away with your legs, as on a leg press machine stood on its end. You are not pulling the bar up with your back.",
+  },
   setup: [
     "Stand with the bar over the middle of your feet, feet hip-width apart.",
     "Bend over and grip the bar just outside your legs, both palms facing you. Then bend your knees until your shins touch the bar. Do not roll the bar.",
@@ -735,6 +965,16 @@ EX.squat = {
   band: "heavy",
   why: "The biggest muscles of the body under a steady bar, so this lift can go heavy. Learn it with the empty bar first, then add weight until {reps} reps are hard. With many more reps your breathing gives out before your legs do.",
   cue: "Sit down between your heels until your thighs are level, then stand up.",
+  form: {
+    angles: [
+      ["Toes", "turn", [15, 30], "out from straight ahead", "Left foot toward 11 on a clock, right foot toward 1, or a little less. The knees travel the same way as the toes."],
+      ["Knees at the bottom", "bend", [110, 120], "of bend", "Clearly past a right angle: the crease of your hip ends level with the top of your knee, or just below it."],
+    ],
+    grip: "Hands just outside your shoulders, elbows pointing down, pulling the bar into the muscle at the top of your back. It never rests on the neck.",
+    feet: "Shoulder-width apart, weight on the whole foot: big toe, little toe and heel all pressed down.",
+    range: "From standing tall down until your thighs are level with the floor or a little lower, heels still down. Then stand all the way up.",
+    like: "Sitting down onto a low stool just behind you and standing up the moment you touch it. Chest up, so someone in front could read the writing on your shirt.",
+  },
   setup: [
     "Set the bar in the rack at chest height. Set the safety bars one hole below where the barbell is at the bottom of your squat; test it with the empty bar.",
     "Step under the bar so it rests on the muscle at the top of your back, not on your neck. Hands just outside your shoulders.",
@@ -766,6 +1006,16 @@ EX.legpress = {
   band: "medium",
   why: "The machine takes care of balance and your back is supported, so the legs can be pushed hard for longer sets. A weight for {reps} deep reps. If the depth shrinks, it is too heavy.",
   cue: "Lower the platform as far as your hips stay on the seat, then press it away.",
+  form: {
+    angles: [
+      ["Knees at the bottom", "bend", [90, 110], "of bend", "A right angle or a little deeper, as long as your hips stay flat on the seat."],
+      ["Knees at the top", "bend", [5, 10], "of bend", "Almost straight, never snapped locked."],
+    ],
+    grip: "Hold the handles beside the seat and pull yourself down into it, so your hips cannot lift.",
+    feet: "Middle of the platform, shoulder-width apart, toes turned out a little. Higher on the platform works the glutes more; lower works the front of the thigh more.",
+    range: "Lower for 3 seconds as deep as you can with your hips and lower back still flat on the pad. Press until the legs are almost straight.",
+    like: "Pushing a stalled car away with your feet: slow and strong through the whole foot, and you never kick your legs straight.",
+  },
   setup: [
     "Sit with your hips and your whole back against the pad.",
     "Feet in the middle of the platform, shoulder-width apart, toes turned out slightly.",
@@ -796,6 +1046,16 @@ EX.gobletSquat = {
   band: "medium",
   why: "Your arms have to hold the weight, so they limit how heavy this can go. That is fine: it is the lift for learning depth. {reps} deep reps.",
   cue: "Hold one dumbbell at your chest and squat down between your knees.",
+  form: {
+    angles: [
+      ["Toes", "turn", [15, 30], "out from straight ahead", "Turned out a little. The knees travel the same way as the toes."],
+      ["Knees at the bottom", "bend", [110, 130], "of bend", "Well past a right angle: thighs level with the floor or lower, elbows touching the inside of your knees."],
+    ],
+    grip: "One dumbbell held upright against your chest, both hands cupped under its top plate, elbows pointing down.",
+    feet: "Shoulder-width apart, heels down for the whole rep.",
+    range: "Down for 3 seconds between your heels until your thighs are level with the floor or lower. Then stand all the way up.",
+    like: "Lowering yourself onto a very low stool between your heels while holding a full bowl against your chest: upright, slow, and nothing spills.",
+  },
   setup: [
     "Hold one dumbbell upright against your chest, both hands under its top plate.",
     "Feet shoulder-width apart, toes turned out slightly.",
@@ -824,6 +1084,16 @@ EX.lunge = {
   band: "medium",
   why: "Balance limits this lift. With dumbbells that are too heavy you wobble and shorten the step. A weight you can control for {reps} steps on each leg.",
   cue: "Take a long step and lower your back knee toward the floor.",
+  form: {
+    angles: [
+      ["Both knees at the bottom", "bend", 90, "of bend", "A right angle each. The front shin is close to upright and the back knee is a hand-width above the floor."],
+      ["Body", "lean", [0, 10], "forward from upright", "Tall, chest up. A small lean forward is fine; folding over is not."],
+    ],
+    grip: "A dumbbell in each hand, arms hanging straight at your sides. They do not swing.",
+    feet: "A long step: far enough that both knees can reach a right angle. The feet stay hip-width apart, as if on two rails, not on one line.",
+    range: "Step, then lower straight down until the back knee is a hand-width above the floor. Push through the front foot and step straight into the next rep.",
+    like: "Kneeling down to pick a coin off the floor without letting the back knee touch, then standing up and walking on.",
+  },
   setup: [
     "Stand tall with a dumbbell in each hand, arms straight at your sides.",
     "Find a clear path of about 10 steps; turn round at the end and keep going.",
@@ -853,6 +1123,16 @@ EX.bulgarian = {
   band: "medium",
   why: "One leg does the work and has to balance as well, so it needs far less weight than a squat. Start lighter than you think. {reps} controlled reps on each leg.",
   cue: "Back foot on a bench; lower straight down on the front leg.",
+  form: {
+    angles: [
+      ["Front knee at the bottom", "bend", [90, 110], "of bend", "A right angle or a little deeper: the front thigh ends level with the floor."],
+      ["Body", "lean", [0, 20], "forward from upright", "Upright for more front of the thigh. A small lean forward for more glute."],
+    ],
+    grip: "A dumbbell in each hand, arms hanging straight. While you learn the balance, hold one dumbbell and keep the other hand on a support.",
+    feet: "Front foot one long step in front of the bench, flat on the floor. The top of the back foot rests on the bench and only balances.",
+    range: "Down for 3 seconds until the back knee is just above the floor and the front thigh is level. Up through the whole front foot.",
+    like: "A lift, not an escalator: your body travels straight down and straight back up, with no drift forward.",
+  },
   setup: [
     "Stand one long step in front of a bench, a dumbbell in each hand.",
     "Put the top of your back foot on the bench.",
@@ -882,6 +1162,15 @@ EX.legext = {
   band: "light",
   why: "Only the knee moves, and the pad pushes on your shin far from it, so the load on the knee climbs fast as the weight goes up. Higher reps train the front of the thigh just as well with less of that load. Use a weight you can hold at the top for 1 second, {reps} times.",
   cue: "Straighten your knees fully, squeeze, and lower slowly.",
+  form: {
+    angles: [
+      ["Knees", "bend", [100, 0, "move"], "of bend", "From the deepest bend the machine allows to fully straight, with a squeeze at the top."],
+    ],
+    grip: "Hold the handles beside the seat and pull yourself down, so your hips stay on the seat.",
+    feet: "Ankle pad on the lower shin, just above your feet. Knees in line with the machine's pivot, toes pointing up.",
+    range: "From knees bent as far as the machine allows up to legs fully straight. Squeeze 1 second, then 3 seconds down to the deepest bend.",
+    like: "Kicking a football in slow motion and freezing at the end of the kick: the leg goes dead straight and stays there for a second.",
+  },
   setup: [
     "Set the back pad so your knees line up with the machine's pivot.",
     "Set the ankle pad on the lower shin, just above your feet.",
@@ -910,6 +1199,16 @@ EX.rdl = {
   band: "medium",
   why: "A big lift, but one done slowly with a long stretch. Use the weight you can lower under control with a flat back for {reps} reps, not the most you could pick up.",
   cue: "Push your hips back and slide the bar down your legs; keep your back flat.",
+  form: {
+    angles: [
+      ["Knees", "bend", [15, 20], "of bend, and it never changes", "Soft, not locked, and they stay like that. If they keep bending, it is turning into a squat."],
+      ["Body at the bottom", "lean", [45, 80], "forward from upright", "Between half-way down and almost level with the floor. Stop where your hips cannot go further back with a flat back."],
+    ],
+    grip: "Palms facing you, hands just outside your thighs, arms straight. Use straps or chalk when your grip gives up before your legs.",
+    feet: "Under your hips, toes forward, weight on the heels and the middle of the foot.",
+    range: "The bar slides down your legs for 3 seconds, usually to between the knee and the middle of the shin. Stand up by pushing the hips forward; do not lean back at the top.",
+    like: "Closing a car door with your backside while your hands are full: the hips go straight back, the knees hardly bend, and the back stays flat.",
+  },
   setup: [
     "Take the bar from a rack at mid-thigh height, hands just outside your thighs.",
     "Feet under your hips. Take one step back.",
@@ -940,6 +1239,15 @@ EX.legcurl = {
   band: "light",
   why: "Only the knee moves. If your hips lift off the pad, the weight is too heavy and the hips are helping it up. {reps} reps with a slow return.",
   cue: "Curl your heels toward your glutes; hips stay on the pad.",
+  form: {
+    angles: [
+      ["Knees", "bend", [0, 120, "move"], "of bend", "From legs straight to the pad as close to your glutes as it will go: well past a right angle."],
+    ],
+    grip: "Hold the handles and pull your hips down into the pad.",
+    feet: "Ankle pad just above your heels. Knees just off the end of the pad, in line with the pivot. If the calves cramp, pull your toes toward your shins.",
+    range: "From legs straight, curl until the pad is as close to your glutes as it will go. Squeeze 1 second, then 3 seconds down to straight.",
+    like: "Trying to kick your own backside with both heels, in slow motion, while your hips stay glued to the pad.",
+  },
   setup: [
     "Lie face down with your knees just off the end of the pad, in line with the pivot.",
     "Set the ankle pad just above your heels.",
@@ -968,6 +1276,15 @@ EX.seatedLegCurl = {
   band: "light",
   why: "Only the knee moves. Use a weight you can curl all the way and let back slowly, {reps} times. If you have to yank it, go lighter.",
   cue: "Pull your heels under the seat, then let the legs straighten slowly.",
+  form: {
+    angles: [
+      ["Knees", "bend", [0, 110, "move"], "of bend", "From legs straight out in front to heels pulled back under the seat, as far as the machine allows."],
+    ],
+    grip: "Hold the handles and sit tall, or lean forward a little: leaning forward stretches the back of the thighs more.",
+    feet: "Ankle pad just above your heels, thigh pad locked down just above the knees, knees in line with the pivot.",
+    range: "From legs fully straight, pull the heels down and back under the seat as far as they go. Squeeze 1 second, then 3 seconds back to straight.",
+    like: "Dragging a heavy sack toward you under your chair with your heels, then letting it slide slowly away again.",
+  },
   setup: [
     "Set the back pad so your knees line up with the pivot.",
     "Lower the thigh pad firmly onto your thighs, just above the knees.",
@@ -996,6 +1313,16 @@ EX.calf = {
   band: "light",
   why: "The calf moves a short distance, and with a heavy weight you start to bounce, which lets the tendon do the work. Go light enough for a full stretch and a 1-second pause at the bottom, {reps} times.",
   cue: "Rise as high as you can on the balls of your feet; lower until your heels are below the step.",
+  form: {
+    angles: [
+      ["Knees", "bend", 0, "of bend", "Straight but not jammed locked, for the whole set. Bending them lets the thighs help."],
+      ["Feet", "turn", 0, "out from straight ahead", "Pointing straight ahead, hip-width apart, so you rise over the big toe and not the little toe."],
+    ],
+    grip: "On a machine, shoulders under the pads and hands on the frame. With a dumbbell, hold it in one hand and a support with the other.",
+    feet: "The balls of your feet on the edge of the step, heels hanging free.",
+    range: "From heels below the step with a stretch in the calves, pause 1–2 seconds, then up as high as you can on the balls of your feet. Hold 1 second, 2–3 seconds down.",
+    like: "Standing on tiptoe to reach a top shelf, then letting your heels sink below the edge of a stair. No bounce at the bottom.",
+  },
   setup: [
     "Stand with the balls of your feet on the edge of the step, heels hanging off.",
     "Shoulders under the pads. Without a machine, hold a dumbbell in one hand and a support with the other.",
@@ -1026,6 +1353,16 @@ EX.hipthrust = {
   band: "medium",
   why: "The number on the bar grows fast on this lift because the movement is short. That is fine as long as you can hold the top for 1 second on each of {reps} reps. If you cannot pause there, it is too heavy.",
   cue: "Shoulders on the bench; push your hips up until your body is level.",
+  form: {
+    angles: [
+      ["Knees at the top", "bend", 90, "of bend", "A right angle, shins straight up and down. Feet too far away and the back of the thighs takes over; too close and the front does."],
+      ["Body at the top", "up", 0, "up from level with the floor", "Flat from shoulders to knees. Higher than that is the lower back arching."],
+    ],
+    grip: "Both hands on the bar just outside your hips for the whole set, so it cannot roll. A pad between the bar and your hips.",
+    feet: "Flat and shoulder-width apart, close enough that your shins are upright at the top. Push through the heels.",
+    range: "From hips low up until they are level with your shoulders and knees. Squeeze the glutes for 1 full second, then 2 seconds down.",
+    like: "Your body becomes a table: the bench under your shoulders and your shins are the legs, and hips, stomach and thighs are the flat top. Hold the table for a second.",
+  },
   setup: [
     "Sit on the floor with your upper back against the long side of a bench. With big plates, roll the bar over your legs into the crease of your hips; with an empty bar or small plates, lift it onto your hips. Put a pad under it.",
     "Feet flat and shoulder-width apart, close enough that your shins are upright at the top.",
@@ -1057,6 +1394,15 @@ EX.backExt = {
   why: "Your upper body is the weight. Do {reps} slow reps. Hold a plate against your chest only when every set reaches the top number.",
   next: "hold a 5 kg plate against your chest",
   cue: "Bend at the hips over the pad, then lift until your body is straight.",
+  form: {
+    angles: [
+      ["Hips", "bend", [80, 0, "move"], "of bend", "From folded forward with a stretch at the back of the thighs to one straight line from head to heels. Stop there: do not arch past straight."],
+    ],
+    grip: "Arms crossed on your chest. When bodyweight is easy, hug a plate against your chest.",
+    feet: "On the foot plate, turned out a little. The pad sits just below your hip bones, so you can fold freely at the hips.",
+    range: "Bend at the hips and lower your chest for 2–3 seconds until the back of the thighs stretches. Squeeze the glutes and rise until the body is straight, and no higher.",
+    like: "A slow, deep bow from the hips, and back up to standing straight. The glutes pull you up; the back only comes along.",
+  },
   setup: [
     "Set the pad just below your hip bones, so you can bend freely at the hips.",
     "Feet on the plate, turned out slightly. Cross your arms on your chest.",
@@ -1085,6 +1431,15 @@ EX.abduction = {
   band: "light",
   why: "A small muscle on the side of the hip. A heavy stack makes you rock and use momentum. Use a weight you can hold open for 1 second, {reps} times.",
   cue: "Push your knees apart as far as they go, then close slowly.",
+  form: {
+    angles: [
+      ["Lean", "lean", [10, 20], "forward from upright", "A small lean off the back pad puts more of the work on the glutes."],
+    ],
+    grip: "Hold the handles beside the seat so your hips stay at the back of it.",
+    feet: "On the footrests, pads on the outside of your knees. Push with the knees, not with the feet.",
+    range: "From knees together out as wide as the machine allows. Hold 1 second, then 3 seconds in without letting the plates touch.",
+    like: "Opening a heavy pair of sliding doors with your knees, holding them open for a second, and letting them close slowly.",
+  },
   setup: [
     "Sit with your hips right at the back of the seat and the pads on the outside of your knees.",
     "Lean your chest forward a little, off the back pad, and hold the handles.",
@@ -1116,6 +1471,15 @@ EX.hangraise = {
   why: "Your legs are the weight. Make it harder by straightening them, not by swinging faster.",
   next: "do it with straight legs; once that is easy too, raise your feet toward the bar",
   cue: "Hang from the bar and curl your hips up as you lift your knees.",
+  form: {
+    angles: [
+      ["Hips at the top", "bend", [100, 120], "of bend", "Past a right angle: your knees end higher than your hips and the lower back rounds a little."],
+      ["Body", "lean", 0, "from hanging straight down", "Still before every rep. If you swing, stop for a moment at the bottom."],
+    ],
+    grip: "Palms facing away, hands shoulder-width apart, thumbs wrapped round the bar. Padded arm supports are fine if your grip gives up first.",
+    range: "From a still hang with legs down, lift the knees and curl the hips up until the knees are above hip height. Then 2–3 seconds down, with no swing.",
+    like: "Your hips are a bucket of water. As the knees rise, tip the bucket so it would pour out behind you: the belt buckle turns up toward your chin.",
+  },
   setup: [
     "Hang from a pull-up bar, hands shoulder-width apart.",
     "Legs together, body still.",
@@ -1145,6 +1509,14 @@ EX.cablecrunch = {
   band: "light",
   why: "The stomach muscles curl the spine through a short distance. Too heavy and the hips and arms pull instead. Use a weight you can curl slowly {reps} times.",
   cue: "Kneel and curl your ribs down toward your hips.",
+  form: {
+    angles: [
+      ["Thighs", "lean", 0, "from straight up", "Upright for the whole set: the hips stay above your knees and do not sink back toward your heels."],
+    ],
+    grip: "The two rope ends held beside your ears, and they stay there. The arms only hold on; they do not pull.",
+    range: "From a tall, straight back with a stretch in the stomach, curl your ribs down toward your hips until the elbows are near your knees. Squeeze 1 second, 2–3 seconds up.",
+    like: "Rolling up a mat, starting from the head: the spine curls down one piece at a time. It is not a bow from the hips.",
+  },
   setup: [
     "Set the pulley at the top with a rope.",
     "Kneel facing the machine, one step away from it, and hold the two rope ends beside your ears.",
@@ -1173,6 +1545,16 @@ EX.pallof = {
   band: "light",
   why: "The job is to stay still while the cable tries to turn you. If your body twists, it is too heavy. {reps} slow presses on each side.",
   cue: "Press the handle straight out and do not let the cable turn you.",
+  form: {
+    angles: [
+      ["Stance", "turn", 90, "side-on to the cable", "The cable comes from straight out to your side, and your chest keeps pointing ahead."],
+      ["Arms at the finish", "bend", 0, "of bend", "Fully straight in front of the middle of your chest, held there for 2 seconds."],
+    ],
+    grip: "Both hands wrapped round one handle, one hand over the other, starting against the middle of your chest.",
+    feet: "Shoulder-width apart, knees soft, one step away from the machine so the cable pulls firmly.",
+    range: "From hands on your chest, press straight out until the arms are straight, hold 2 seconds, and bring them back. Nothing else moves.",
+    like: "Holding a door shut while someone pushes it from the side: your arms reach out in front and your body refuses to turn.",
+  },
   setup: [
     "Set the pulley at chest height with a single handle.",
     "Stand side-on to the machine, one step away, feet shoulder-width apart.",
@@ -1201,6 +1583,16 @@ EX.plank = {
   band: "hold",
   why: "No weight: you hold a position for time. Add seconds before you add anything else.",
   cue: "Hold one straight line from head to heels.",
+  form: {
+    angles: [
+      ["Elbows", "bend", 90, "of bend", "A right angle, directly under your shoulders, forearms flat on the floor."],
+      ["Hips", "bend", 0, "of bend", "One straight line from head to heels: hips level with your shoulders, not sagging and not raised."],
+    ],
+    grip: "Forearms flat and parallel on the floor, palms down or in fists, whichever is comfortable.",
+    feet: "Together, weight on the toes.",
+    range: "No movement: hold the straight line for the time shown and breathe slowly. The set ends when the hips start to drop or rise.",
+    like: "A wooden plank resting on two bricks: straight and stiff from end to end, with no dip in the middle.",
+  },
   setup: [
     "Forearms on the floor, elbows under your shoulders.",
     "Legs straight, feet together, weight on your forearms and toes.",

@@ -65,6 +65,20 @@ const GUIDE=[
     +row('heavy','up to 10 reps')+row('medium','about 8–15 reps')+row('light','about 10–20 reps')+row('body','your own weight')+row('hold','seconds')
     +'<p style="margin-top:12px">On the Strength plan the big barbell lifts go heavier still, 3 to 5 reps. Each exercise card says why that lift sits where it does.</p>';
  }},
+ {t:'Reading the angles on an exercise card', b:()=>{
+   const row=(k,d,t)=>'<div class="ang">'+dial(k,d)+'<div class="ang-t"><span class="ang-h"><b>'+t[0]+'</b></span><span class="ang-w">'+t[1]+'</span></div></div>';
+   return '<p>Every exercise card has a block called <b>Angles, grip and range</b>, above the logbook. Each angle has a small drawing: the <b>dashed line</b> is what the angle is measured from, and the <b>solid line</b> is where your body or the bench should be.</p>'
+    +'<p style="margin-top:10px">Three sizes are worth knowing by eye: <b>90°</b> is a right angle, the corner of a door. <b>45°</b> is half of that. <b>30°</b> is the gap between two neighbouring numbers on a clock face.</p>'
+    +'<div class="angs" style="margin-top:12px">'
+    +row('up',30,['Up from flat','A bench or your body, measured up from level. 0° is flat, 90° is fully upright.'])
+    +row('lean',15,['From upright','How far something tips over from straight up: a lean of the body, or toes turned out from straight ahead.'])
+    +row('out',45,['Out from your side','How far the upper arm is from hanging straight down. 0° is against your ribs, 90° is level with your shoulder.'])
+    +row('bend',90,['Bend at a joint','How far an elbow, a knee or the hips are bent. 0° is dead straight, 90° is a right angle.'])
+    +row('bend',[100,0,'move'],['A shaded band','A range: either anywhere between two numbers, or how far the joint travels during the rep.'])
+    +'</div>'
+    +'<p style="margin-top:12px">The numbers are guides, not laws. Bodies differ: if a position hurts, stop short of it. The line under each number says the same thing in plain words, and <b>Like</b> gives you a picture to hold in your head while you lift.</p>';
+ }},
+ {t:'Deload weeks: what they are and why', b:()=>deloadText()},
  {t:'Reading the trend, and when to change something', b:`
   <p>Judge on <b>two to three weeks</b>, never one week and never one morning.</p>
   <div class="tw" style="margin-top:10px"><table>

@@ -42,11 +42,15 @@ function nextLoad(ex,w){
 }
 /* A step lighter: a tenth off, to the nearest jump the equipment has, and never the
    weight you are already on. Under one jump there is nothing lighter to name. */
-function lighter(ex,w){
+function lighterKg(ex,w){                   // the number itself, or null when there is nothing lighter to name
   const st=+ex.step||2.5;
   let d=roundTo(w*0.9,st); if(d>=w) d=w-st;
   d=Math.round(d*100)/100;
-  if(d>0) return 'about '+(ex.load==='bw'?'+':'')+kg(d);
+  return d>0?d:null;
+}
+function lighter(ex,w){
+  const d=lighterKg(ex,w);
+  if(d!=null) return 'about '+(ex.load==='bw'?'+':'')+kg(d);
   return ex.load==='bw'?'bodyweight only':'the lightest setting';
 }
 function setText(ex,it,s){                 // one logged set, as the logbook prints it
@@ -131,12 +135,13 @@ function verdict(id,it){
 
   // ---- a deload session: nothing to beat, and it never becomes the reference
   if(dlToday){
-    const n=deloadSets(tgt);
-    let t='Deload: ';
+    const n=deloadSets(tgt), few=n+' sets'+(n<tgt?' instead of '+tgt:'');
+    const stop=(it.hold?', and end each hold well before it gets hard.':', and stop each set with about three reps left.')+' It should feel easy.';
+    let t='Deload week: ';
     if(ref){
       const w=workWeight(judged(ref,tgt));
-      t+=(w?lighter(ex,w)+' (lighter than last time), ':'')+n+' sets, stop three reps short of failure.';
-    }else t+='lighter than you could, '+n+' sets, stop three reps short of failure.';
+      t+=(w?lighter(ex,w)+' (lighter than last time), ':'')+few+stop;
+    }else t+='a weight that feels light, '+few+stop;
     if(todayE) t+=' · '+Math.min(nToday,n)+' of '+n+' sets done';
     return mk('none',t+(nToday>=n&&todayE?' — that is enough for today.':''));
   }

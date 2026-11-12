@@ -18,7 +18,7 @@ const PHASES=[
    gain:'Technique solid and the first small increases on the bar.'}},
  {n:2, name:'Overload', sub:'Weeks 5–8', w:[5,8], color:'ember',
   goal:'Now you push. Take sets to one or two reps before failure and add weight whenever the range is filled.',
-  train:['Main lifts one or two reps from failure; small lifts to the last clean rep.','Add the smallest jump as soon as every set reaches the top of the range.','Week 6 is a deload: about 10% lighter and one set fewer.'],
+  train:['Main lifts one or two reps from failure; small lifts to the last clean rep.','Add the smallest jump as soon as every set reaches the top of the range.','Week 6 is a deload, a planned easy week: about a tenth lighter and one set fewer.'],
   eat:{
    lose:['Hold the calorie target.','Put most of your carbs in the meals around training.','Weekends count: that is where a week is most often undone.'],
    hold:['Keep eating at your target.','Put most of your carbs in the meals around training.'],
@@ -30,7 +30,7 @@ const PHASES=[
    gain:'Weight creeping up slowly and clear increases in the logbook.'}},
  {n:3, name:'Refinement', sub:'Weeks 9–13', w:[9,13], color:'ember',
   goal:'Hold the heavy work, tidy the details, and finish strong.',
-  train:['Keep the main lifts heavy: that is what keeps your muscle.','On small lifts you may take the last set to failure.','Week 12 is a deload, then one hard final week.'],
+  train:['Keep the main lifts heavy: that is what keeps your muscle.','On small lifts you may take the last set to failure.','Week 12 is a deload, a planned easy week, then one hard final week.'],
   eat:{
    lose:['Hold the deficit. If you feel worn down, eat at maintenance for 3 to 7 days, then go back.','Watch the oil and ghee your food is cooked in: that is where calories hide.','Protein stays high.'],
    hold:['Keep doing what works.','Protein stays high.'],

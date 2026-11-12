@@ -6,6 +6,8 @@
    =================================================================== */
 /* the last set row cleared by hand, so a slip of the thumb can be put back: {id, i, set, popped, d} */
 let UNDO=null;
+/* the lift whose "Done with this lift" is waiting for an answer about rows filled in from last time and never ticked */
+let ASK=null;
 /* how this lift is prescribed in that slot (or its usual prescription when it is not in a plan) */
 function itemFor(id,ref){
   const sl=ref?slotAt(ref):null;
@@ -48,15 +50,21 @@ function logger(id,ref){
       +'<button class="ok" data-ok="'+i+'" aria-label="Set '+(i+1)+' done, start rest">✓</button>'
       +'<button class="del" data-del="'+i+'" aria-label="Clear set '+(i+1)+'">×</button></div>';
   }
-  const prev=prevSession(id), vd=safeVerdict(id,it), dlNow=draft?!!draft.dl:isDeload(), anyPre=cur.some(planned);
+  const prev=prevSession(id), vd=safeVerdict(id,it), dlNow=draft?!!draft.dl:isDeload(), nPre=cur.filter(planned).length;
+  // In a deload week the chip says whether this lift is being logged as a deload session, and turns it off or on.
+  const chip=dlNow?'<button class="dlchip on" data-dl aria-pressed="true">Deload: on</button>'
+    :(isDeload()?'<button class="dlchip" data-dl aria-pressed="false">Deload: off</button>':'');
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
-    +'<div class="lh"><b>Logbook</b>'+((draft?draft.dl:isDeload())?'<button class="dlchip on" data-dl aria-pressed="true" title="A lighter session that is not used as your reference. Tap if you trained normally.">Deload</button>':(isDeload()?'<button class="dlchip" data-dl aria-pressed="false" title="Mark this as a deload session">Deload</button>':''))+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
+    +'<div class="lh"><b>Logbook</b>'+chip+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
+    +(dlNow?'<p class="dlnote">Deload session: lighter on purpose, and not a number to beat next week. <button class="lkbtn" data-dlwhy>What is this?</button></p>':'')
     +'<div class="sets">'+rows+'</div>'
-    +(anyPre?'<p class="prenote">Filled in from last time. Tick each set when it is done, or type what you did. Rows left like this are not counted.</p>':'')
+    +(nPre&&ASK!==id?'<p class="prenote">Filled in from last time'+(dlNow?', a step lighter and with one set fewer for the deload':'')+'. Tick each set as you do it, or type over it.</p>':'')
+    +(nPre&&ASK===id?'<div class="askbar"><span>'+(nPre===1?'1 set is':nPre+' sets are')+' filled in from last time and not ticked. Did you do '+(nPre===1?'it':'them')+'?</span>'
+      +'<span class="ask-b"><button class="btn sm primary" data-askyes>Yes, count '+(nPre===1?'it':'them')+'</button><button class="btn sm" data-askno>No, clear '+(nPre===1?'it':'them')+'</button></span></div>':'')
     +(UNDO&&UNDO.id===id&&UNDO.d===TODAY?'<div class="undobar"><span>Set '+(UNDO.i+1)+' cleared.</span><button class="btn sm" data-undo>Undo</button></div>':'')
     +restPanel(id,ref)
     +'<div class="lf"><button class="btn sm" data-addset>+ Set</button>'
-    +(prev&&!dlNow?'<button class="btn sm" data-repeat>Same as last time</button>':'')
+    +(prev?'<button class="btn sm" data-repeat>Same as last time'+(dlNow?', lighter':'')+'</button>':'')
     +'<button class="btn sm primary" data-savelog>Done with this lift</button></div>'
     +'<div class="verdict '+vd.cls+'"><span class="ic">'+vd.ic+'</span><span>'+esc(vd.txt)+'</span></div>'
     +'</div>';

@@ -78,7 +78,24 @@ document.addEventListener('click',e=>{
     save(); return;
   }
   if(T.closest('[data-hidehelp]')){ S.ui.helpSeen=1; save(); renderHelp(); return; }
-  if(T.closest('[data-hidenew]')){ S.ui.from=2; save(); renderHelp(); return; }
+  if(T.closest('[data-hidenew]')){ S.ui.from=2; S.ui.news=NEWS; save(); renderHelp(); return; }
+  if(T.closest('[data-hidenews]')){ S.ui.news=NEWS; save(); renderHelp(); return; }
+  /* ---- deload weeks: the explanation, "Got it", and training normally instead ---- */
+  const dlBtn=T.closest('[data-dlok],[data-dlskip],[data-dlback]');
+  if(dlBtn){
+    const info=infoForDate(TODAY), wk=info?info.week:0;
+    if(DELOAD_WEEKS.indexOf(wk)>=0){
+      if(dlBtn.hasAttribute('data-dlok')) dlMark('seen',wk,true);
+      else{ setDeloadSkipped(wk,dlBtn.hasAttribute('data-dlskip')); dlMark('seen',wk,true); }
+      save();
+      if(sheet.classList.contains('on')) closeSheet();
+      // on Train the open logbooks are redrawn where they stand (a rebuilt list would close the card in use)
+      if(currentTab==='train'){ const seen={}; $$('.logger').forEach(b=>{ const k=b.dataset.log; if(!seen[k]){ seen[k]=1; refreshLogger(k); } }); }
+      else refreshTab();
+    }
+    return;
+  }
+  if(T.closest('[data-dlwhy]')){ deloadSheet(); return; }
   if(T.closest('[data-newblock]')){ planSheet(true); return; }
   const cond=T.closest('[data-cond]');
   if(cond){ logCond(cond.dataset.cond); renderCond(); return; }
@@ -100,6 +117,16 @@ document.addEventListener('click',e=>{
   const dayBtn=T.closest('[data-day]');
   if(dayBtn){ daySheet(+dayBtn.dataset.day); return; }
 
+  const fold=T.closest('details.formnotes>summary');
+  if(fold){
+    // folded or opened by hand: remembered, and every card on screen follows.
+    // The click comes before the fold moves, so the state it is about to leave is the one read here.
+    const off=fold.parentNode.open;
+    if(off) S.ui.formOff=1; else delete S.ui.formOff;
+    save();
+    $$('details.formnotes').forEach(d=>{ if(d!==fold.parentNode) d.open=!off; });
+    return;
+  }
   const exh=T.closest('.ex-h');
   if(exh){
     const card=exh.closest('.ex'), id=card.dataset.ex, body=$('.ex-b',card);
@@ -164,15 +191,27 @@ document.addEventListener('click',e=>{
   const box=T.closest('.logger');
   if(box){
     const id=box.dataset.log, ref=box.dataset.ref, it=itemFor(id,ref);
+    if(T.closest('[data-dlwhy]')){ deloadSheet(); return; }
+    // the question about unticked rows stands only until the logbook is used for something else
+    if(ASK===id&&!T.closest('[data-askyes],[data-askno],[data-savelog]')) ASK=null;
     if(T.closest('[data-repeat]')){
       const prev=prevSession(id);
       if(prev){
-        const en=upsert(id,it);
+        const en=upsert(id,it), dl=!!en.dl, ex=EX[id];
+        let left=dl?deloadSets(setsWanted(it)):Infinity;      // a deload session takes one set fewer
         prev.sets.forEach((s,i)=>{
-          if(blankSet(s)) return;
+          if(blankSet(s)||left<=0) return;
+          left--;
           while(en.sets.length<=i) en.sets.push({});
           if(!blankSet(en.sets[i])) return;            // never touch a row that already holds something
-          const o={pre:1}; if(s.w!=null) o.w=s.w; if(s.r!=null) o.r=s.r; en.sets[i]=o;      // a plan until it is ticked or changed
+          const o={pre:1};                             // a plan until it is ticked or changed
+          if(s.w!=null){
+            // on a deload day the weight is a step lighter; with nothing lighter to name, a loaded lift keeps its weight and a bodyweight lift drops the extra
+            const lw=dl?lighterKg(ex,+s.w):+s.w;
+            if(lw!=null) o.w=lw; else if(ex.load!=='bw') o.w=s.w;
+          }
+          if(s.r!=null) o.r=s.r;
+          en.sets[i]=o;
         });
         syncSession(); save(); refreshLogger(id);
       }
@@ -234,11 +273,21 @@ document.addEventListener('click',e=>{
       }
       refreshLogger(id); return;
     }
-    const savelog=T.closest('[data-savelog]');
-    if(savelog){
+    const savelog=T.closest('[data-savelog]'), yes=T.closest('[data-askyes]'), no=T.closest('[data-askno]');
+    if(savelog||yes||no){
       const en=upsert(id,it);
       if(UNDO&&UNDO.id===id) UNDO=null;
-      en.sets=en.sets.map(s=>planned(s)?{}:s);               // rows filled in from last time and never done are not sets
+      // Rows filled in from last time and never ticked: were they done? The app cannot know, so it asks
+      // once instead of counting them or throwing them away in silence.
+      if(savelog&&en.sets.some(planned)){
+        ASK=id; save(); refreshLogger(id);
+        const bar=$('.logger[data-log="'+id+'"][data-ref="'+ref+'"] .askbar');
+        if(bar&&bar.scrollIntoView) bar.scrollIntoView({block:'nearest'});
+        return;
+      }
+      ASK=null;
+      if(yes) en.sets.forEach(s=>{ if(planned(s)){ delete s.pre; s.done=1; } });
+      else en.sets=en.sets.map(s=>planned(s)?{}:s);          // "No": they were a plan, not sets
       // Trim only blank rows off the END. Filtering the whole array renumbered
       // the sets, so skipping set 2 silently turned set 3 into set 2.
       let n=en.sets.length;
