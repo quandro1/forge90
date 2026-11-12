@@ -152,6 +152,8 @@ function normalize(p){
     if(d.off.length||d.seen.length) s.ui.dl=d;
   }
   if(numIn(u.news,1,99,null)!=null) s.ui.news=+u.news;       // the last "what changed" note that was read
+  if(numIn(u.bk,1,1e15,null)!=null) s.ui.bk=+u.bk;           // when a backup was last made from this copy (sent or saved as a file)
+  if(isDate(u.bkLater)) s.ui.bkLater=u.bkLater;              // the day "Later" was tapped on the backup reminder
   // plan history: which plan was in force from which date, so a change never re-judges the past
   s.plans=(Array.isArray(p.plans)?p.plans:[]).filter(x=>isObj(x)&&isDate(x.from)&&typeof x.program==='string'&&safeKey(x.program)
       &&PROGRAMS[x.program]&&PROGRAMS[x.program].variants[x.dpw]&&validDays(x.days,PROGRAMS[x.program].variants[x.dpw].sessions.length))

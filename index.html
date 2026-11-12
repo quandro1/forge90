@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
-<meta name="forge-build" content="dae6f68b8d">
+<meta name="forge-build" content="66e53172ab">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0D1317">
 <meta name="mobile-web-app-capable" content="yes">
@@ -321,6 +321,23 @@ svg{display:block}
 .mz{fill:var(--zone-off)}
 .mz.on{fill:var(--ember)}
 .mz.sec{fill:var(--zone-sec); stroke:var(--ember); stroke-width:1.1px; stroke-linejoin:round; vector-effect:non-scaling-stroke}
+/* Muscles this week (Progress): one colour in three steps, more sets further from grey */
+:root{--zone-v1:color-mix(in srgb,var(--ember) 50%,var(--zone-off)); --zone-v2:color-mix(in srgb,var(--ember) 76%,var(--zone-off))}
+.mz.v1{fill:var(--zone-v1)} .mz.v2{fill:var(--zone-v2)} .mz.v3{fill:var(--ember)}
+#muscleWeek:empty{display:none}
+.maps.mw{margin-top:0}
+.mw-key{flex-wrap:wrap; gap:6px 14px; letter-spacing:.1em}
+.mw-key .k{background:var(--zone-off)} .mw-key .k.v1{background:var(--zone-v1)} .mw-key .k.v2{background:var(--zone-v2)} .mw-key .k.v3{background:var(--ember)}
+.mw-line{font-size:13px; color:var(--text-dim); margin-top:11px; line-height:1.5}
+.mw-line b{color:var(--text)}
+details.mw-all{margin-top:11px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
+details.mw-all>summary{padding:10px 12px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); min-height:44px}
+details.mw-all>summary .how-t{flex:1}
+.mw-list{padding:4px 12px 12px; display:flex; flex-direction:column; gap:9px}
+.mw-row{display:grid; grid-template-columns:92px 1fr auto; gap:10px; align-items:center; font-size:13px; color:var(--text-dim)}
+.mw-row .pbar{margin:0}
+.mw-v{font-size:12px; color:var(--text); white-space:nowrap; min-width:58px; text-align:right}
+.mw-note{font-size:12px; color:var(--text-faint); line-height:1.45; margin-top:4px}
 
 /* ============ HOW TO DO IT (the written guide inside a card) ============ */
 details.how{margin-top:12px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
@@ -365,7 +382,7 @@ details.formnotes>summary .how-t{flex:1}
 @media (prefers-reduced-motion:reduce){.dial .d-swing{animation:none}}
 
 /* ============ DELOAD WEEKS, IN WORDS ============ */
-#helpCard:empty,#dlCard:empty{display:none}
+#helpCard:empty,#dlCard:empty,#bkCard:empty{display:none}
 .lkbtn{display:inline; padding:0; border:none; background:none; font:inherit; color:var(--steel); text-decoration:underline; text-underline-offset:3px; cursor:pointer}
 .lkbtn:hover{color:var(--ember)}
 .dlline{font-size:13px; color:var(--text-dim); line-height:1.5; padding:0 2px}
@@ -459,6 +476,30 @@ details.formnotes>summary .how-t{flex:1}
 .logger .lh{display:flex; align-items:center; gap:8px; padding:9px 11px; background:var(--raised); border-bottom:1px solid var(--line)}
 .logger .lh b{font-family:var(--font-d); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--text-dim)}
 .logger .lh .last{margin-left:auto; font-family:var(--font-m); font-size:11px; color:var(--text-faint)}
+/* "last time" is a button into the lift's history when there is one */
+.logger .lh .lasth{margin-left:auto; min-width:0; min-height:30px; padding:3px 0; line-height:1.45; text-align:right}
+.logger .lh .lasth .last{margin-left:0}
+.logger .lh .lasth .more{font-family:var(--font-m); font-size:11px; color:var(--steel); text-decoration:underline; text-underline-offset:3px; white-space:nowrap; margin-left:4px}
+/* a set today that beats every earlier session */
+.pbline{margin:-2px 11px 10px; padding:7px 10px; border-radius:8px; font-size:12.5px; line-height:1.45; color:var(--good);
+  background:color-mix(in srgb,var(--good) 11%,transparent); border:1px solid color-mix(in srgb,var(--good) 42%,transparent)}
+.pbline b{font-weight:700}
+.pbline .was{color:var(--text-dim); margin-left:8px; white-space:nowrap}
+.pbline.fresh{animation:pbpop .9s ease-out 1}
+@keyframes pbpop{0%{transform:scale(.96); box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent)}45%{transform:scale(1.015)}100%{transform:none; box-shadow:0 0 0 10px transparent}}
+/* the history sheet of a lift */
+.hist-s{font-size:14px; line-height:1.5; margin-bottom:6px}
+.hist-s.dim{font-size:13px; color:var(--text-dim)}
+.hist-c{margin-top:14px}
+.hist-r{font-size:13px; color:var(--text); margin-bottom:6px; min-height:19px}
+.hist-n{font-size:12px; color:var(--text-faint); margin-top:8px; line-height:1.4}
+.lchart .trend{stroke-width:2}
+.lchart .pt{fill:var(--ember); stroke:var(--surface); stroke-width:2}
+.lchart .pt.dl{fill:var(--surface); stroke:var(--steel-dim); stroke-width:2}
+.lchart .pt.sel{stroke:var(--text)}
+.lchart .hit{fill:transparent; cursor:pointer}
+.lchart .hit:focus-visible{outline:none; stroke:var(--ember); stroke-width:1.5}
+.lc-t{font-family:var(--font-m); font-size:10px; fill:var(--text-faint)}
 .sets{display:flex; flex-direction:column; gap:6px; padding:10px 11px}
 .setrow{display:grid; grid-template-columns:16px minmax(0,1fr) minmax(0,1fr) 48px 40px; gap:6px; align-items:center}
 .setrow .sn{font-family:var(--font-m); font-size:11.5px; color:var(--text-faint)}
@@ -741,6 +782,7 @@ if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)
       <div class="readout" id="ro-today"></div>
       <div id="sessionCard"></div>
       <div id="dlCard"></div>
+      <div id="bkCard"></div>
       <div class="card">
         <div class="card-h"><h3>Non-negotiables</h3><span class="pill" id="chkCount">0 / 7</span></div>
         <div class="checks" id="checklist"></div>
@@ -878,6 +920,7 @@ if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)
         <p style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">Every two weeks, in the morning, relaxed. Waist at the navel is the best single sign of fat loss or gain: it moves when the scale does not.</p>
         <div class="tw" id="measTable"></div>
       </div>
+      <div id="muscleWeek"></div>
       <div class="card">
         <div class="card-h"><h3>Strength log</h3><span class="pill" id="prCount">0 lifts</span></div>
         <p style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">Pulled from your session logs. Best set = heaviest weight you've recorded on that lift.</p>
@@ -1039,18 +1082,22 @@ m:[
    the forearm and the calf can be seen from both sides). */
 const FRONT_ZONES={uchest:1,chest:1,fdelt:1,sdelt:1,biceps:1,forearm:1,abs:1,obliques:1,quads:1,fcalf:1};
 const BACK_ZONES={traps:1,rdelt:1,lats:1,midback:1,lowerback:1,triceps:1,glutes:1,hams:1,bcalf:1};
-/* prim zones are drawn strong, sec zones outlined; every other muscle stays part of the grey figure */
-function muscleMap(side, prim, sec){
+/* One figure. `mark(zones)` says how a shape is drawn: '' (grey), or the class that lights it. */
+function bodyFigure(side, mark){
   const view = side === 'back' ? 'back' : 'front', v = BODY[view];
-  prim = prim || []; sec = sec || [];
-  const any = (list, zs) => zs.some(z => list.indexOf(z) >= 0);
   let h = '<svg class="body" data-view="' + view + '" viewBox="' + BODY_VB + '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">'
     + '<path class="silo" d="' + v.o + '"/>';
   v.m.forEach(m => {
-    const zs = m[0] ? m[0].split(' ') : [];
-    h += '<path class="mz' + (any(prim, zs) ? ' on' : any(sec, zs) ? ' sec' : '') + '"' + (m[0] ? ' data-z="' + m[0] + '"' : '') + ' d="' + m[1] + '"/>';
+    const c = m[0] ? mark(m[0].split(' ')) : '';
+    h += '<path class="mz' + (c ? ' ' + c : '') + '"' + (m[0] ? ' data-z="' + m[0] + '"' : '') + ' d="' + m[1] + '"/>';
   });
   return h + '</svg>';
+}
+/* a lift's muscles: prim zones are filled, sec zones outlined; every other muscle stays part of the grey figure */
+function muscleMap(side, prim, sec){
+  prim = prim || []; sec = sec || [];
+  const any = (list, zs) => zs.some(z => list.indexOf(z) >= 0);
+  return bodyFigure(side, zs => any(prim, zs) ? 'on' : any(sec, zs) ? 'sec' : '');
 }
 const ZN={uchest:'Upper chest',chest:'Chest',fdelt:'Front delts',sdelt:'Side delts',biceps:'Biceps',forearm:'Forearms',abs:'Abs',obliques:'Obliques',quads:'Quads',fcalf:'Shins',traps:'Traps',rdelt:'Rear delts',lats:'Lats',midback:'Mid-back',lowerback:'Lower back',triceps:'Triceps',glutes:'Glutes',hams:'Hamstrings',bcalf:'Calves'};
 /* ===================================================================
@@ -3450,7 +3497,7 @@ const daysBetween=(a,b)=>Math.round((parseISO(iso(b))-parseISO(iso(a)))/86400000
 function segSync(){ $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('on')))); }
 const BLOCK_DAYS=91;                        // a block is thirteen weeks
 const DELOAD_WEEKS=[6,12];                  // the two planned easy weeks of a block
-const NEWS=2;                               // the number of the latest "what changed" note on Today (raise it when one is added to NEWS_NOTES)
+const NEWS=3;                             // the number of the latest "what changed" note on Today (raise it when one is added to NEWS_NOTES)
 const DAY_ROLL_H=3;
 const dayOf=d=>iso(new Date(d.getTime()-DAY_ROLL_H*3600000));
 const TODAY=dayOf(new Date());
@@ -3620,6 +3667,8 @@ function normalize(p){
     if(d.off.length||d.seen.length) s.ui.dl=d;
   }
   if(numIn(u.news,1,99,null)!=null) s.ui.news=+u.news;       // the last "what changed" note that was read
+  if(numIn(u.bk,1,1e15,null)!=null) s.ui.bk=+u.bk;           // when a backup was last made from this copy (sent or saved as a file)
+  if(isDate(u.bkLater)) s.ui.bkLater=u.bkLater;              // the day "Later" was tapped on the backup reminder
   // plan history: which plan was in force from which date, so a change never re-judges the past
   s.plans=(Array.isArray(p.plans)?p.plans:[]).filter(x=>isObj(x)&&isDate(x.from)&&typeof x.program==='string'&&safeKey(x.program)
       &&PROGRAMS[x.program]&&PROGRAMS[x.program].variants[x.dpw]&&validDays(x.days,PROGRAMS[x.program].variants[x.dpw].sessions.length))
@@ -4336,6 +4385,7 @@ function renderToday(){
   }
   $('#sessionCard').innerHTML=sc;
   $('#dlCard').innerHTML=deloadCard(started&&!done?info:null);
+  renderBackupCard();
 
   renderChecklist();
 
@@ -4378,6 +4428,37 @@ function deloadCard(info){
     +'<p class="dl-p">It clears the tiredness that builds up over weeks of training and gives your tendons and joints a rest, so you start the next weeks fresh. You do not lose muscle in one lighter week.</p>'
     +'<div class="dl-b"><button class="btn sm" data-dlwhy>More about this</button><button class="btn sm" data-dlskip>Train normally this week</button></div></div>';
 }
+/* ---- the backup reminder ---------------------------------------------
+   Outside claude.ai the log exists on this phone only. Once there is a week of it, Today asks for a backup
+   when none was made for two weeks. "Later" keeps the card away for a week; a backup, for two. */
+const BK_EVERY=14, BK_LATER=7, BK_AFTER=7;
+function firstLogged(){                      // the earliest day anything was logged, or null
+  let d=null; const see=x=>{ if(isDate(x)&&(d==null||x<d)) d=x; };
+  for(const id in S.logs) if(S.logs[id].length) see(S.logs[id][0].d);
+  Object.keys(S.weights).forEach(see); Object.keys(S.checks).forEach(see);
+  return d;
+}
+function backupDue(){
+  if(CLOUD.doc||CLOUD.status==='connecting'||!S.profile.setup) return false;     // inside claude.ai the account holds a copy
+  const first=firstLogged();
+  if(!first||daysBetween(parseISO(first),parseISO(TODAY))<BK_AFTER) return false;
+  const age=backupAge();
+  if(age!=null&&age<BK_EVERY) return false;
+  if(isDate(S.ui.bkLater)&&daysBetween(parseISO(S.ui.bkLater),parseISO(TODAY))<BK_LATER) return false;
+  return true;
+}
+function renderBackupCard(){
+  const el=$('#bkCard'); if(!el) return;
+  if(!backupDue()){ el.innerHTML=''; return; }
+  const age=backupAge();
+  el.innerHTML='<div class="card help"><div class="card-h"><h3>Back up your log</h3><button class="btn sm" data-bklater>Later</button></div>'
+    +'<p class="dl-p">'+(age==null?'Everything you have logged is stored <b>only on this phone</b>.'
+        :'Your last backup was <b>'+age+' days ago</b>. What you logged since then is stored only on this phone.')
+    +' If the phone is lost or the browser\'s data is cleared, it is gone.</p>'
+    +'<p class="dl-p">'+(canShareFiles()?'One tap sends a copy to WhatsApp, Gmail or Drive.'
+        :'One tap saves a copy as a file. Then send that file to yourself on WhatsApp or Gmail, or put it in Drive, so it is not only on this phone.')+'</p>'
+    +'<button class="btn primary wide" data-bknow style="margin-top:11px">Back up now</button></div>';
+}
 function chkButton(x,on,attr){
   return '<button class="chk" '+attr+' aria-pressed="'+!!on+'">'
     +'<span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(x.l)+'</span><span class="hint">'+esc(x.h)+'</span></button>';
@@ -4400,6 +4481,11 @@ const NEWS_NOTES={
   2:[
     '<b>A real body shows the muscles.</b> Open a lift, then "How to do it": the muscles that work are lit on a drawing of a real body. A filled muscle does most of the work. An outlined muscle helps.',
     '<b>Clearer angle drawings.</b> Small notches mark 30°, 45°, 60° and 90°. A grey line with a cross shows a common mistake next to the right position. Where a joint moves, the line swings from the start to the finish.'
+  ],
+  3:[
+    '<b>Back up in one tap.</b> Your log is stored on this phone only. In Settings (the cog at the top), "Back up now" sends a copy to WhatsApp, Gmail or Drive, and Restore reads it back.',
+    '<b>A history for every lift.</b> In a logbook, tap History beside last time\'s sets: your best set, a graph and every session. When a set beats your best, the logbook says "New best".',
+    '<b>Muscles this week.</b> Progress shows how many sets each muscle has had this week, on the body, and which muscles are still to come.'
   ]
 };
 function renderHelp(){
@@ -4878,9 +4964,13 @@ function logger(id,ref){
   const chip=dlNow?'<button class="dlchip on" data-dl aria-pressed="true">Deload: on</button>'
     :(isDeload()?'<button class="dlchip" data-dl aria-pressed="false">Deload: off</button>':'');
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
-    +'<div class="lh"><b>Logbook</b>'+chip+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
+    // "last time" is also the way into the lift's history (best set, graph, every session)
+    +'<div class="lh"><b>Logbook</b>'+chip+(prev
+        ?'<button class="lasth" data-hist="'+id+'" aria-label="History of this lift"><span class="last">last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  ')+'</span> <span class="more">History ›</span></button>'
+        :'<span class="last">no history yet</span>')+'</div>'
     +(dlNow?'<p class="dlnote">Deload session: easier on purpose. Next week\'s target comes from your last normal session, not from this one. <button class="lkbtn" data-dlwhy>What is this?</button></p>':'')
     +'<div class="sets">'+rows+'</div>'
+    +pbLine(id)
     +(nPre&&ASK!==id?'<p class="prenote">Filled in from last time'+(dlNow?' and made easier for the deload week':'')+'. Tick each set as you do it, or type over it.</p>':'')
     +(nPre&&ASK===id?'<div class="askbar" role="alert" tabindex="-1"><span>'+(nPre===1?'1 set is':nPre+' sets are')+' filled in from last time and not ticked. Did you do '+(nPre===1?'it':'them')+'?</span>'
       +'<span class="ask-b"><button class="btn sm primary" data-askyes>Yes, count '+(nPre===1?'it':'them')+'</button><button class="btn sm" data-askno>No, clear '+(nPre===1?'it':'them')+'</button></span></div>':'')
@@ -5080,6 +5170,181 @@ function scrollToRest(){
     if(p) p.scrollIntoView({behavior:'smooth',block:'center'});
   };
   if(currentTab!=='train'){ setTab('train'); setTimeout(go,80); } else go();
+}
+/* ===================================================================
+   A LIFT'S HISTORY, AND "NEW BEST"
+   Every lift has a history sheet: its best set, a graph of the best set of each session, and every session
+   as it was logged. It opens from the logbook's "last time" line and from the Strength log in Progress.
+
+   One rule decides what "best" means everywhere: the best set of a session is the heaviest, then the most
+   reps at that weight (bestSet). The Strength log, this sheet and the "New best" line all use it, so two
+   screens can never name different bests.
+   =================================================================== */
+function betterSet(a,b){ return !b||a.w>b.w||(a.w===b.w&&a.r>b.r); }
+function bestText(id,b){
+  const hold=EX[id].load==='time';
+  return b.w>0?b.w+' kg × '+b.r+(hold?' s':''):(hold?b.r+' s':'BW × '+b.r);
+}
+/* the sessions of a lift that have a best set, oldest first */
+function liftSessions(id){
+  return (S.logs[id]||[]).filter(e=>bestSet(e)).map(e=>({d:e.d, dl:!!e.dl, best:bestSet(e), e:e}));
+}
+/* Today's best set, when it beats the best set of every earlier session: {now, was}. Otherwise null.
+   A lift's first session is not a "new best": there is nothing to beat yet. */
+function newBestToday(id){
+  const all=liftSessions(id), now=all.find(x=>x.d===TODAY), past=all.filter(x=>x.d<TODAY);
+  if(!now||!past.length) return null;
+  let was=null; past.forEach(x=>{ if(betterSet(x.best,was)) was=x.best; });
+  return betterSet(now.best,was)?{now:now.best, was:was}:null;
+}
+/* the logbook must draw and the rest must start whatever happens here, so these two never throw */
+function pbKey(id){ try{ const p=newBestToday(id); return p?p.now.w+'x'+p.now.r:''; }catch(e){ return ''; } }
+let PB_FLASH=null;                           // the lift whose "New best" line has just appeared or changed: it pops once
+function pbLine(id){
+  try{
+    const p=newBestToday(id); if(!p) return '';
+    return '<p class="pbline'+(PB_FLASH===id?' fresh':'')+'" role="status"><span aria-hidden="true">★</span> <b>New best: '+esc(bestText(id,p.now))+'</b>'
+      +'<span class="was">before: '+esc(bestText(id,p.was))+'</span></p>';
+  }catch(e){ return ''; }
+}
+/* A rough estimate of the heaviest single from one set (Epley: weight × (1 + reps/30)). Only for sets of
+   10 reps or fewer, where such formulas hold up; it is shown as a sentence with its warning, never as a target. */
+function est1(b){ return (b&&b.w>0&&b.r>=1&&b.r<=10)?Math.round(b.w*(b.r>1?1+b.r/30:1)*2)/2:null; }
+
+let HIST=null;                               // what the open history sheet shows: {id, all, usesW}
+function histValue(x){ return HIST.usesW?x.best.w:x.best.r; }
+function histReadText(x){ return fmtDate(x.d)+' · '+bestText(HIST.id,x.best)+(x.dl?' · deload week':''); }
+function histRead(i){
+  const el=$('#histRead'); if(!el||!HIST||!HIST.all[i]) return;
+  el.textContent=histReadText(HIST.all[i]);
+  $$('#sheetBody .lchart .pt').forEach((c,k)=>c.classList.toggle('sel',k===i));
+}
+function historySheet(id){
+  const ex=EX[id]; if(!ex) return;
+  const all=liftSessions(id); if(!all.length) return;
+  const hold=ex.load==='time', usesW=all.some(x=>x.best.w>0), it=Object.assign({ex:id},ex.typ);
+  let best=null, bestAt=null; all.forEach(x=>{ if(betterSet(x.best,best)){ best=x.best; bestAt=x.d; } });
+  const e1=hold?null:est1(best);
+  HIST={id:id, all:all, usesW:usesW};
+  let h='<p class="hist-s"><b>Best so far: '+esc(bestText(id,best))+'</b>, on '+fmtDate(bestAt)+'.</p>';
+  if(all.length>1) h+='<p class="hist-s dim">First session: '+esc(bestText(id,all[0].best))+', on '+fmtDate(all[0].d)+'.</p>';
+  if(e1) h+='<p class="hist-s dim">Estimated best single: about '+e1+' kg. Worked out from that set, as a rough guide to how your strength is moving. It is not a weight to try.</p>';
+  if(all.length>1){
+    h+='<div class="card hist-c"><div class="card-h"><h3>Best set of each session</h3><span class="pill">'+(usesW?'kg':hold?'seconds':'reps')+'</span></div>'
+      +'<p class="hist-r num" id="histRead">'+esc(histReadText(all[all.length-1]))+'</p>'
+      +liftChart(id,all,usesW,hold)
+      +'<p class="hist-n">Tap a point to read that session.'+(all.some(x=>x.dl)?' A hollow point is a deload week: easier on purpose.':'')+'</p></div>';
+  }else h+='<p class="hist-s dim">One session so far. The graph starts with the second.</p>';
+  h+='<div class="eyebrow" style="margin:16px 0 7px">Every session</div><div class="tw"><table><thead><tr><th>Date</th><th>Sets</th></tr></thead><tbody>'
+    +all.slice().reverse().map(x=>'<tr><td>'+fmtDate(x.d)+(x.dl?' <span class="pill">Deload</span>':'')+'</td><td class="num">'
+      +loggedSets(x.e).map(s=>esc(setText(ex,it,s))).join('&nbsp; ')+'</td></tr>').join('')
+    +'</tbody></table></div>';
+  openSheet('History · '+ex.name,h);
+  if(all.length>1) histRead(all.length-1);
+}
+/* One line, one colour: the best set of each session over time. Normal sessions are joined; a deload session
+   is a hollow point off the line, since it is easier on purpose. Drawn at about one unit to a pixel on a
+   phone, so the points (9 px), their tap areas (26 px) and the labels (10 px) keep their size. */
+function liftChart(id,all,usesW,hold){
+  const W=340,H=176,PL=30,PR=14,PT=16,PB=22;
+  const val=x=>usesW?x.best.w:x.best.r, t=x=>parseISO(x.d).getTime();
+  const x0=t(all[0]), x1=t(all[all.length-1]);
+  let lo=Math.min.apply(null,all.map(val)), hi=Math.max.apply(null,all.map(val));
+  const pad=Math.max(usesW?2.5:1,(hi-lo)*0.18); lo=Math.max(0,lo-pad); hi+=pad;
+  const steps=[0.5,1,2,2.5,5,10,20,25,50,100,200];
+  let step=steps[steps.length-1];
+  for(let i=0;i<steps.length;i++){ if((hi-lo)/steps[i]<=4){ step=steps[i]; break; } }
+  lo=Math.floor(lo/step)*step; hi=Math.ceil(hi/step)*step; if(hi===lo) hi=lo+step;
+  // the first and last points sit a little inside the plot, clear of the numbers on the left
+  const X=v=>PL+8+(x1===x0?0.5:(v-x0)/(x1-x0))*(W-PL-PR-16), Y=v=>PT+(1-(v-lo)/(hi-lo))*(H-PT-PB);
+  const f=n=>n.toFixed(1), dec=step<1?1:0;
+  let g='';
+  for(let v=lo; v<=hi+1e-9; v+=step){
+    const y=f(Y(v));
+    g+='<line class="grid-l" x1="'+PL+'" y1="'+y+'" x2="'+(W-PR)+'" y2="'+y+'"/><text class="lc-t" x="'+(PL-5)+'" y="'+(+y+3.5)+'" text-anchor="end">'+v.toFixed(dec)+'</text>';
+  }
+  const normal=all.filter(x=>!x.dl);
+  const line=normal.length>1?'<path class="trend" d="'+normal.map((x,i)=>(i?'L':'M')+f(X(t(x)))+' '+f(Y(val(x)))).join(' ')+'"/>':'';
+  const pts=all.map(x=>'<circle class="pt'+(x.dl?' dl':'')+'" cx="'+f(X(t(x)))+'" cy="'+f(Y(val(x)))+'" r="4.5"/>').join('');
+  // the tap area of a point is bigger than the point: 26 px across
+  const hits=all.map((x,i)=>'<circle class="hit" data-pt="'+i+'" tabindex="0" role="button" aria-label="'+esc(histReadTextFor(id,x))+'" cx="'+f(X(t(x)))+'" cy="'+f(Y(val(x)))+'" r="13"/>').join('');
+  return '<svg class="chart lchart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc('Best set of each '+EX[id].name+' session, in '+(usesW?'kilograms':hold?'seconds':'reps'))+'">'
+    +g+line+pts+hits
+    +'<text class="lc-t" x="'+PL+'" y="'+(H-6)+'">'+fmtDate(all[0].d)+'</text>'
+    +'<text class="lc-t" x="'+(W-PR)+'" y="'+(H-6)+'" text-anchor="end">'+fmtDate(all[all.length-1].d)+'</text></svg>';
+}
+function histReadTextFor(id,x){ return fmtDate(x.d)+': '+bestText(id,x.best)+(x.dl?', deload week':''); }
+document.addEventListener('keydown',e=>{            // a point reached with the keyboard reads out like a tapped one
+  const pt=e.target&&e.target.closest&&e.target.closest('[data-pt]');
+  if(pt&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); histRead(+pt.dataset.pt); }
+});
+/* ===================================================================
+   MUSCLES THIS WEEK (Progress)
+   How many sets each muscle has had so far this week, shaded on the body, against what the plan asks for.
+   A set counts 1 for a muscle the lift names as main (prim) and half for one it names as a helper (sec):
+   the same rule tools/validate.mjs counts a plan's weekly volume by.
+   "This week" is the week of the block that today is in; before or after a block, the last seven days.
+   =================================================================== */
+function weekSpan(){
+  const info=infoForDate(TODAY);
+  if(info) return {dates:weekDates(info.week), label:'Week '+info.week};
+  const out=[]; for(let k=6;k>=0;k--) out.push(iso(addDays(parseISO(TODAY),-k)));
+  return {dates:out, label:'Last 7 days'};
+}
+/* n sets of a lift, added to a tally of {zone: sets} */
+function setCredit(tally,id,n){
+  const e=EX[id]; if(!e||!(n>0)) return;
+  const prim=e.prim||[];
+  prim.forEach(z=>{ tally[z]=(tally[z]||0)+n; });
+  (e.sec||[]).forEach(z=>{ if(prim.indexOf(z)<0) tally[z]=(tally[z]||0)+n*0.5; });
+}
+/* what was logged on those days: sets with reps, the same sets the logbook and the Strength log count */
+function weekDone(dates){
+  const t={}, on={}; dates.forEach(d=>{ on[d]=1; });
+  for(const id in S.logs) S.logs[id].forEach(e=>{ if(on[e.d]) setCredit(t,id,loggedSets(e).length); });
+  return t;
+}
+function weekSets(dates){
+  const on={}; dates.forEach(d=>{ on[d]=1; }); let n=0;
+  for(const id in S.logs) if(EX[id]) S.logs[id].forEach(e=>{ if(on[e.d]) n+=loggedSets(e).length; });
+  return n;
+}
+/* what the plan in force on each of those days asks for; a deload week asks for one set fewer on each lift */
+function weekPlanned(dates){
+  const t={};
+  dates.forEach(ds=>{
+    const info=infoForDate(ds);
+    if(info&&info.type==='lift'&&info.session) info.session.items.forEach(it=>{ const n=+it.sets||3; setCredit(t,it.ex,info.deload?deloadSets(n):n); });
+  });
+  return t;
+}
+/* three steps of one colour: under 5 sets, 5 to 9, 10 or more */
+function weekStep(v){ return !(v>0)?0:v<5?1:v<10?2:3; }
+function fmtSets(v){ return String(Math.round(v*2)/2); }
+function renderMuscleWeek(){
+  const el=$('#muscleWeek'); if(!el) return;
+  if(!Object.keys(S.logs).some(id=>EX[id])){ el.innerHTML=''; return; }       // nothing logged yet: no empty figure
+  const span=weekSpan(), done=weekDone(span.dates), plan=weekPlanned(span.dates), n=weekSets(span.dates);
+  const zones=Object.keys(ZN).filter(z=>done[z]>0||plan[z]>0)
+    .sort((a,b)=>((plan[b]||0)-(plan[a]||0))||((done[b]||0)-(done[a]||0)));
+  const step=zs=>{ const s=Math.max.apply(null,zs.map(z=>weekStep(done[z]))); return s?'v'+s:''; };
+  let top=null; zones.forEach(z=>{ if(done[z]>0&&(top==null||done[z]>done[top])) top=z; });
+  const todo=zones.filter(z=>plan[z]>0&&!(done[z]>0)).map(z=>ZN[z]);
+  let line=n?('<b>'+n+(n===1?' set':' sets')+'</b> logged so far.'+(top?' Most: '+esc(ZN[top])+' ('+fmtSets(done[top])+').':''))
+            :'Nothing logged yet this week.';
+  if(todo.length) line+=' Not trained yet this week: '+esc(todo.slice(0,6).join(', '))+(todo.length>6?' and '+(todo.length-6)+' more':'')+'.';
+  el.innerHTML='<div class="card"><div class="card-h"><h3>Muscles this week</h3><span class="pill cool">'+esc(span.label)+'</span></div>'
+    +'<div class="maps mw"><div class="figs">'+bodyFigure('front',step)+bodyFigure('back',step)+'</div>'
+    +'<div class="mkey mw-key"><span><i class="k"></i>none</span><span><i class="k v1"></i>under 5</span><span><i class="k v2"></i>5 to 9</span><span><i class="k v3"></i>10 or more</span></div></div>'
+    +'<p class="mw-line">'+line+'</p>'
+    +(zones.length?'<details class="mw-all"><summary><span class="how-t">Every muscle: sets done'+(Object.keys(plan).length?' of planned':'')+'</span><span class="chev">'+ICO.chev+'</span></summary>'
+      +'<div class="mw-list">'+zones.map(z=>{
+          const d=done[z]||0, p=plan[z]||0, pct=p?Math.min(100,Math.round(d/p*100)):(d?100:0);
+          return '<div class="mw-row"><span class="mw-n">'+esc(ZN[z])+'</span><span class="pbar sm"><i style="width:'+pct+'%"></i></span>'
+            +'<span class="mw-v num">'+fmtSets(d)+(p?' of '+fmtSets(p):'')+'</span></div>';
+        }).join('')
+      +'<p class="mw-note">A set counts once for the main muscle of a lift and as half a set for each muscle that helps.'+(Object.keys(plan).length?' "Planned" is what your plan asks for this week.':'')+'</p></div></details>':'')
+    +'</div>';
 }
 /* ===================================================================
    RENDER — MAP
@@ -5353,6 +5618,7 @@ function renderProg(){
   $('#chartBox').innerHTML=chart(wl,avg,t);
   $('#verdictCard').innerHTML=trendVerdict(tr,t,staleWeighIns(wl))+ownTarget(tr,t,lastAvg);
   renderMeas();
+  renderMuscleWeek();
   renderPR();
   renderHabit();
   renderBlocks();
@@ -5484,16 +5750,16 @@ function renderPR(){
   let h='<table><thead><tr><th>Lift</th><th class="n">Best set</th><th class="n">First</th><th class="n">Change</th></tr></thead><tbody>';
   if(!ids.length) h+='<tr><td colspan="4" style="color:var(--text-faint)">Log a session in Train and your lifts appear here.</td></tr>';
   ids.forEach(id=>{
-    const hold=EX[id].load==='time', unit=hold?' s':'';
+    const hold=EX[id].load==='time';
     const sess=S.logs[id].filter(e=>bestSet(e)), first=bestSet(sess[0]);
     let best=first;
-    sess.forEach(e=>{ const b=bestSet(e); if(b.w>best.w||(b.w===best.w&&b.r>best.r)) best=b; });
-    const txt=b=>b.w>0?b.w+' kg × '+b.r+unit:(hold?b.r+' s':'BW × '+b.r);
+    sess.forEach(e=>{ const b=bestSet(e); if(betterSet(b,best)) best=b; });
+    const txt=b=>bestText(id,b);              // the same wording as the lift's history and its "New best" line
     let delta='—', up=false;
     if(best.w>first.w&&first.w>0){ delta='+'+(Math.round((best.w-first.w)/first.w*1000)/10)+'%'; up=true; }
     else if(best.w>first.w){ delta='+'+best.w+' kg'; up=true; }
     else if(best.r>first.r){ delta='+'+(best.r-first.r)+(hold?' s':' reps'); up=true; }
-    h+='<tr><td>'+esc(EX[id].name)+'</td><td class="n">'+txt(best)+'</td><td class="n">'+txt(first)
+    h+='<tr><td><button class="lkbtn" data-hist="'+id+'">'+esc(EX[id].name)+'</button></td><td class="n">'+txt(best)+'</td><td class="n">'+txt(first)
       +'</td><td class="n" style="color:'+(up?'var(--good)':'var(--text-faint)')+'">'+delta+'</td></tr>';
   });
   $('#prTable').innerHTML=h+'</tbody></table>';
@@ -5652,12 +5918,15 @@ function settingsSheet(){
     +'<div class="sec"><div class="eyebrow">Data</div>'
     +'<p style="font-size:12.5px;color:var(--text-dim);margin-bottom:8px">'+(CLOUD.doc||CLOUD.status==='connecting'
         ?'Everything you log is saved on this device and backed up privately to your Claude account, so a cleared browser or a second phone picks up where you left off.'
-        :'Everything you log lives in this browser only — nothing is sent anywhere. Clearing site data or using a different device starts you fresh, so export a backup now and then.')+'</p>'
+        :'Everything you log is stored on this phone only. Nothing is sent anywhere. If the phone is lost or the browser\'s data is cleared, the log is gone, so back it up now and then. Restore reads a backup back in, on this phone or a new one.')+'</p>'
     +'<p style="margin-bottom:8px"><span id="cloudBadge" class="pill"></span></p>'
     +(lsGet(KEY_DMG)?'<div id="damagedNote" class="note hot" style="margin-bottom:10px"><b>Some saved data could not be read.</b><br>A copy of it was put aside so it is not lost. '
       +'<span style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" id="btnDmgExport">Save that copy as a file</button><button class="btn sm danger" id="btnDmgDrop">Discard it</button></span></div>':'')
     +'<p id="storageLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+storageLine()+'</p>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btnExport">Export a backup</button>'
+    +'<p id="bkLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+backupLine()+'</p>'
+    // one tap: the share sheet where the phone has one, a saved file where it has not
+    +'<button class="btn primary wide" id="btnBackup" style="margin-bottom:8px">'+(canShareFiles()?'Back up now: WhatsApp, Gmail or Drive':'Back up now: save a file')+'</button>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+(canShareFiles()?'<button class="btn" id="btnExport">Save as a file</button>':'')
     +'<button class="btn" id="btnImport">Restore</button>'
     +'<button class="btn danger" id="btnWipe">Erase everything</button></div></div>'
     +'<p class="credits">The body drawing in "How to do it" is from MuscleMap by Jsplice, used under the MIT licence.</p>');
@@ -6129,6 +6398,12 @@ document.addEventListener('click',e=>{
     syncAuto(); save(); renderProt(); return;
   }
 
+  /* ---- a lift's history: from the logbook's "last time" line, from the Strength log, and the points of its graph ---- */
+  const hist=T.closest('[data-hist]');
+  if(hist){ historySheet(hist.dataset.hist); return; }
+  const pt=T.closest('[data-pt]');
+  if(pt){ histRead(+pt.dataset.pt); return; }
+
   /* ---- the logbook ---- */
   const box=T.closest('.logger');
   if(box){
@@ -6174,14 +6449,17 @@ document.addEventListener('click',e=>{
       while(en.sets.length<=i) en.sets.push({});
       // the cross was hit by mistake and now the tick, as meant: the set comes back and is done
       if(UNDO&&UNDO.id===id&&UNDO.i===i&&UNDO.d===TODAY&&!UNDO.popped&&blankSet(en.sets[i])){ en.sets[i]=UNDO.set; UNDO=null; }
-      const s=en.sets[i], prev=i>0?en.sets[i-1]:null;
+      const s=en.sets[i], prev=i>0?en.sets[i-1]:null, pbWas=pbKey(id);
       if(s.w==null&&prev&&prev.w!=null&&EX[id].load!=='bw') s.w=prev.w;   // carry the bar weight forward
       s.done=1; delete s.pre;
       if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
       syncSession(); save();
       // The rest starts first: nothing that happens while redrawing the logbook may stop it.
       startRest(id,i,ref);
+      const pbNow=pbKey(id);
+      PB_FLASH=(pbNow&&pbNow!==pbWas)?id:null;                            // this tick made a new best: its line pops once
       try{ refreshLogger(id); }catch(err){ console.error(err); }
+      PB_FLASH=null;
       return;
     }
     if(T.closest('[data-rest-start]')){
@@ -6506,18 +6784,57 @@ function paintOnline(){ document.documentElement.classList.toggle('offline', nav
 window.addEventListener('online',paintOnline);
 window.addEventListener('offline',paintOnline);
 
-/* ---- backup / restore / wipe -------------------------------------- */
-function flash(btn,msg,back){
+/* ---- backup / restore / wipe --------------------------------------
+   Outside claude.ai the log exists on this phone only, so a backup has to be one tap. "Back up now" hands
+   the phone's share sheet a file (WhatsApp, Gmail, Drive ...). Share sheets take plain text but not the
+   app's own .json, so that file is a .txt holding the same text, and Restore reads both. Where there is no
+   share sheet, or the phone will not open it, the same button saves the file instead. */
+function flash(btn,msg){                       // a word on the button for a moment, then its own label again
+  if(!btn) return;
+  if(!btn.dataset.label) btn.dataset.label=btn.textContent;
   btn.textContent=msg;
-  setTimeout(()=>{ btn.textContent=back||'Export a backup'; },1800);
+  clearTimeout(btn._flash);
+  btn._flash=setTimeout(()=>{ if(btn.isConnected) btn.textContent=btn.dataset.label; },1800);
+}
+function backupName(ext){ return 'forge90-backup-'+TODAY+'.'+ext; }
+function canShareFiles(){                      // can this phone's share sheet take a text file?
+  if(typeof claude!=='undefined'&&claude.use) return false;       // inside claude.ai the viewer saves files
+  try{ return !!(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File(['{}'],'forge90-backup.txt',{type:'text/plain'})]})); }
+  catch(e){ return false; }
+}
+/* when the last backup was made, in whole days before today (null: never) */
+function backupAge(){ const at=+S.ui.bk||0; return at?Math.max(0,daysBetween(new Date(at),parseISO(TODAY))):null; }
+function backupLine(){
+  const age=backupAge();
+  if(age==null) return '<span class="pill warn">No backup yet</span> A copy outside this phone is the only thing that survives a lost phone.';
+  return '<span class="pill '+(age>=14?'warn':'good')+'">Last backup: '+(age===0?'today':age===1?'yesterday':age+' days ago')+'</span>'
+    +(age>0?' '+esc(fmtDate(iso(new Date(+S.ui.bk))))+'.':'');
+}
+function markBackedUp(){
+  S.ui.bk=Date.now(); delete S.ui.bkLater; save(true);
+  const l=$('#bkLine'); if(l) l.innerHTML=backupLine();
+  renderBackupCard();
+}
+async function backupNow(btn){
+  if(canShareFiles()){
+    try{
+      const file=new File([JSON.stringify(S,null,2)],backupName('txt'),{type:'text/plain'});
+      await navigator.share({files:[file], title:'FORGE 90 backup'});
+      markBackedUp(); flash(btn,'Backed up'); return;
+    }catch(err){
+      if(err&&err.name==='AbortError'){ flash(btn,'Cancelled'); return; }      // the sheet was closed: nothing was sent
+      // anything else: the phone would not open the sheet, so the file is saved instead
+    }
+  }
+  return exportBackup(btn);
 }
 async function exportBackup(btn){
-  const json=JSON.stringify(S,null,2), name='forge90-backup-'+TODAY+'.json';
+  const json=JSON.stringify(S,null,2), name=backupName('json');
   // published page: the viewer mediates the save. standalone file: ordinary download.
   let dl=null;
   try{ dl=(typeof claude!=='undefined'&&claude.use)?await claude.use('downloads'):null; }catch(err){ dl=null; }
   if(dl){
-    try{ await dl.save({filename:name,data:json}); flash(btn,'Saved'); }
+    try{ await dl.save({filename:name,data:json}); markBackedUp(); flash(btn,'Saved'); }
     catch(err){ flash(btn, err&&err.code==='declined'?'Cancelled':'Could not save'); }
     return;
   }
@@ -6526,7 +6843,7 @@ async function exportBackup(btn){
     const url=URL.createObjectURL(blob), a=document.createElement('a');
     a.href=url; a.download=name; document.body.appendChild(a); a.click();
     setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },400);
-    flash(btn,'Downloaded');
+    markBackedUp(); flash(btn,'Saved as a file');
   }catch(err){ flash(btn,'Could not save'); }
 }
 document.addEventListener('click',e=>{
@@ -6542,6 +6859,8 @@ document.addEventListener('click',e=>{
     }).catch(()=>{ e.target.disabled=false; });
     return;
   }
+  if(e.target.id==='btnBackup'||e.target.closest('[data-bknow]')){ backupNow(e.target.closest('button')); return; }
+  if(e.target.closest('[data-bklater]')){ S.ui.bkLater=TODAY; save(true); renderBackupCard(); return; }
   if(e.target.id==='btnExport'||e.target.closest('[data-export]')) exportBackup(e.target.closest('button'));
   if(e.target.id==='btnDmgExport'){
     const raw=lsGet(KEY_DMG)||'';
@@ -6551,7 +6870,7 @@ document.addEventListener('click',e=>{
   }
   if(e.target.id==='btnDmgDrop'){ lsDrop(KEY_DMG); const n=$('#damagedNote'); if(n) n.remove(); }
   if(e.target.id==='btnImport'){
-    const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,.txt,application/json,text/plain';   // a backup sent through the share sheet is a .txt
     inp.addEventListener('change',()=>{
       const f=inp.files[0]; if(!f) return;
       const r=new FileReader();
@@ -6564,6 +6883,7 @@ document.addEventListener('click',e=>{
           p=normalize(raw);
         }catch(err){ e.target.textContent='Could not read that file'; return; }
         p.ui.savedAt=Date.now(); p.profile.setup=true;
+        p.ui.bk=Date.now(); delete p.ui.bkLater;               // the file just read is a backup of exactly this state
         const at=v1Stamp(readStore(KEY_V1)); if(at) p.ui.v1At=at;      // a restore is not topped up from the old copy on this phone
         // The restored state becomes THE state before the page reloads: the save
         // that runs as a page closes would otherwise write the old one back.

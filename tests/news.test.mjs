@@ -28,6 +28,19 @@ export default [
     },
   },
   {
+    name: 'the note for the backup, lift history and weekly muscles update says where each one is',
+    async run({ open }) {
+      const { page } = await open({ state: v2State({ logs, ui: { helpSeen: 1, news: 2 } }) });
+      await page.locator('#ro-today').waitFor();
+      const text = await card(page).innerText();
+      assert.match(text, /back up now/i); assert.match(text, /whatsapp|gmail|drive/i);
+      assert.match(text, /history/i); assert.match(text, /new best/i);
+      assert.match(text, /muscles this week/i); assert.match(text, /progress/i);
+      assert.doesNotMatch(text, /real body/i, 'a note that was already read is shown again');
+      assert.ok((await card(page).locator('li').count()) <= 4, 'the note is long');
+    },
+  },
+  {
     name: 'someone who never closed the earlier note sees both, the newest first',
     async run({ open }) {
       const { page } = await open({ state: v2State({ logs, ui: { helpSeen: 1 } }) });

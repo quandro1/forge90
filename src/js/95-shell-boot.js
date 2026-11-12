@@ -100,18 +100,57 @@ function paintOnline(){ document.documentElement.classList.toggle('offline', nav
 window.addEventListener('online',paintOnline);
 window.addEventListener('offline',paintOnline);
 
-/* ---- backup / restore / wipe -------------------------------------- */
-function flash(btn,msg,back){
+/* ---- backup / restore / wipe --------------------------------------
+   Outside claude.ai the log exists on this phone only, so a backup has to be one tap. "Back up now" hands
+   the phone's share sheet a file (WhatsApp, Gmail, Drive ...). Share sheets take plain text but not the
+   app's own .json, so that file is a .txt holding the same text, and Restore reads both. Where there is no
+   share sheet, or the phone will not open it, the same button saves the file instead. */
+function flash(btn,msg){                       // a word on the button for a moment, then its own label again
+  if(!btn) return;
+  if(!btn.dataset.label) btn.dataset.label=btn.textContent;
   btn.textContent=msg;
-  setTimeout(()=>{ btn.textContent=back||'Export a backup'; },1800);
+  clearTimeout(btn._flash);
+  btn._flash=setTimeout(()=>{ if(btn.isConnected) btn.textContent=btn.dataset.label; },1800);
+}
+function backupName(ext){ return 'forge90-backup-'+TODAY+'.'+ext; }
+function canShareFiles(){                      // can this phone's share sheet take a text file?
+  if(typeof claude!=='undefined'&&claude.use) return false;       // inside claude.ai the viewer saves files
+  try{ return !!(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File(['{}'],'forge90-backup.txt',{type:'text/plain'})]})); }
+  catch(e){ return false; }
+}
+/* when the last backup was made, in whole days before today (null: never) */
+function backupAge(){ const at=+S.ui.bk||0; return at?Math.max(0,daysBetween(new Date(at),parseISO(TODAY))):null; }
+function backupLine(){
+  const age=backupAge();
+  if(age==null) return '<span class="pill warn">No backup yet</span> A copy outside this phone is the only thing that survives a lost phone.';
+  return '<span class="pill '+(age>=14?'warn':'good')+'">Last backup: '+(age===0?'today':age===1?'yesterday':age+' days ago')+'</span>'
+    +(age>0?' '+esc(fmtDate(iso(new Date(+S.ui.bk))))+'.':'');
+}
+function markBackedUp(){
+  S.ui.bk=Date.now(); delete S.ui.bkLater; save(true);
+  const l=$('#bkLine'); if(l) l.innerHTML=backupLine();
+  renderBackupCard();
+}
+async function backupNow(btn){
+  if(canShareFiles()){
+    try{
+      const file=new File([JSON.stringify(S,null,2)],backupName('txt'),{type:'text/plain'});
+      await navigator.share({files:[file], title:'FORGE 90 backup'});
+      markBackedUp(); flash(btn,'Backed up'); return;
+    }catch(err){
+      if(err&&err.name==='AbortError'){ flash(btn,'Cancelled'); return; }      // the sheet was closed: nothing was sent
+      // anything else: the phone would not open the sheet, so the file is saved instead
+    }
+  }
+  return exportBackup(btn);
 }
 async function exportBackup(btn){
-  const json=JSON.stringify(S,null,2), name='forge90-backup-'+TODAY+'.json';
+  const json=JSON.stringify(S,null,2), name=backupName('json');
   // published page: the viewer mediates the save. standalone file: ordinary download.
   let dl=null;
   try{ dl=(typeof claude!=='undefined'&&claude.use)?await claude.use('downloads'):null; }catch(err){ dl=null; }
   if(dl){
-    try{ await dl.save({filename:name,data:json}); flash(btn,'Saved'); }
+    try{ await dl.save({filename:name,data:json}); markBackedUp(); flash(btn,'Saved'); }
     catch(err){ flash(btn, err&&err.code==='declined'?'Cancelled':'Could not save'); }
     return;
   }
@@ -120,7 +159,7 @@ async function exportBackup(btn){
     const url=URL.createObjectURL(blob), a=document.createElement('a');
     a.href=url; a.download=name; document.body.appendChild(a); a.click();
     setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },400);
-    flash(btn,'Downloaded');
+    markBackedUp(); flash(btn,'Saved as a file');
   }catch(err){ flash(btn,'Could not save'); }
 }
 document.addEventListener('click',e=>{
@@ -136,6 +175,8 @@ document.addEventListener('click',e=>{
     }).catch(()=>{ e.target.disabled=false; });
     return;
   }
+  if(e.target.id==='btnBackup'||e.target.closest('[data-bknow]')){ backupNow(e.target.closest('button')); return; }
+  if(e.target.closest('[data-bklater]')){ S.ui.bkLater=TODAY; save(true); renderBackupCard(); return; }
   if(e.target.id==='btnExport'||e.target.closest('[data-export]')) exportBackup(e.target.closest('button'));
   if(e.target.id==='btnDmgExport'){
     const raw=lsGet(KEY_DMG)||'';
@@ -145,7 +186,7 @@ document.addEventListener('click',e=>{
   }
   if(e.target.id==='btnDmgDrop'){ lsDrop(KEY_DMG); const n=$('#damagedNote'); if(n) n.remove(); }
   if(e.target.id==='btnImport'){
-    const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,.txt,application/json,text/plain';   // a backup sent through the share sheet is a .txt
     inp.addEventListener('change',()=>{
       const f=inp.files[0]; if(!f) return;
       const r=new FileReader();
@@ -158,6 +199,7 @@ document.addEventListener('click',e=>{
           p=normalize(raw);
         }catch(err){ e.target.textContent='Could not read that file'; return; }
         p.ui.savedAt=Date.now(); p.profile.setup=true;
+        p.ui.bk=Date.now(); delete p.ui.bkLater;               // the file just read is a backup of exactly this state
         const at=v1Stamp(readStore(KEY_V1)); if(at) p.ui.v1At=at;      // a restore is not topped up from the old copy on this phone
         // The restored state becomes THE state before the page reloads: the save
         // that runs as a page closes would otherwise write the old one back.

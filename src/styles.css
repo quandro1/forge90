@@ -303,6 +303,23 @@ svg{display:block}
 .mz{fill:var(--zone-off)}
 .mz.on{fill:var(--ember)}
 .mz.sec{fill:var(--zone-sec); stroke:var(--ember); stroke-width:1.1px; stroke-linejoin:round; vector-effect:non-scaling-stroke}
+/* Muscles this week (Progress): one colour in three steps, more sets further from grey */
+:root{--zone-v1:color-mix(in srgb,var(--ember) 50%,var(--zone-off)); --zone-v2:color-mix(in srgb,var(--ember) 76%,var(--zone-off))}
+.mz.v1{fill:var(--zone-v1)} .mz.v2{fill:var(--zone-v2)} .mz.v3{fill:var(--ember)}
+#muscleWeek:empty{display:none}
+.maps.mw{margin-top:0}
+.mw-key{flex-wrap:wrap; gap:6px 14px; letter-spacing:.1em}
+.mw-key .k{background:var(--zone-off)} .mw-key .k.v1{background:var(--zone-v1)} .mw-key .k.v2{background:var(--zone-v2)} .mw-key .k.v3{background:var(--ember)}
+.mw-line{font-size:13px; color:var(--text-dim); margin-top:11px; line-height:1.5}
+.mw-line b{color:var(--text)}
+details.mw-all{margin-top:11px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
+details.mw-all>summary{padding:10px 12px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); min-height:44px}
+details.mw-all>summary .how-t{flex:1}
+.mw-list{padding:4px 12px 12px; display:flex; flex-direction:column; gap:9px}
+.mw-row{display:grid; grid-template-columns:92px 1fr auto; gap:10px; align-items:center; font-size:13px; color:var(--text-dim)}
+.mw-row .pbar{margin:0}
+.mw-v{font-size:12px; color:var(--text); white-space:nowrap; min-width:58px; text-align:right}
+.mw-note{font-size:12px; color:var(--text-faint); line-height:1.45; margin-top:4px}
 
 /* ============ HOW TO DO IT (the written guide inside a card) ============ */
 details.how{margin-top:12px; border-radius:10px; background:var(--sunken); border-color:var(--line-soft)}
@@ -347,7 +364,7 @@ details.formnotes>summary .how-t{flex:1}
 @media (prefers-reduced-motion:reduce){.dial .d-swing{animation:none}}
 
 /* ============ DELOAD WEEKS, IN WORDS ============ */
-#helpCard:empty,#dlCard:empty{display:none}
+#helpCard:empty,#dlCard:empty,#bkCard:empty{display:none}
 .lkbtn{display:inline; padding:0; border:none; background:none; font:inherit; color:var(--steel); text-decoration:underline; text-underline-offset:3px; cursor:pointer}
 .lkbtn:hover{color:var(--ember)}
 .dlline{font-size:13px; color:var(--text-dim); line-height:1.5; padding:0 2px}
@@ -441,6 +458,30 @@ details.formnotes>summary .how-t{flex:1}
 .logger .lh{display:flex; align-items:center; gap:8px; padding:9px 11px; background:var(--raised); border-bottom:1px solid var(--line)}
 .logger .lh b{font-family:var(--font-d); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--text-dim)}
 .logger .lh .last{margin-left:auto; font-family:var(--font-m); font-size:11px; color:var(--text-faint)}
+/* "last time" is a button into the lift's history when there is one */
+.logger .lh .lasth{margin-left:auto; min-width:0; min-height:30px; padding:3px 0; line-height:1.45; text-align:right}
+.logger .lh .lasth .last{margin-left:0}
+.logger .lh .lasth .more{font-family:var(--font-m); font-size:11px; color:var(--steel); text-decoration:underline; text-underline-offset:3px; white-space:nowrap; margin-left:4px}
+/* a set today that beats every earlier session */
+.pbline{margin:-2px 11px 10px; padding:7px 10px; border-radius:8px; font-size:12.5px; line-height:1.45; color:var(--good);
+  background:color-mix(in srgb,var(--good) 11%,transparent); border:1px solid color-mix(in srgb,var(--good) 42%,transparent)}
+.pbline b{font-weight:700}
+.pbline .was{color:var(--text-dim); margin-left:8px; white-space:nowrap}
+.pbline.fresh{animation:pbpop .9s ease-out 1}
+@keyframes pbpop{0%{transform:scale(.96); box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent)}45%{transform:scale(1.015)}100%{transform:none; box-shadow:0 0 0 10px transparent}}
+/* the history sheet of a lift */
+.hist-s{font-size:14px; line-height:1.5; margin-bottom:6px}
+.hist-s.dim{font-size:13px; color:var(--text-dim)}
+.hist-c{margin-top:14px}
+.hist-r{font-size:13px; color:var(--text); margin-bottom:6px; min-height:19px}
+.hist-n{font-size:12px; color:var(--text-faint); margin-top:8px; line-height:1.4}
+.lchart .trend{stroke-width:2}
+.lchart .pt{fill:var(--ember); stroke:var(--surface); stroke-width:2}
+.lchart .pt.dl{fill:var(--surface); stroke:var(--steel-dim); stroke-width:2}
+.lchart .pt.sel{stroke:var(--text)}
+.lchart .hit{fill:transparent; cursor:pointer}
+.lchart .hit:focus-visible{outline:none; stroke:var(--ember); stroke-width:1.5}
+.lc-t{font-family:var(--font-m); font-size:10px; fill:var(--text-faint)}
 .sets{display:flex; flex-direction:column; gap:6px; padding:10px 11px}
 .setrow{display:grid; grid-template-columns:16px minmax(0,1fr) minmax(0,1fr) 48px 40px; gap:6px; align-items:center}
 .setrow .sn{font-family:var(--font-m); font-size:11.5px; color:var(--text-faint)}

@@ -120,12 +120,15 @@ function settingsSheet(){
     +'<div class="sec"><div class="eyebrow">Data</div>'
     +'<p style="font-size:12.5px;color:var(--text-dim);margin-bottom:8px">'+(CLOUD.doc||CLOUD.status==='connecting'
         ?'Everything you log is saved on this device and backed up privately to your Claude account, so a cleared browser or a second phone picks up where you left off.'
-        :'Everything you log lives in this browser only — nothing is sent anywhere. Clearing site data or using a different device starts you fresh, so export a backup now and then.')+'</p>'
+        :'Everything you log is stored on this phone only. Nothing is sent anywhere. If the phone is lost or the browser\'s data is cleared, the log is gone, so back it up now and then. Restore reads a backup back in, on this phone or a new one.')+'</p>'
     +'<p style="margin-bottom:8px"><span id="cloudBadge" class="pill"></span></p>'
     +(lsGet(KEY_DMG)?'<div id="damagedNote" class="note hot" style="margin-bottom:10px"><b>Some saved data could not be read.</b><br>A copy of it was put aside so it is not lost. '
       +'<span style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" id="btnDmgExport">Save that copy as a file</button><button class="btn sm danger" id="btnDmgDrop">Discard it</button></span></div>':'')
     +'<p id="storageLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+storageLine()+'</p>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btnExport">Export a backup</button>'
+    +'<p id="bkLine" style="font-size:12.5px;color:var(--text-dim);margin-bottom:10px">'+backupLine()+'</p>'
+    // one tap: the share sheet where the phone has one, a saved file where it has not
+    +'<button class="btn primary wide" id="btnBackup" style="margin-bottom:8px">'+(canShareFiles()?'Back up now: WhatsApp, Gmail or Drive':'Back up now: save a file')+'</button>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+(canShareFiles()?'<button class="btn" id="btnExport">Save as a file</button>':'')
     +'<button class="btn" id="btnImport">Restore</button>'
     +'<button class="btn danger" id="btnWipe">Erase everything</button></div></div>'
     +'<p class="credits">The body drawing in "How to do it" is from MuscleMap by Jsplice, used under the MIT licence.</p>');

@@ -270,6 +270,7 @@ function renderProg(){
   $('#chartBox').innerHTML=chart(wl,avg,t);
   $('#verdictCard').innerHTML=trendVerdict(tr,t,staleWeighIns(wl))+ownTarget(tr,t,lastAvg);
   renderMeas();
+  renderMuscleWeek();
   renderPR();
   renderHabit();
   renderBlocks();
@@ -401,16 +402,16 @@ function renderPR(){
   let h='<table><thead><tr><th>Lift</th><th class="n">Best set</th><th class="n">First</th><th class="n">Change</th></tr></thead><tbody>';
   if(!ids.length) h+='<tr><td colspan="4" style="color:var(--text-faint)">Log a session in Train and your lifts appear here.</td></tr>';
   ids.forEach(id=>{
-    const hold=EX[id].load==='time', unit=hold?' s':'';
+    const hold=EX[id].load==='time';
     const sess=S.logs[id].filter(e=>bestSet(e)), first=bestSet(sess[0]);
     let best=first;
-    sess.forEach(e=>{ const b=bestSet(e); if(b.w>best.w||(b.w===best.w&&b.r>best.r)) best=b; });
-    const txt=b=>b.w>0?b.w+' kg × '+b.r+unit:(hold?b.r+' s':'BW × '+b.r);
+    sess.forEach(e=>{ const b=bestSet(e); if(betterSet(b,best)) best=b; });
+    const txt=b=>bestText(id,b);              // the same wording as the lift's history and its "New best" line
     let delta='—', up=false;
     if(best.w>first.w&&first.w>0){ delta='+'+(Math.round((best.w-first.w)/first.w*1000)/10)+'%'; up=true; }
     else if(best.w>first.w){ delta='+'+best.w+' kg'; up=true; }
     else if(best.r>first.r){ delta='+'+(best.r-first.r)+(hold?' s':' reps'); up=true; }
-    h+='<tr><td>'+esc(EX[id].name)+'</td><td class="n">'+txt(best)+'</td><td class="n">'+txt(first)
+    h+='<tr><td><button class="lkbtn" data-hist="'+id+'">'+esc(EX[id].name)+'</button></td><td class="n">'+txt(best)+'</td><td class="n">'+txt(first)
       +'</td><td class="n" style="color:'+(up?'var(--good)':'var(--text-faint)')+'">'+delta+'</td></tr>';
   });
   $('#prTable').innerHTML=h+'</tbody></table>';

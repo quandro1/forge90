@@ -57,9 +57,13 @@ function logger(id,ref){
   const chip=dlNow?'<button class="dlchip on" data-dl aria-pressed="true">Deload: on</button>'
     :(isDeload()?'<button class="dlchip" data-dl aria-pressed="false">Deload: off</button>':'');
   return '<div class="logger" data-log="'+id+'" data-ref="'+esc(ref||'')+'">'
-    +'<div class="lh"><b>Logbook</b>'+chip+'<span class="last">'+(prev?'last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  '):'no history yet')+'</span></div>'
+    // "last time" is also the way into the lift's history (best set, graph, every session)
+    +'<div class="lh"><b>Logbook</b>'+chip+(prev
+        ?'<button class="lasth" data-hist="'+id+'" aria-label="History of this lift"><span class="last">last '+fmtDate(prev.d)+': '+loggedSets(prev).map(s=>esc(setText(ex,it,s))).join('  ')+'</span> <span class="more">History ›</span></button>'
+        :'<span class="last">no history yet</span>')+'</div>'
     +(dlNow?'<p class="dlnote">Deload session: easier on purpose. Next week\'s target comes from your last normal session, not from this one. <button class="lkbtn" data-dlwhy>What is this?</button></p>':'')
     +'<div class="sets">'+rows+'</div>'
+    +pbLine(id)
     +(nPre&&ASK!==id?'<p class="prenote">Filled in from last time'+(dlNow?' and made easier for the deload week':'')+'. Tick each set as you do it, or type over it.</p>':'')
     +(nPre&&ASK===id?'<div class="askbar" role="alert" tabindex="-1"><span>'+(nPre===1?'1 set is':nPre+' sets are')+' filled in from last time and not ticked. Did you do '+(nPre===1?'it':'them')+'?</span>'
       +'<span class="ask-b"><button class="btn sm primary" data-askyes>Yes, count '+(nPre===1?'it':'them')+'</button><button class="btn sm" data-askno>No, clear '+(nPre===1?'it':'them')+'</button></span></div>':'')

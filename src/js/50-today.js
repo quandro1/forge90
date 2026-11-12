@@ -51,6 +51,7 @@ function renderToday(){
   }
   $('#sessionCard').innerHTML=sc;
   $('#dlCard').innerHTML=deloadCard(started&&!done?info:null);
+  renderBackupCard();
 
   renderChecklist();
 
@@ -93,6 +94,37 @@ function deloadCard(info){
     +'<p class="dl-p">It clears the tiredness that builds up over weeks of training and gives your tendons and joints a rest, so you start the next weeks fresh. You do not lose muscle in one lighter week.</p>'
     +'<div class="dl-b"><button class="btn sm" data-dlwhy>More about this</button><button class="btn sm" data-dlskip>Train normally this week</button></div></div>';
 }
+/* ---- the backup reminder ---------------------------------------------
+   Outside claude.ai the log exists on this phone only. Once there is a week of it, Today asks for a backup
+   when none was made for two weeks. "Later" keeps the card away for a week; a backup, for two. */
+const BK_EVERY=14, BK_LATER=7, BK_AFTER=7;
+function firstLogged(){                      // the earliest day anything was logged, or null
+  let d=null; const see=x=>{ if(isDate(x)&&(d==null||x<d)) d=x; };
+  for(const id in S.logs) if(S.logs[id].length) see(S.logs[id][0].d);
+  Object.keys(S.weights).forEach(see); Object.keys(S.checks).forEach(see);
+  return d;
+}
+function backupDue(){
+  if(CLOUD.doc||CLOUD.status==='connecting'||!S.profile.setup) return false;     // inside claude.ai the account holds a copy
+  const first=firstLogged();
+  if(!first||daysBetween(parseISO(first),parseISO(TODAY))<BK_AFTER) return false;
+  const age=backupAge();
+  if(age!=null&&age<BK_EVERY) return false;
+  if(isDate(S.ui.bkLater)&&daysBetween(parseISO(S.ui.bkLater),parseISO(TODAY))<BK_LATER) return false;
+  return true;
+}
+function renderBackupCard(){
+  const el=$('#bkCard'); if(!el) return;
+  if(!backupDue()){ el.innerHTML=''; return; }
+  const age=backupAge();
+  el.innerHTML='<div class="card help"><div class="card-h"><h3>Back up your log</h3><button class="btn sm" data-bklater>Later</button></div>'
+    +'<p class="dl-p">'+(age==null?'Everything you have logged is stored <b>only on this phone</b>.'
+        :'Your last backup was <b>'+age+' days ago</b>. What you logged since then is stored only on this phone.')
+    +' If the phone is lost or the browser\'s data is cleared, it is gone.</p>'
+    +'<p class="dl-p">'+(canShareFiles()?'One tap sends a copy to WhatsApp, Gmail or Drive.'
+        :'One tap saves a copy as a file. Then send that file to yourself on WhatsApp or Gmail, or put it in Drive, so it is not only on this phone.')+'</p>'
+    +'<button class="btn primary wide" data-bknow style="margin-top:11px">Back up now</button></div>';
+}
 function chkButton(x,on,attr){
   return '<button class="chk" '+attr+' aria-pressed="'+!!on+'">'
     +'<span class="box">'+ICO.tick+'</span><span class="lbl">'+esc(x.l)+'</span><span class="hint">'+esc(x.h)+'</span></button>';
@@ -115,6 +147,11 @@ const NEWS_NOTES={
   2:[
     '<b>A real body shows the muscles.</b> Open a lift, then "How to do it": the muscles that work are lit on a drawing of a real body. A filled muscle does most of the work. An outlined muscle helps.',
     '<b>Clearer angle drawings.</b> Small notches mark 30°, 45°, 60° and 90°. A grey line with a cross shows a common mistake next to the right position. Where a joint moves, the line swings from the start to the finish.'
+  ],
+  3:[
+    '<b>Back up in one tap.</b> Your log is stored on this phone only. In Settings (the cog at the top), "Back up now" sends a copy to WhatsApp, Gmail or Drive, and Restore reads it back.',
+    '<b>A history for every lift.</b> In a logbook, tap History beside last time\'s sets: your best set, a graph and every session. When a set beats your best, the logbook says "New best".',
+    '<b>Muscles this week.</b> Progress shows how many sets each muscle has had this week, on the body, and which muscles are still to come.'
   ]
 };
 function renderHelp(){

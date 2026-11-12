@@ -188,6 +188,12 @@ document.addEventListener('click',e=>{
     syncAuto(); save(); renderProt(); return;
   }
 
+  /* ---- a lift's history: from the logbook's "last time" line, from the Strength log, and the points of its graph ---- */
+  const hist=T.closest('[data-hist]');
+  if(hist){ historySheet(hist.dataset.hist); return; }
+  const pt=T.closest('[data-pt]');
+  if(pt){ histRead(+pt.dataset.pt); return; }
+
   /* ---- the logbook ---- */
   const box=T.closest('.logger');
   if(box){
@@ -233,14 +239,17 @@ document.addEventListener('click',e=>{
       while(en.sets.length<=i) en.sets.push({});
       // the cross was hit by mistake and now the tick, as meant: the set comes back and is done
       if(UNDO&&UNDO.id===id&&UNDO.i===i&&UNDO.d===TODAY&&!UNDO.popped&&blankSet(en.sets[i])){ en.sets[i]=UNDO.set; UNDO=null; }
-      const s=en.sets[i], prev=i>0?en.sets[i-1]:null;
+      const s=en.sets[i], prev=i>0?en.sets[i-1]:null, pbWas=pbKey(id);
       if(s.w==null&&prev&&prev.w!=null&&EX[id].load!=='bw') s.w=prev.w;   // carry the bar weight forward
       s.done=1; delete s.pre;
       if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();   // drop the keyboard
       syncSession(); save();
       // The rest starts first: nothing that happens while redrawing the logbook may stop it.
       startRest(id,i,ref);
+      const pbNow=pbKey(id);
+      PB_FLASH=(pbNow&&pbNow!==pbWas)?id:null;                            // this tick made a new best: its line pops once
       try{ refreshLogger(id); }catch(err){ console.error(err); }
+      PB_FLASH=null;
       return;
     }
     if(T.closest('[data-rest-start]')){
